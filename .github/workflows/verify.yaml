@@ -59,7 +59,11 @@ jobs:
           docker compose --env-file .env.production -f compose.production.yaml config --quiet
       - name: Disposable production-profile database smoke test
         run: |
-          docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml up --build --wait --wait-timeout 120 web
+          if ! docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml up --build --wait --wait-timeout 120 web; then
+            docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml ps
+            docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml logs --no-color --tail=200 db migrate web
+            exit 1
+          fi
           docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml exec -T web python manage.py check_database --require-postgresql --require-least-privilege
           docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml exec -T web python manage.py verify_evidence_storage
         env:
