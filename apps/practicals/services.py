@@ -208,7 +208,7 @@ def remove_evidence(*, evidence, student):
 
 @transaction.atomic
 def formally_submit(*, submission, student):
-    submission = PracticalSubmission.objects.select_for_update().select_related(
+    submission = PracticalSubmission.objects.select_for_update(of=("self",)).select_related(
         "task", "resource"
     ).get(pk=submission.pk)
     if submission.student_id != student.pk or not submission.can_edit:
@@ -347,7 +347,7 @@ def release_result(*, assessment, lecturer):
 
 @transaction.atomic
 def create_integration_launch(*, submission, student, callback_url, completion_url):
-    submission = PracticalSubmission.objects.select_for_update().select_related(
+    submission = PracticalSubmission.objects.select_for_update(of=("self",)).select_related(
         "task", "resource"
     ).get(pk=submission.pk)
     if submission.student_id != student.pk or not submission.can_edit:
@@ -448,7 +448,7 @@ def accept_integration_return(*, raw_body, payload, signature):
     if returned_status not in {"completed", "failed"}:
         raise ValueError("Integration status must be completed or failed.")
 
-    submission = PracticalSubmission.objects.select_for_update().select_related(
+    submission = PracticalSubmission.objects.select_for_update(of=("self",)).select_related(
         "task__offering", "student", "resource"
     ).get(pk=integration.submission_id)
     if not submission.can_edit:
