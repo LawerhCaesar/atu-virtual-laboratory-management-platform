@@ -2,12 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import DatabaseError, connection, transaction
 from django.db.models import Count, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST, require_safe
 
 from apps.accounts.models import User
 from apps.accounts.decorators import administrator_required
@@ -22,6 +24,19 @@ from .services import cancel_notice, notice_recipients, notify, send_notice
 
 def home(request):
     return render(request, "core/home.html")
+
+
+@never_cache
+@require_safe
+def readiness(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            if cursor.fetchone() != (1,):
+                return JsonResponse({"status": "unavailable"}, status=503)
+    except DatabaseError:
+        return JsonResponse({"status": "unavailable"}, status=503)
+    return JsonResponse({"status": "ready"})
 
 
 @login_required

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
-from .environment import env_bool, positive_int, validate_production_environment
+from .environment import env_bool, positive_int, postgres_options, validate_production_environment
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,6 +81,7 @@ if os.getenv("POSTGRES_HOST"):
             "PORT": os.getenv("POSTGRES_PORT", "5432"),
             "CONN_MAX_AGE": 60,
             "CONN_HEALTH_CHECKS": True,
+            "OPTIONS": postgres_options(os.environ),
         }
     }
 else:

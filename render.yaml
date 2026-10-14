@@ -1,0 +1,44 @@
+# Paid staging service. Review Render's price before applying this Blueprint.
+services:
+  - type: web
+    name: atu-virtual-laboratory-staging
+    runtime: python
+    plan: 0.5c-512mb
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: pip install -r requirements.txt && DJANGO_DEBUG=true python manage.py collectstatic --noinput --settings=config.build_settings
+    startCommand: python deploy/render_start.py
+    healthCheckPath: /health/ready/
+    numInstances: 1
+    disk:
+      name: private-evidence
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.16
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.render_settings
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_MEDIA_ROOT
+        value: /opt/render/project/src/storage/media
+      - key: POSTGRES_HOST
+        value: aws-0-us-east-2.pooler.supabase.com
+      - key: POSTGRES_PORT
+        value: "5432"
+      - key: POSTGRES_DB
+        value: postgres
+      - key: POSTGRES_USER
+        value: postgres.puogbfavrwfmbmgcwleb
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: POSTGRES_SSLMODE
+        value: require
+      - key: POSTGRES_SCHEMA
+        value: atu_staging
+      - key: INTEGRATION_SHARED_SECRETS
+        value: "{}"

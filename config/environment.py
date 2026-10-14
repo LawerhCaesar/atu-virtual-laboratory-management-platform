@@ -1,4 +1,6 @@
 """Fail-closed parsing for deployment configuration (without database access)."""
+import re
+
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -17,6 +19,21 @@ def positive_int(environ, name, default):
     if value <= 0:
         raise ImproperlyConfigured(f"{name} must be a positive integer.")
     return value
+
+
+def postgres_options(environ):
+    options = {"connect_timeout": 5}
+    sslmode = environ.get("POSTGRES_SSLMODE")
+    if sslmode:
+        if sslmode not in {"disable", "allow", "prefer", "require", "verify-ca", "verify-full"}:
+            raise ImproperlyConfigured("POSTGRES_SSLMODE is invalid.")
+        options["sslmode"] = sslmode
+    schema = environ.get("POSTGRES_SCHEMA")
+    if schema:
+        if not re.fullmatch(r"[a-z_][a-z0-9_]{0,62}", schema):
+            raise ImproperlyConfigured("POSTGRES_SCHEMA must be a simple lowercase identifier.")
+        options["options"] = f"-c search_path={schema}"
+    return options
 
 
 def validate_production_environment(environ):

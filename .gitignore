@@ -17,3 +17,4 @@ deploy/tls/
 .env.production
 output/
 tmp/
+storage/

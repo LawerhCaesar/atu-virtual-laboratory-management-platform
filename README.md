@@ -46,6 +46,8 @@ The implemented platform slices include:
 
 ## Local setup
 
+For online QA using Render and Supabase, see [Render staging deployment](docs/render-staging.md).
+
 ```bash
 python3.13 -m venv .venv
 .venv/bin/python -m pip install -r requirements-dev.txt

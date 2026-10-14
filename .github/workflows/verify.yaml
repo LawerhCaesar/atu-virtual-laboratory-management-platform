@@ -42,6 +42,34 @@ jobs:
       - run: python manage.py makemigrations --check --dry-run
       - run: pytest -q
       - run: pytest -m e2e tests/e2e -q
+      - name: Render startup and isolated-schema smoke test
+        run: |
+          python deploy/render_start.py > /tmp/atu-render-startup.log 2>&1 &
+          staging_pid=$!
+          trap 'kill "$staging_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail --max-time 3 -H 'Host: lab.example.edu' -H 'X-Forwarded-Proto: https' http://127.0.0.1:10001/health/ready/; then
+              python manage.py shell -c "from django.db import connection; c=connection.cursor(); c.execute('SELECT current_schema()'); assert c.fetchone() == ('atu_staging',); c.execute('SELECT COUNT(*) FROM django_migrations'); assert c.fetchone()[0] > 0"
+              exit 0
+            fi
+            if ! kill -0 "$staging_pid" 2>/dev/null; then
+              cat /tmp/atu-render-startup.log
+              exit 1
+            fi
+            sleep 1
+          done
+          cat /tmp/atu-render-startup.log
+          exit 1
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_DEBUG: "false"
+          DJANGO_SECRET_KEY: ci-only-check-key-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ-random-like
+          DJANGO_ALLOWED_HOSTS: lab.example.edu
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://lab.example.edu
+          DJANGO_TRUST_PROXY_HEADERS: "true"
+          DJANGO_MEDIA_ROOT: /tmp/atu-render-evidence
+          POSTGRES_SCHEMA: atu_staging
+          PORT: "10001"
       - name: Production settings check
         run: python manage.py check --deploy --fail-level WARNING
         env:

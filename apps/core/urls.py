@@ -6,6 +6,7 @@ from . import views
 app_name = "core"
 
 urlpatterns = [
+    path("health/ready/", views.readiness, name="readiness"),
     path("", views.home, name="home"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("help/", views.help_page, name="help"),
