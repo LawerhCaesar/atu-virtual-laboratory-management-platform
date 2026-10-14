@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Notifications | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<p class="eyebrow">Updates</p><h1 class="h2 mb-4">Notifications</h1>
+{% if notifications %}<div class="list-group shadow-sm">{% for notification in notifications %}<a class="list-group-item list-group-item-action p-3{% if not notification.read_at %} notification-unread{% endif %}" href="{% url 'core:notification_open' notification.pk %}"><div class="d-flex justify-content-between gap-3"><strong>{{ notification.title }}</strong><span class="small text-secondary">{{ notification.created_at|timesince }} ago</span></div><p class="mb-0 mt-1 text-secondary">{{ notification.message }}</p></a>{% endfor %}</div>{% else %}<div class="empty-state"><h2 class="h5">No notifications</h2><p class="text-secondary mb-0">Task, resubmission and result updates will appear here.</p></div>{% endif %}
+{% endblock %}

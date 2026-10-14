@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Academic setup | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto">
+  <p class="eyebrow">Account activation</p>
+  <h1 class="h2">Complete academic setup</h1>
+  <p class="text-secondary">Assign the verified academic details for <strong>{{ account.full_name }}</strong> ({{ account.get_role_display }}).</p>
+  <form method="post" novalidate class="card card-body shadow-sm mt-4">
+    {% csrf_token %}
+    {% include "includes/form_fields.html" %}
+    <button class="btn btn-primary" type="submit">Save and activate account</button>
+  </form>
+</div>
+{% endblock %}
+

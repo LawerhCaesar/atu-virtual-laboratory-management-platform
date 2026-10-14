@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Assigned practical tasks | ATU Virtual Laboratory{% endblock %}
+{% block content %}<p class="eyebrow">Student workspace</p><h1 class="h2 mb-4">Assigned practical tasks</h1>{% if tasks %}<div class="row g-4">{% for task in tasks %}<div class="col-md-6"><a class="dashboard-card" href="{% url 'practicals:student_task_detail' task.pk %}"><span class="small text-secondary">{{ task.offering.course.code }}</span><strong>{{ task.title }}</strong><span>Due {{ task.due_at|date:"j M Y, H:i" }} · {{ task.max_score }} marks</span></a></div>{% endfor %}</div>{% else %}<div class="empty-state"><h2 class="h5">No published tasks</h2><p class="text-secondary mb-0">Published tasks for your enrolled offerings will appear here.</p></div>{% endif %}{% endblock %}
+

@@ -1,0 +1,90 @@
+# Standalone production file, not an override of the local development stack.
+# Only the database receives bootstrap superuser credentials.
+x-application-environment: &application-environment
+  DJANGO_DEBUG: "false"
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?Set DJANGO_ALLOWED_HOSTS}
+  DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:?Set HTTPS origin}
+  DJANGO_TRUST_PROXY_HEADERS: "true"
+  DJANGO_HSTS_INCLUDE_SUBDOMAINS: ${DJANGO_HSTS_INCLUDE_SUBDOMAINS:-false}
+  DJANGO_HSTS_PRELOAD: ${DJANGO_HSTS_PRELOAD:-false}
+  POSTGRES_HOST: db
+  POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+  POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+  DJANGO_MEDIA_ROOT: /app/media
+  INTEGRATION_SHARED_SECRETS: ${INTEGRATION_SHARED_SECRETS:?Set integration JSON object}
+  INTEGRATION_RETURN_TOKEN_MAX_AGE_SECONDS: ${INTEGRATION_RETURN_TOKEN_MAX_AGE_SECONDS:-1800}
+  INTEGRATION_CALLBACK_MAX_BYTES: ${INTEGRATION_CALLBACK_MAX_BYTES:-1048576}
+  SESSION_IDLE_TIMEOUT_SECONDS: ${SESSION_IDLE_TIMEOUT_SECONDS:-300}
+  EVIDENCE_FILE_MAX_BYTES: ${EVIDENCE_FILE_MAX_BYTES:-20971520}
+  EVIDENCE_SUBMISSION_MAX_BYTES: ${EVIDENCE_SUBMISSION_MAX_BYTES:-104857600}
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:?Set distinct POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Set POSTGRES_ADMIN_PASSWORD}
+      ATU_APP_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      ATU_APP_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./deploy/create_app_role.sh:/docker-entrypoint-initdb.d/10-create-app-role.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+
+  migrate:
+    build: .
+    command: ["python", "manage.py", "migrate", "--noinput"]
+    environment: *application-environment
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [backend]
+
+  web:
+    build: .
+    restart: unless-stopped
+    environment: *application-environment
+    command: ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    volumes:
+      - media_data:/app/media
+    # No published upstream port: only the trusted proxy reaches Gunicorn.
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check_database", "--require-postgresql", "--require-least-privilege"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+
+  proxy:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      ATU_DOMAIN: ${ATU_DOMAIN:?Set ATU_DOMAIN}
+      NGINX_ENVSUBST_FILTER: ATU_DOMAIN
+    volumes:
+      - ./deploy/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./deploy/tls:/etc/nginx/tls:ro
+    depends_on:
+      web: {condition: service_healthy}
+    networks: [edge, backend]
+
+networks:
+  edge:
+  backend:
+    internal: true
+
+volumes:
+  postgres_data:
+  media_data:

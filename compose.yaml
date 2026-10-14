@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-atu_virtual_lab}
+      POSTGRES_USER: ${POSTGRES_USER:-atu_virtual_lab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-atu_virtual_lab} -d ${POSTGRES_DB:-atu_virtual_lab}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    command: sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db
+      DJANGO_DEBUG: "true"
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check_database", "--require-postgresql"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  media_data:

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Lecturer dashboard | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<p class="eyebrow">Lecturer workspace</p>
+<h1 class="h2 mb-2">Welcome, {{ user.full_name }}</h1>
+<p class="text-secondary mb-4">Create practical tasks, connect approved resources, review evidence and release feedback.</p>
+<div class="row g-4">
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:lecturer_task_list' %}"><span class="metric">{{ task_count }}</span><strong>Practical tasks</strong><span>Create, edit and publish practical questions.</span></a></div>
+  <div class="col-md-4"><div class="dashboard-card muted"><span class="metric">{{ assigned_offering_count }}</span><strong>Assigned offerings</strong><span>Your task forms are restricted to these course offerings.</span></div></div>
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:review_queue' %}"><span class="metric">{{ review_count }}</span><strong>Submissions awaiting review</strong><span>Open evidence, return work or save an assessment.</span></a></div>
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:review_queue' %}"><strong>Assessment records</strong><span>Manage feedback, scores and controlled result release.</span></a></div>
+</div>
+{% endblock %}

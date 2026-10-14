@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sign in | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto">
+  <p class="eyebrow">Secure access</p>
+  <h1 class="h2">Sign in</h1>
+  <p class="text-secondary">Approved administrators, lecturers and students use the same sign-in page.</p>
+  <form method="post" novalidate class="card card-body shadow-sm mt-4">
+    {% csrf_token %}
+    {% include "includes/form_fields.html" %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto">
+  <p class="eyebrow">Account request</p>
+  <h1 class="h2">Register as a student or lecturer</h1>
+  <p class="text-secondary">Every registration is reviewed by an administrator before academic setup and access.</p>
+  <form method="post" novalidate class="card card-body shadow-sm mt-4">
+    {% csrf_token %}
+    {% include "includes/form_fields.html" %}
+    <button class="btn btn-primary" type="submit">Submit registration</button>
+  </form>
+</div>
+{% endblock %}
+

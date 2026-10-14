@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Access denied | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto text-center"><h1 class="h2">Access denied</h1><p class="text-secondary">Your account does not have permission to open this page.</p><a class="btn btn-primary" href="{% url 'core:home' %}">Return home</a></div>
+{% endblock %}
+

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Registration received | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto text-center">
+  <div class="status-icon" aria-hidden="true">✓</div>
+  <h1 class="h2 mt-3">Registration received</h1>
+  <p class="text-secondary">The account request for <strong>{{ registered_user.email }}</strong> is pending administrator approval. Sign-in becomes available after the academic setup is completed.</p>
+  <a class="btn btn-outline-primary" href="{% url 'core:home' %}">Return home</a>
+</div>
+{% endblock %}
+

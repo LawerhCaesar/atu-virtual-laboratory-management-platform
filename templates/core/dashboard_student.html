@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Student dashboard | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<p class="eyebrow">Student workspace</p>
+<h1 class="h2 mb-2">Welcome, {{ user.full_name }}</h1>
+<p class="text-secondary mb-4">Access assigned practical questions, approved demonstration resources, submissions and results.</p>
+<div class="row g-4">
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:student_task_list' %}"><span class="metric">{{ assigned_task_count }}</span><strong>Assigned tasks</strong><span>Open published practical questions and approved resources.</span></a></div>
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:student_task_list' %}"><span class="metric">{{ submission_count }}</span><strong>My submissions</strong><span>Review attempt and submission status from each task.</span></a></div>
+  <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:result_list' %}"><span class="metric">{{ released_result_count }}</span><strong>Released results</strong><span>View released feedback and grades.</span></a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} practical task | ATU Virtual Laboratory{% endblock %}
+{% block content %}<div class="form-shell mx-auto"><p class="eyebrow">Lecturer workspace</p><h1 class="h2">{% if editing %}Edit draft task{% else %}Create practical task{% endif %}</h1><p class="text-secondary">Only your assigned offerings and administrator-approved resources are available.</p><form method="post" novalidate class="card card-body shadow-sm mt-4">{% csrf_token %}{% include "includes/form_fields.html" %}<button class="btn btn-primary" type="submit">Save draft task</button></form></div>{% endblock %}
+

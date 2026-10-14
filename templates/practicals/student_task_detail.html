@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<p class="eyebrow">{{ task.offering.course.code }} · Practical task</p>
+<h1 class="h2">{{ task.title }}</h1>
+<p class="text-secondary">Due {{ task.due_at|date:"j M Y, H:i" }} · Maximum {{ task.max_score }} marks · {{ task.max_resubmissions }} resubmission{{ task.max_resubmissions|pluralize }}</p>
+<div class="content-panel">
+  <h2 class="h5">Instructions</h2>{{ task.instructions|linebreaks }}
+  <h2 class="h5 mt-4">Question</h2>{{ task.question|linebreaks }}
+  <h2 class="h5 mt-4">Required evidence</h2>{{ task.evidence_requirements|linebreaks }}
+  {% if task.resources.all %}<h2 class="h5 mt-4">Approved demonstration resources</h2><ul>{% for resource in task.resources.all %}<li><a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource }}</a></li>{% endfor %}</ul>{% endif %}
+</div>
+<section class="mt-4" aria-labelledby="submission-heading">
+  <div class="page-heading">
+    <div><p class="eyebrow mb-1">Assessment trail</p><h2 id="submission-heading" class="h4 mb-0">Your attempts</h2></div>
+    {% if latest_submission and latest_submission.can_edit %}<a class="btn btn-primary" href="{% url 'practicals:submission_workspace' latest_submission.pk %}">Continue draft</a>
+    {% elif can_start_submission %}<form method="post" action="{% url 'practicals:submission_start' task.pk %}">{% csrf_token %}<button class="btn btn-primary" type="submit">{% if latest_submission %}Start resubmission{% else %}Start submission{% endif %}</button></form>{% endif %}
+  </div>
+  {% if not deadline_open and not latest_submission %}<div class="alert alert-warning">The submission deadline has passed.</div>{% endif %}
+  {% if submissions %}
+  <div tabindex="0" role="region" aria-label="Submission attempts" class="table-responsive card shadow-sm"><table class="table align-middle mb-0"><caption class="visually-hidden">Submission attempts for this task</caption><thead><tr><th scope="col">Attempt</th><th scope="col">Status</th><th scope="col">Submitted</th><th scope="col">Feedback/result</th></tr></thead><tbody>
+  {% for submission in submissions %}<tr><td>{{ submission.attempt_number }}</td><td>{{ submission.get_status_display }}</td><td>{{ submission.submitted_at|date:"j M Y, H:i"|default:"Not submitted" }}</td><td>{% if submission.assessment.status == 'RELEASED' %}<a href="{% url 'practicals:result_detail' submission.assessment.pk %}">View released result</a>{% elif submission.status == 'RETURNED' %}<span class="text-danger">{{ submission.assessment.feedback }}</span>{% else %}—{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty-state"><p class="mb-0 text-secondary">No submission attempt has been started.</p></div>{% endif %}
+</section>
+{% endblock %}

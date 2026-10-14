@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}ATU Virtual Laboratory Management Platform{% endblock %}
+{% block content %}
+<section class="hero rounded-4 p-4 p-md-5 mb-5">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <p class="eyebrow mb-2">Automotive Engineering</p>
+      <h1 class="display-5 fw-bold">Practical assessment, organised in one secure platform.</h1>
+      <p class="lead text-secondary mt-3">Lecturers set structured practical tasks, students submit evidence, and approved demonstration resources remain connected to the academic record.</p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-primary btn-lg" href="{% url 'accounts:register' %}">Request an account</a>
+        <a class="btn btn-outline-secondary btn-lg" href="{% url 'accounts:login' %}">Sign in</a>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="row g-4">
+  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Structured assessment</h2><p>Access assigned practical questions, evidence requirements and deadlines.</p></div></div>
+  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Approved resources</h2><p>Use only the simulations, demonstrations and practical concepts approved for the course.</p></div></div>
+  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Traceable records</h2><p>Keep submissions, feedback, results and key activity events connected and auditable.</p></div></div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Pending approvals | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div><p class="eyebrow">Administration</p><h1 class="h2">Pending account approvals</h1></div>
+  <a class="btn btn-outline-secondary" href="{% url 'core:dashboard' %}">Back to dashboard</a>
+</div>
+{% if pending_users %}
+<div tabindex="0" role="region" aria-label="Pending registrations" class="table-responsive card shadow-sm">
+  <table class="table align-middle mb-0">
+    <caption class="visually-hidden">Student and lecturer registrations awaiting a decision</caption>
+    <thead><tr><th scope="col">Applicant</th><th scope="col">Role</th><th scope="col">Submitted</th><th scope="col" class="text-end">Actions</th></tr></thead>
+    <tbody>
+      {% for account in pending_users %}
+      <tr>
+        <td><strong>{{ account.full_name }}</strong><br><span class="text-secondary small">{{ account.email }}</span></td>
+        <td>{{ account.get_role_display }}</td>
+        <td>{{ account.date_joined|date:"j M Y, H:i" }}</td>
+        <td class="text-end">
+          <div class="d-flex justify-content-end gap-2">
+            <form method="post" action="{% url 'accounts:approve_account' account.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button></form>
+            <form method="post" action="{% url 'accounts:reject_account' account.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button></form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state"><h2 class="h5">No pending registrations</h2><p class="text-secondary mb-0">New student and lecturer requests will appear here.</p></div>
+{% endif %}
+{% endblock %}

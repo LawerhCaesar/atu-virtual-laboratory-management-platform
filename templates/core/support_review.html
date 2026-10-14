@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Review support request | ATU Virtual Laboratory{% endblock %}
+{% block content %}<div class="form-shell mx-auto"><p class="eyebrow">Administration</p><h1 class="h2">Review support request</h1><div class="card card-body text-break"><h2 class="h4">{{ ticket.subject }}</h2><p>{{ ticket.submitted_by.full_name }} · {{ ticket.created_at }}</p>{{ ticket.message|linebreaks }}</div><form method="post" novalidate class="card card-body mt-3">{% csrf_token %}{% include "includes/form_fields.html" %}<button class="btn btn-primary" type="submit">Save response and notify account</button></form><a class="btn btn-outline-secondary mt-3" href="{% url 'core:support_management' %}">Back to support requests</a></div>{% endblock %}

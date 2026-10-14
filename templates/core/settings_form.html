@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Platform settings | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<div class="form-shell mx-auto"><p class="eyebrow">Administration</p><h1 class="h2">Platform settings</h1>
+<p>Configure support contact details and plain-text help guidance. Password rules, signing secrets, HTTPS and database settings are deliberately not editable here.</p>
+{% if settings_record.updated_at %}<p class="small text-secondary">Last updated {{ settings_record.updated_at }} by {{ settings_record.updated_by.full_name|default:"—" }}.</p>{% endif %}
+<form method="post" class="card card-body shadow-sm" novalidate>{% csrf_token %}{% include "includes/form_fields.html" %}<button class="btn btn-primary" type="submit">Save support settings</button></form>
+<a class="btn btn-outline-secondary mt-3" href="{% url 'core:dashboard' %}">Back to dashboard</a></div>
+{% endblock %}

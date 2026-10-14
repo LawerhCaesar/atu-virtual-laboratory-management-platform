@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Released results | ATU Virtual Laboratory{% endblock %}
+{% block content %}<p class="eyebrow">Student workspace</p><h1 class="h2 mb-4">Released results</h1>{% if assessments %}<div class="row g-4">{% for assessment in assessments %}<div class="col-md-6"><a class="dashboard-card" href="{% url 'practicals:result_detail' assessment.pk %}"><span class="small text-secondary">{{ assessment.submission.task.offering.course.code }}</span><strong>{{ assessment.submission.task.title }}</strong><span>{{ assessment.score }} / {{ assessment.submission.task.max_score }} marks · Released {{ assessment.released_at|date:"j M Y" }}</span></a></div>{% endfor %}</div>{% else %}<div class="empty-state"><h2 class="h5">No released results</h2><p class="text-secondary mb-0">Results remain private until your lecturer releases them.</p></div>{% endif %}{% endblock %}
+

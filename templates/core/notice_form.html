@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Draft notice | ATU Virtual Laboratory{% endblock %}
+{% block content %}<div class="form-shell mx-auto"><p class="eyebrow">Administration</p><h1 class="h2">Draft Administrator notice</h1><p>Saving creates an unsent draft. Review its audience before confirming delivery. Notices are in-platform only, not email.</p><form method="post" novalidate class="card card-body shadow-sm">{% csrf_token %}{% include "includes/form_fields.html" %}<button class="btn btn-primary" type="submit">Save and preview notice</button></form><a class="btn btn-outline-secondary mt-3" href="{% url 'core:notice_management' %}">Back to notices</a></div>{% endblock %}

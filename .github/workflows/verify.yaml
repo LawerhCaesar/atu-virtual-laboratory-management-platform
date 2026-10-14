@@ -1,0 +1,78 @@
+name: Platform verification
+"on": [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  postgres-and-browser:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: atu_ci
+          POSTGRES_USER: atu_ci
+          POSTGRES_PASSWORD: ci-only-disposable-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U atu_ci -d atu_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DJANGO_DEBUG: "true"
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: atu_ci
+      POSTGRES_USER: atu_ci
+      POSTGRES_PASSWORD: ci-only-disposable-password
+      POSTGRES_PORT: "5432"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - uses: pnpm/action-setup@v4
+        with: {version: "11.19.0"}
+      - run: pip install -r requirements-dev.txt
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm run sync-assets
+      - run: git diff --exit-code -- static/vendor/bootstrap
+      - run: python -m playwright install --with-deps chromium
+      - run: python manage.py migrate --noinput
+      - run: python manage.py check_database --require-postgresql
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: pytest -q
+      - run: pytest -m e2e tests/e2e -q
+      - name: Production settings check
+        run: python manage.py check --deploy --fail-level WARNING
+        env:
+          DJANGO_DEBUG: "false"
+          DJANGO_SECRET_KEY: ci-only-check-key-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ-random-like
+          DJANGO_ALLOWED_HOSTS: lab.example.edu
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://lab.example.edu
+          DJANGO_HSTS_INCLUDE_SUBDOMAINS: "true"
+          DJANGO_HSTS_PRELOAD: "true"
+      - run: python manage.py collectstatic --noinput --settings=config.build_settings
+      - name: Container build and configuration check (not a deployment)
+        run: |
+          docker build -t atu-ci-check .
+          cp .env.production.example .env.production
+          docker compose --env-file .env.production -f compose.production.yaml config --quiet
+      - name: Disposable production-profile database smoke test
+        run: |
+          docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml up --build --wait --wait-timeout 120 web
+          docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml exec -T web python manage.py check_database --require-postgresql --require-least-privilege
+          docker compose --env-file .env.production -p atu-ci-production -f compose.production.yaml exec -T web python manage.py verify_evidence_storage
+        env:
+          DJANGO_SECRET_KEY: ci-only-check-key-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ-random-like
+          DJANGO_ALLOWED_HOSTS: lab.example.edu
+          DJANGO_CSRF_TRUSTED_ORIGINS: https://lab.example.edu
+          POSTGRES_USER: atu_ci_app
+          POSTGRES_PASSWORD: ci-only-disposable-app-password
+          POSTGRES_ADMIN_USER: atu_ci_bootstrap
+          POSTGRES_ADMIN_PASSWORD: ci-only-disposable-bootstrap-password
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-accessibility-results
+          path: test-results/
+          if-no-files-found: ignore

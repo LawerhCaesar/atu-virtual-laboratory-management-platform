@@ -1,0 +1,7 @@
+{
+  "name": "atu-virtual-laboratory-assets",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {"sync-assets": "node scripts/sync_assets.mjs"},
+  "devDependencies": {"axe-core": "4.11.0", "bootstrap": "5.3.8"}
+}

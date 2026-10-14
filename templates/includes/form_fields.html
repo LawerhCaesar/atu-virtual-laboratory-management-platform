@@ -1,0 +1,20 @@
+{% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+{% endif %}
+{% for field in form %}
+  {% if field.name == "resources" or field.name == "lecturers" or field.name == "students" %}
+    <fieldset class="mb-3">
+      <legend class="form-label">{{ field.label }}</legend>
+      {{ field }}
+      {% if field.help_text %}<div id="{{ field.auto_id }}_helptext" class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+      {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    </fieldset>
+  {% else %}
+    <div class="mb-3 atu-form-field">
+      <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<div id="{{ field.auto_id }}_helptext" class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+      {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    </div>
+  {% endif %}
+{% endfor %}

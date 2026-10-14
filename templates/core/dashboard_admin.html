@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Administrator dashboard | ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<p class="eyebrow">Administrator workspace</p>
+<h1 class="h2 mb-4">Welcome, {{ user.full_name }}</h1>
+<div class="row g-4">
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'accounts:pending_approvals' %}"><span class="metric">{{ pending_count }}</span><strong>Pending registrations</strong><span>Review student and lecturer account requests.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'accounts:user_management' %}"><strong>User management</strong><span>Find accounts and issue audited temporary-password resets.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'academics:course_list' %}"><strong>Courses</strong><span>Manage automotive courses and their department ownership.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'academics:offering_list' %}"><span class="metric">{{ offering_count }}</span><strong>Active course offerings</strong><span>Allocate lecturers and enrolled students.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'practicals:resource_list' %}"><span class="metric">{{ resource_review_count }}</span><strong>Resources awaiting approval</strong><span>Control approved demonstration-resource access.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'reporting:dashboard' %}"><strong>Reports and exports</strong><span>Review metrics and download controlled CSV or PDF reports.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'reporting:audit' %}"><strong>Audit records</strong><span>Filter and export security and workflow events.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'core:notice_management' %}"><strong>Notice management</strong><span>Draft, preview and send notices; retain delivery history.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'core:support_management' %}"><strong>Support requests</strong><span>Review platform feedback and respond to account holders.</span></a></div>
+  <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'core:platform_settings' %}"><strong>Platform settings</strong><span>Configure support contacts and educational help guidance.</span></a></div>
+  {% if user.is_staff %}<div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'admin:index' %}"><strong>Academic administration</strong><span>Maintain faculties, departments, programmes and academic periods in the restricted administration console.</span></a></div>{% endif %}
+</div>
+{% endblock %}

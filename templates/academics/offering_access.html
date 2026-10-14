@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Manage course access | ATU Virtual Laboratory{% endblock %}
+{% block content %}<div class="form-shell mx-auto"><p class="eyebrow">Course access</p><h1 class="h2">{{ offering.course.code }} allocations</h1><p class="text-secondary">{{ offering.programme.name }} · {{ offering.academic_year }} · {{ offering.get_semester_display }}</p><form method="post" novalidate class="card card-body shadow-sm mt-4">{% csrf_token %}{% include "includes/form_fields.html" %}<button class="btn btn-primary" type="submit">Save access allocations</button></form></div>{% endblock %}
+

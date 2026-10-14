@@ -1,0 +1,16 @@
+.git
+.venv
+.env*
+*.sqlite3
+__pycache__
+*.pyc
+node_modules
+media
+staticfiles
+backups
+deploy/tls
+deliverables
+output
+tmp
+test-results
+.pytest_cache
