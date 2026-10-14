@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 from pathlib import Path
@@ -11,7 +12,7 @@ from django.db import OperationalError
 from django.urls import reverse
 import yaml
 
-from config.environment import postgres_options
+from config.environment import postgres_options, render_signing_key, validate_production_environment
 
 
 def test_supabase_options_require_ssl_and_isolate_schema():
@@ -42,10 +43,14 @@ def test_readiness_hides_database_failure_details(client):
     assert b"private database details" not in response.content
 
 
-def test_render_profile_requires_production_security_and_exact_host():
+@pytest.mark.parametrize("secret", [
+    "synthetic-render-test-key-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    base64.b64encode(bytes(range(32))).decode(),
+])
+def test_render_profile_requires_production_security_and_exact_host(secret):
     environment = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "POSTGRES_", "RENDER_"))}
     environment.update(
-        DJANGO_SECRET_KEY="synthetic-render-test-key-0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        DJANGO_SECRET_KEY=secret,
         DJANGO_DEBUG="true",
         RENDER_EXTERNAL_HOSTNAME="atu-qa.onrender.com",
         POSTGRES_HOST="example.invalid", POSTGRES_USER="test", POSTGRES_DB="test",
@@ -72,6 +77,15 @@ print(json.dumps({
         "origins": ["https://atu-qa.onrender.com"], "ssl": "require",
         "cookie": True, "redirect": 301,
     }
+
+
+def test_render_generated_key_derivation_is_stable_and_preserves_validation():
+    generated = base64.b64encode(bytes(range(32))).decode()
+    assert len(render_signing_key(generated)) == 128
+    assert render_signing_key(generated) == render_signing_key(generated)
+    for weak in ("", "short", base64.b64encode(b"x" * 32).decode()):
+        with pytest.raises(ImproperlyConfigured):
+            validate_production_environment({"DJANGO_SECRET_KEY": render_signing_key(weak)})
 
 
 def test_render_blueprint_keeps_password_out_of_source_and_uploads_on_disk():

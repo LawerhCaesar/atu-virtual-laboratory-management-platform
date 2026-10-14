@@ -1,4 +1,8 @@
 """Fail-closed parsing for deployment configuration (without database access)."""
+import base64
+import binascii
+import hashlib
+import hmac
 import re
 
 from django.core.exceptions import ImproperlyConfigured
@@ -34,6 +38,19 @@ def postgres_options(environ):
             raise ImproperlyConfigured("POSTGRES_SCHEMA must be a simple lowercase identifier.")
         options["options"] = f"-c search_path={schema}"
     return options
+
+
+def render_signing_key(value):
+    """Adapt Render's 256-bit base64 secret to Django's long-key format."""
+    if len(value) >= 50:
+        return value
+    try:
+        decoded = base64.b64decode(value, validate=True)
+    except (ValueError, binascii.Error):
+        return value  # The ordinary production validator rejects weak inputs.
+    if len(decoded) != 32 or len(set(decoded)) < 5:
+        return value
+    return hmac.new(decoded, b"atu-render-django-signing-v1", hashlib.sha512).hexdigest()
 
 
 def validate_production_environment(environ):

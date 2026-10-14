@@ -16,7 +16,10 @@ in Render before applying the Blueprint.
    `POSTGRES_PASSWORD` field. Keep passwords out of GitHub and chat.
 5. Review the paid service, Ohio region and 1 GB disk, then apply the Blueprint.
 
-Render generates the application secret. Its exact assigned hostname is used
+Render generates the application secret.
+The Render profile derives a stable long signing key from Render's generated
+256-bit base64 secret; the deployment still rejects missing or weak secrets.
+Its exact assigned hostname is used
 for allowed hosts and HTTPS CSRF origins. Automatic deploys are off: deploy
 tested commits manually until staging QA is complete.
 
