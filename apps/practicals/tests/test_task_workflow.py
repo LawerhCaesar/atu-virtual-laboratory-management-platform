@@ -472,6 +472,7 @@ def test_other_lecturer_cannot_assess_submission(workflow, tmp_path):
         )
 
 
+@pytest.mark.django_db(transaction=True)
 def test_protected_evidence_download_enforces_ownership(client, workflow, tmp_path):
     _, submission = make_submitted_attempt(workflow, tmp_path, title="Download task")
     evidence = submission.evidence_files.get()
