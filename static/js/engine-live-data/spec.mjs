@@ -1,0 +1,700 @@
+// Engineering metadata from the preserved 2026-10-12 integration handover.
+export const SPEC = {
+  "schemaVersion": "1.0.0",
+  "projectTitle": "Virtual Modelling and Physical Demonstration of Engine Live-Data Relationships for Virtual-Platform Integration",
+  "applicationName": "Engine Live-Data Demonstration",
+  "packageRevision": "2026-10-12-existing-platform-section",
+  "purpose": "Teach how controlled engine inputs are capped, interpreted by simplified ECU logic, and displayed as calculated live-data values and commanded outputs.",
+  "scope": {
+    "virtualOnly": true,
+    "physicalStageSeparate": true,
+    "compareVirtualAndPhysical": false,
+    "hardwareInLoop": false,
+    "virtualCoolingIncludesElectricWaterPump": true,
+    "physical1NZIncludesElectricWaterPump": false,
+    "existingPlatformSectionOnly": true,
+    "buildNewPlatform": false,
+    "redesignUnrelatedPlatformAreas": false,
+    "virtualCoolingIncludesECT1AndECT2": true,
+    "virtualCoolingIncludesDutyControlledFan": true,
+    "virtualAndPhysicalTestedIndependently": true,
+    "disclaimer": "Simplified educational model; not Toyota 1NZ, OEM or production ECU calibration data. Do not use for road-vehicle or safety-critical control."
+  },
+  "integration": {
+    "authoritativePrompt": "CODEX_MASTER_PROMPT.md",
+    "target": "One Engine Live-Data Demonstration section inside the colleague's already-existing virtual automotive platform/repository",
+    "inspectExistingRepositoryBeforeCoding": true,
+    "reuse": ["routing", "navigation", "layout", "authentication", "components", "styles", "design tokens", "state conventions", "chart library", "test runner", "build process"],
+    "changeBoundary": "Engine section and minimal host route/navigation wiring only; no unrelated redesign",
+    "ifRepositoryUnavailable": "Request the existing repository location/access; do not scaffold a substitute platform",
+    "engineeringContract": "Preserve all input caps, units, defaults, equations, dependencies, state logic, timing, outputs, presets and expected tests",
+    "prototypeRole": "Standalone reference demonstration only; adapt behaviour to the existing platform",
+    "physicalStage": "Separate 1NZ setup with no electric water pump; independently tested with no virtual-versus-physical comparison"
+  },
+  "simulation": {
+    "fixedStepSeconds": 0.05,
+    "recommendedUiRefreshSeconds": 0.2,
+    "historySeconds": 60,
+    "engineStates": [
+      {
+        "code": 0,
+        "key": "OFF",
+        "label": "Off"
+      },
+      {
+        "code": 1,
+        "key": "PRIME",
+        "label": "Fuel-pump prime"
+      },
+      {
+        "code": 2,
+        "key": "CRANK",
+        "label": "Cranking"
+      },
+      {
+        "code": 3,
+        "key": "RUN",
+        "label": "Running"
+      },
+      {
+        "code": 4,
+        "key": "SHUTDOWN",
+        "label": "Shutdown"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "name": "BatteryVoltage",
+      "label": "Battery voltage",
+      "category": "measured",
+      "unit": "V",
+      "min": 8.0,
+      "max": 14.9,
+      "default": 13.8,
+      "control": "slider-number"
+    },
+    {
+      "name": "EngineSpeed",
+      "label": "Engine speed",
+      "category": "measured",
+      "unit": "rpm",
+      "min": 0,
+      "max": 6500,
+      "default": 800,
+      "control": "slider-number"
+    },
+    {
+      "name": "ThrottlePosition",
+      "label": "Throttle position",
+      "category": "measured",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "default": 2,
+      "control": "slider-number"
+    },
+    {
+      "name": "ManifoldPressure",
+      "label": "Manifold pressure",
+      "category": "measured",
+      "unit": "kPa",
+      "min": 20,
+      "max": 105,
+      "default": 35,
+      "control": "slider-number"
+    },
+    {
+      "name": "O2SensorVoltage",
+      "label": "Oxygen-sensor voltage",
+      "category": "measured",
+      "unit": "V",
+      "min": 0.05,
+      "max": 0.95,
+      "default": 0.45,
+      "control": "slider-number"
+    },
+    {
+      "name": "ECT1Voltage",
+      "label": "ECT1 sensor voltage",
+      "category": "measured",
+      "unit": "V",
+      "min": 0.2,
+      "max": 4.8,
+      "default": 1.0,
+      "control": "slider-number"
+    },
+    {
+      "name": "ECT2Voltage",
+      "label": "ECT2 sensor voltage",
+      "category": "measured",
+      "unit": "V",
+      "min": 0.2,
+      "max": 4.8,
+      "default": 1.1,
+      "control": "slider-number"
+    },
+    {
+      "name": "AccessoryLoad",
+      "label": "Accessory/electrical load",
+      "category": "operating",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "default": 10,
+      "control": "slider-number"
+    },
+    {
+      "name": "IgnitionSwitch",
+      "label": "Ignition switch",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "toggle"
+    },
+    {
+      "name": "StartAuthorisation",
+      "label": "Fingerprint authorised",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "toggle"
+    },
+    {
+      "name": "StartRequest",
+      "label": "Voice/manual start request",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "momentary-button"
+    },
+    {
+      "name": "StopRequest",
+      "label": "Normal stop request",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "momentary-button"
+    },
+    {
+      "name": "EmergencyStop",
+      "label": "Emergency stop",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "latching-button"
+    },
+    {
+      "name": "ACRequest",
+      "label": "Air-conditioning request",
+      "category": "status",
+      "unit": "state",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "control": "toggle"
+    }
+  ],
+  "formulas": {
+    "clamp": "min(max(value, minimum), maximum)",
+    "ectVoltageToTemperature": [
+      {
+        "condition": "V >= 4.3",
+        "expression": "-20 + (4.8 - V) * 40"
+      },
+      {
+        "condition": "3.5 <= V < 4.3",
+        "expression": "0 + (4.3 - V) * 31.25"
+      },
+      {
+        "condition": "2.5 <= V < 3.5",
+        "expression": "25 + (3.5 - V) * 25"
+      },
+      {
+        "condition": "1.5 <= V < 2.5",
+        "expression": "50 + (2.5 - V) * 25"
+      },
+      {
+        "condition": "1.0 <= V < 1.5",
+        "expression": "75 + (1.5 - V) * 30"
+      },
+      {
+        "condition": "0.6 <= V < 1.0",
+        "expression": "90 + (1.0 - V) * 37.5"
+      },
+      {
+        "condition": "0.3 <= V < 0.6",
+        "expression": "105 + (0.6 - V) * (20 / 0.3)"
+      },
+      {
+        "condition": "V < 0.3",
+        "expression": "125 + (0.3 - V) * 100"
+      }
+    ],
+    "ectTemperatureCap": {
+      "min": -20,
+      "max": 135,
+      "unit": "degC"
+    },
+    "fuel": {
+      "EngineLoad": "clip(0.55 * ((MAP - 20) / 85) * 100 + 0.45 * TPS, 0, 100)",
+      "LambdaEstimate": "clip(1.0 + (0.45 - O2Voltage) * 0.35, 0.75, 1.25)",
+      "ClosedLoopActive": "InjectionEnable && ECT1Temp >= 70 && EngineSpeed >= 600",
+      "STFT": "ClosedLoopActive ? clip((LambdaEstimate - 1.0) * 120, -25, 25) : 0",
+      "WarmupEnrichment": "clip((70 - ECT1Temp) * 0.5, 0, 40)",
+      "BatteryCompensation": "clip((13.8 - BatteryVoltage) * 0.18, 0, 1.20)",
+      "BaseInjectorPW": "clip(1.0 + 0.00035 * EngineSpeed + 0.025 * (MAP - 20) + 0.012 * TPS, 1.0, 15.0)",
+      "InjectorPW": "InjectionEnable ? clip((BaseInjectorPW + BatteryCompensation) * (1 + (STFT + WarmupEnrichment) / 100), 0, 20) : 0"
+    },
+    "idleIgnition": {
+      "TargetIdleRPM": "750 + clip((80 - ECT1Temp) * 5.625, 0, 450)",
+      "IdleActive": "EngineState == 3 && TPS <= 5 && EngineSpeed < 2000",
+      "RPMError": "IdleActive ? TargetIdleRPM - EngineSpeed : 0",
+      "IdleControlDuty": "IdleActive ? clip(25 + 0.06 * RPMError + 0.25 * AccessoryLoad, 0, 100) : 0",
+      "IgnitionTiming": "IgnitionEnable == 0 ? 0 : (EngineState == 2 ? 5 : clip(10 + 0.004 * (EngineSpeed - 800) - 0.08 * (MAP - 35) + 0.015 * RPMError, -5, 45))"
+    },
+    "cooling": {
+      "SensorDifference": "abs(ECT1Temp - ECT2Temp)",
+      "SensorDisagreement": "SensorDifference > 15",
+      "ControlTemperature": "max(ECT1Temp, ECT2Temp)",
+      "FanNormalMap": [
+        {
+          "condition": "T < 88",
+          "expression": "0"
+        },
+        {
+          "condition": "88 <= T < 95",
+          "expression": "20 + (T - 88) * (30 / 7)"
+        },
+        {
+          "condition": "95 <= T < 105",
+          "expression": "50 + (T - 95) * 5"
+        },
+        {
+          "condition": "T >= 105",
+          "expression": "100"
+        }
+      ],
+      "ACMinimumFan": "if ACRequest && EngineState >= 2, FanDuty = max(FanDuty, 35)",
+      "PumpRunMap": [
+        {
+          "condition": "T < 50",
+          "expression": "35"
+        },
+        {
+          "condition": "50 <= T < 90",
+          "expression": "35 + (T - 50) * (35 / 40)"
+        },
+        {
+          "condition": "90 <= T < 110",
+          "expression": "70 + (T - 90) * 1.5"
+        },
+        {
+          "condition": "T >= 110",
+          "expression": "100"
+        }
+      ],
+      "PumpAfterRun": "if EngineState != 3 && T > 95, WaterPumpDuty = 60; otherwise 0",
+      "FailSafe": "if SensorDisagreement, FanDuty = 100 and WaterPumpDuty = 100",
+      "Emergency": "if EmergencyStop or BatteryVoltage < 8.0, FanDuty = 0 and WaterPumpDuty = 0"
+    }
+  },
+  "stateMachine": {
+    "safeStart": "IgnitionSwitch > 0.5 && StartAuthorisation > 0.5 && StartRequest > 0.5 && EmergencyStop < 0.5 && BatteryVoltage >= 9.5",
+    "transitions": [
+      {
+        "from": 0,
+        "to": 1,
+        "condition": "safeStart"
+      },
+      {
+        "from": 1,
+        "to": 4,
+        "condition": "EmergencyStop || StopRequest || !IgnitionSwitch"
+      },
+      {
+        "from": 1,
+        "to": 2,
+        "condition": "elapsedInState >= 2.0"
+      },
+      {
+        "from": 2,
+        "to": 4,
+        "condition": "EmergencyStop || StopRequest || !IgnitionSwitch || BatteryVoltage < 8.5"
+      },
+      {
+        "from": 2,
+        "to": 3,
+        "condition": "EngineSpeed >= 500"
+      },
+      {
+        "from": 2,
+        "to": 4,
+        "condition": "elapsedInState >= 5.0"
+      },
+      {
+        "from": 3,
+        "to": 4,
+        "condition": "EmergencyStop || StopRequest || !IgnitionSwitch"
+      },
+      {
+        "from": 4,
+        "to": 0,
+        "condition": "elapsedInState >= 0.5"
+      }
+    ],
+    "outputs": {
+      "FuelPumpState": "EngineState in [1,2,3]",
+      "StarterState": "EngineState == 2",
+      "InjectionEnable": "EngineState in [2,3]",
+      "IgnitionEnable": "EngineState in [2,3]",
+      "StartPermitted": "EngineState in [1,2,3]"
+    }
+  },
+  "outputs": [
+    {
+      "name": "EngineState",
+      "category": "status",
+      "unit": "code",
+      "range": "0..4"
+    },
+    {
+      "name": "StateElapsedTime",
+      "category": "status",
+      "unit": "s",
+      "range": ">=0"
+    },
+    {
+      "name": "FuelPumpState",
+      "category": "commanded",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "StarterState",
+      "category": "commanded",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "InjectionEnable",
+      "category": "commanded",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "IgnitionEnable",
+      "category": "commanded",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "StartPermitted",
+      "category": "status",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "EngineLoad",
+      "category": "calculated",
+      "unit": "%",
+      "range": "0..100"
+    },
+    {
+      "name": "LambdaEstimate",
+      "category": "calculated",
+      "unit": "ratio",
+      "range": "0.75..1.25"
+    },
+    {
+      "name": "STFT",
+      "displayLabel": "STFT / equivalent closed-loop correction",
+      "category": "calculated",
+      "unit": "%",
+      "range": "-25..25"
+    },
+    {
+      "name": "BaseInjectorPW",
+      "category": "calculated",
+      "unit": "ms",
+      "range": "1..15"
+    },
+    {
+      "name": "WarmupEnrichment",
+      "category": "calculated",
+      "unit": "%",
+      "range": "0..40"
+    },
+    {
+      "name": "BatteryCompensation",
+      "category": "calculated",
+      "unit": "ms",
+      "range": "0..1.2"
+    },
+    {
+      "name": "InjectorPW",
+      "category": "commanded",
+      "unit": "ms",
+      "range": "0..20"
+    },
+    {
+      "name": "ClosedLoopActive",
+      "category": "status",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "TargetIdleRPM",
+      "category": "calculated",
+      "unit": "rpm",
+      "range": "750..1200"
+    },
+    {
+      "name": "RPMError",
+      "category": "calculated",
+      "unit": "rpm",
+      "range": "signed"
+    },
+    {
+      "name": "IdleControlDuty",
+      "category": "commanded",
+      "unit": "%",
+      "range": "0..100"
+    },
+    {
+      "name": "IgnitionTiming",
+      "category": "commanded",
+      "unit": "deg BTDC",
+      "range": "-5..45"
+    },
+    {
+      "name": "IdleActive",
+      "category": "status",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "ECT1Temp",
+      "category": "calculated",
+      "unit": "degC",
+      "range": "-20..135"
+    },
+    {
+      "name": "ECT2Temp",
+      "category": "calculated",
+      "unit": "degC",
+      "range": "-20..135"
+    },
+    {
+      "name": "SensorDifference",
+      "category": "calculated",
+      "unit": "degC",
+      "range": "0..155"
+    },
+    {
+      "name": "SensorDisagreement",
+      "category": "status",
+      "unit": "state",
+      "range": "0..1"
+    },
+    {
+      "name": "ControlTemperature",
+      "category": "calculated",
+      "unit": "degC",
+      "range": "-20..135"
+    },
+    {
+      "name": "FanDuty",
+      "category": "commanded",
+      "unit": "%",
+      "range": "0..100"
+    },
+    {
+      "name": "WaterPumpDuty",
+      "displayLabel": "Virtual electric-water-pump duty",
+      "category": "commanded",
+      "unit": "%",
+      "range": "0..100"
+    },
+    {
+      "name": "CoolingLoopActive",
+      "category": "status",
+      "unit": "state",
+      "range": "0..1"
+    }
+  ],
+  "ui": {
+    "pageTitle": "Engine Live-Data Demonstration",
+    "sections": [
+      "Overview",
+      "Fuel and injection",
+      "Idle and ignition",
+      "Cooling",
+      "Start and run"
+    ],
+    "inputGroups": [
+      {
+        "title": "Power and engine signals",
+        "signals": [
+          "BatteryVoltage",
+          "EngineSpeed",
+          "ThrottlePosition",
+          "ManifoldPressure",
+          "AccessoryLoad"
+        ]
+      },
+      {
+        "title": "Fuel feedback",
+        "signals": [
+          "O2SensorVoltage"
+        ]
+      },
+      {
+        "title": "Cooling sensors",
+        "signals": [
+          "ECT1Voltage",
+          "ECT2Voltage"
+        ]
+      },
+      {
+        "title": "Operating controls",
+        "signals": [
+          "IgnitionSwitch",
+          "StartAuthorisation",
+          "ACRequest",
+          "StartRequest",
+          "StopRequest",
+          "EmergencyStop"
+        ]
+      }
+    ],
+    "dependencyFlows": [
+      "O2 voltage -> Lambda estimate -> STFT -> Injector pulse width",
+      "ECT1 temperature + actual RPM + accessory load -> Target idle and RPM error -> Idle duty and ignition timing",
+      "ECT1 + ECT2 -> Sensor plausibility + control temperature -> Fan duty + virtual pump duty",
+      "Authorisation + ignition + start request + battery + RPM -> Engine state -> Fuel pump + starter + injection + ignition enable"
+    ],
+    "requiredControls": [
+      "Run",
+      "Pause",
+      "Reset",
+      "Export CSV",
+      "Load preset"
+    ],
+    "requiredIndicators": [
+      "Engine-state stepper",
+      "Status lamps",
+      "Simulation time",
+      "Capped-input notice"
+    ],
+    "charts": {
+      "fuel": [
+        "O2SensorVoltage",
+        "LambdaEstimate",
+        "STFT",
+        "InjectorPW"
+      ],
+      "idle": [
+        "EngineSpeed",
+        "TargetIdleRPM",
+        "IdleControlDuty",
+        "IgnitionTiming"
+      ],
+      "cooling": [
+        "ECT1Temp",
+        "ECT2Temp",
+        "FanDuty",
+        "WaterPumpDuty"
+      ],
+      "startRun": [
+        "EngineState",
+        "FuelPumpState",
+        "StarterState",
+        "InjectionEnable",
+        "IgnitionEnable"
+      ]
+    }
+  },
+  "presets": [
+    {
+      "name": "Warm idle",
+      "values": {
+        "BatteryVoltage": 13.8,
+        "EngineSpeed": 800,
+        "ThrottlePosition": 2,
+        "ManifoldPressure": 35,
+        "O2SensorVoltage": 0.45,
+        "ECT1Voltage": 1.0,
+        "ECT2Voltage": 1.1,
+        "AccessoryLoad": 10,
+        "ACRequest": 0
+      }
+    },
+    {
+      "name": "Lean oxygen response",
+      "values": {
+        "BatteryVoltage": 13.8,
+        "EngineSpeed": 800,
+        "ThrottlePosition": 2,
+        "ManifoldPressure": 35,
+        "O2SensorVoltage": 0.1,
+        "ECT1Voltage": 1.0,
+        "ECT2Voltage": 1.1,
+        "AccessoryLoad": 10,
+        "ACRequest": 0
+      }
+    },
+    {
+      "name": "High cooling demand",
+      "values": {
+        "BatteryVoltage": 13.8,
+        "EngineSpeed": 900,
+        "ThrottlePosition": 3,
+        "ManifoldPressure": 38,
+        "O2SensorVoltage": 0.45,
+        "ECT1Voltage": 0.55,
+        "ECT2Voltage": 0.62,
+        "AccessoryLoad": 20,
+        "ACRequest": 1
+      }
+    },
+    {
+      "name": "Idle load disturbance",
+      "values": {
+        "BatteryVoltage": 13.0,
+        "EngineSpeed": 620,
+        "ThrottlePosition": 2,
+        "ManifoldPressure": 45,
+        "O2SensorVoltage": 0.45,
+        "ECT1Voltage": 1.0,
+        "ECT2Voltage": 1.1,
+        "AccessoryLoad": 80,
+        "ACRequest": 1
+      }
+    },
+    {
+      "name": "ECT sensor disagreement",
+      "values": {
+        "BatteryVoltage": 13.8,
+        "EngineSpeed": 800,
+        "ThrottlePosition": 2,
+        "ManifoldPressure": 35,
+        "O2SensorVoltage": 0.45,
+        "ECT1Voltage": 1.0,
+        "ECT2Voltage": 2.0,
+        "AccessoryLoad": 10,
+        "ACRequest": 0
+      }
+    }
+  ]
+};

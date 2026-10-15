@@ -1,0 +1,19 @@
+MODEL ASSUMPTIONS AND LIMITS
+
+1. This is an educational live-data relationship model, not a production ECU.
+2. All student inputs are capped before ECU calculations.
+3. Battery voltage is capped at 8.0–14.9 V.
+4. The ECT voltage-to-temperature curve is a generic NTC-like teaching curve.
+   Replace it with verified sensor calibration data when available.
+5. The oxygen-voltage, lambda and STFT relationship is deliberately simplified
+   to show direction and dependence. It is not OEM Toyota calibration data.
+6. STFT means short-term fuel trim or the equivalent closed-loop correction
+   available in a programmable ECU.
+7. The virtual cooling model contains ECT1, ECT2, a PWM fan and an electric
+   water pump. The physical 1NZ engine stage does not contain an electric pump.
+8. The fingerprint and voice systems are represented in Simulink by an
+   authorisation input and a start-request input. Their recognition algorithms
+   are outside the virtual model.
+9. The physical and virtual stages are tested independently; no comparison is
+   required.
+10. Do not use this model to command a road vehicle or safety-critical hardware.

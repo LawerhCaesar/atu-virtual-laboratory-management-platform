@@ -1,0 +1,33 @@
+Stage,Signal,Category,Unit,Range_or_state,Main_relationship
+Virtual input,BatteryVoltage,Measured input,V,8.0 to 14.9,Affects cranking permission and injector battery compensation
+Virtual input,EngineSpeed,Measured input,rpm,0 to 6500,Affects start confirmation fuel quantity idle error and ignition timing
+Virtual input,ThrottlePosition,Measured input,percent,0 to 100,Affects engine load fuel quantity and idle status
+Virtual input,ManifoldPressure,Measured input,kPa,20 to 105,Affects engine load injector pulse width and ignition timing
+Virtual input,O2SensorVoltage,Measured input,V,0.05 to 0.95,Produces lambda estimate and STFT direction
+Virtual input,ECT1Voltage,Measured input,V,0.2 to 4.8,Converted to ECT1 temperature for fuel idle and cooling logic
+Virtual input,ECT2Voltage,Measured input,V,0.2 to 4.8,Converted to ECT2 temperature for cooling control and plausibility
+Virtual input,AccessoryLoad,Operating input,percent,0 to 100,Increases idle-control demand
+Virtual input,IgnitionSwitch,Status input,state,0 or 1,Enables authorised start sequence
+Virtual input,StartAuthorisation,Status input,state,0 or 1,Represents successful fingerprint authorisation
+Virtual input,StartRequest,Status input,state,0 or 1,Represents voice or manual start request
+Virtual input,StopRequest,Status input,state,0 or 1,Requests normal shutdown
+Virtual input,EmergencyStop,Status input,state,0 or 1,Forces shutdown
+Virtual input,ACRequest,Status input,state,0 or 1,Applies a minimum fan command when the engine is active
+Calculated,EngineLoad,ECU-calculated value,percent,0 to 100,Calculated from MAP and TPS
+Calculated,LambdaEstimate,ECU-calculated value,ratio,0.75 to 1.25,Estimated from oxygen-sensor voltage for teaching
+Calculated,STFT,ECU-calculated value,percent,-25 to 25,Corrects fuel according to lambda error
+Commanded,InjectorPW,ECU output,ms,0 to 20,Depends on base fuel STFT warm-up and battery compensation
+Calculated,TargetIdleRPM,ECU-calculated value,rpm,750 to 1200,Depends on coolant temperature
+Calculated,RPMError,ECU-calculated value,rpm,unbounded within model,Target idle minus actual RPM
+Commanded,IdleControlDuty,ECU output,percent,0 to 100,Depends on RPM error and accessory load
+Commanded,IgnitionTiming,ECU output,deg BTDC,-5 to 45,Depends on RPM MAP and idle error
+Calculated,ECT1Temp,ECU-calculated value,deg C,-20 to 135,Converted from ECT1 voltage
+Calculated,ECT2Temp,ECU-calculated value,deg C,-20 to 135,Converted from ECT2 voltage
+Commanded,FanDuty,ECU output,percent,0 to 100,Depends on maximum ECT AC request and sensor plausibility
+Commanded,WaterPumpDuty,Virtual ECU output,percent,0 to 100,Depends on temperature and engine state; virtual only
+Status,SensorDisagreement,Diagnostic status,state,0 or 1,Set when ECT1 and ECT2 differ by more than 15 deg C
+Status,EngineState,Operating status,code,0 OFF 1 PRIME 2 CRANK 3 RUN 4 SHUTDOWN,Shows start/run sequence
+Commanded,FuelPumpState,Relay command,state,0 or 1,Prime crank and run control
+Commanded,StarterState,Relay command,state,0 or 1,Active during CRANK only
+Commanded,InjectionEnable,ECU status,state,0 or 1,Allows injector output during CRANK and RUN
+Commanded,IgnitionEnable,ECU status,state,0 or 1,Allows ignition during CRANK and RUN

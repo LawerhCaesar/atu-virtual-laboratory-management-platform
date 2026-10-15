@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Engine Live-Data Virtual Laboratory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Virtual automotive learning platform</p>
+      <h1>Engine Live-Data Virtual Laboratory</h1>
+      <p class="summary">
+        Change controlled engine inputs and observe how simplified ECU calculations
+        produce related live-data values and actuator commands.
+      </p>
+    </div>
+    <div class="header-controls" aria-label="Simulation controls">
+      <button id="runButton" class="primary">Run</button>
+      <button id="pauseButton">Pause</button>
+      <button id="resetButton">Reset</button>
+      <button id="exportButton">Export CSV</button>
+    </div>
+  </header>
+
+  <section class="notice" role="note">
+    <strong>Educational model:</strong> the equations are simplified and are not Toyota 1NZ,
+    OEM or production ECU calibration data. Do not use this model to control a road vehicle
+    or safety-critical hardware.
+  </section>
+
+  <section class="status-bar" aria-label="Simulation status">
+    <div><span>Simulation</span><strong id="runStatus">PAUSED</strong></div>
+    <div><span>Virtual time</span><strong id="simulationTime">0.00 s</strong></div>
+    <div><span>Engine state</span><strong id="engineStateHeader">OFF</strong></div>
+    <div><span>Time in state</span><strong id="stateTimeHeader">0.00 s</strong></div>
+  </section>
+
+  <main class="app-layout">
+    <aside class="input-panel" aria-label="Student input panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Student controls</p>
+          <h2>Controlled inputs</h2>
+        </div>
+        <span class="category-badge measured">Input</span>
+      </div>
+
+      <div class="preset-row">
+        <label for="presetSelect">Demonstration preset</label>
+        <div class="inline-controls">
+          <select id="presetSelect">
+            <option value="">Choose a preset</option>
+            <option value="warmIdle">Warm idle</option>
+            <option value="leanO2">Lean oxygen response</option>
+            <option value="highCooling">High cooling demand</option>
+            <option value="idleLoad">Idle load disturbance</option>
+            <option value="ectDisagreement">ECT sensor disagreement</option>
+          </select>
+          <button id="loadPresetButton">Load</button>
+        </div>
+      </div>
+
+      <div id="numericInputs"></div>
+
+      <section class="control-group">
+        <h3>Operating controls</h3>
+        <div class="toggle-row">
+          <label class="switch-label" for="IgnitionSwitch">
+            <span>Ignition switch</span>
+            <input id="IgnitionSwitch" type="checkbox" />
+          </label>
+          <span id="IgnitionSwitchState" class="binary-state">OFF</span>
+        </div>
+        <div class="toggle-row">
+          <label class="switch-label" for="StartAuthorisation">
+            <span>Fingerprint authorised</span>
+            <input id="StartAuthorisation" type="checkbox" />
+          </label>
+          <span id="StartAuthorisationState" class="binary-state">NO</span>
+        </div>
+        <div class="toggle-row">
+          <label class="switch-label" for="ACRequest">
+            <span>A/C request</span>
+            <input id="ACRequest" type="checkbox" />
+          </label>
+          <span id="ACRequestState" class="binary-state">OFF</span>
+        </div>
+        <div class="action-grid">
+          <button id="startRequestButton" class="primary">Voice/manual start</button>
+          <button id="stopRequestButton">Normal stop</button>
+          <button id="emergencyButton" class="danger">Emergency stop</button>
+          <button id="resetEmergencyButton">Reset E-stop</button>
+        </div>
+        <p id="startBlockReason" class="helper-text">Start request is waiting.</p>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <nav class="tabs" aria-label="Laboratory sections">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="fuel">Fuel and injection</button>
+        <button class="tab" data-tab="idle">Idle and ignition</button>
+        <button class="tab" data-tab="cooling">Cooling</button>
+        <button class="tab" data-tab="startRun">Start and run</button>
+      </nav>
+
+      <section id="overview" class="tab-panel active">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">System map</p>
+            <h2>How live data are related</h2>
+          </div>
+        </div>
+
+        <div class="category-key">
+          <span class="category-badge measured">Measured/status input</span>
+          <span class="category-badge calculated">ECU-calculated value</span>
+          <span class="category-badge commanded">Commanded output</span>
+          <span class="category-badge status">Operating status</span>
+        </div>
+
+        <div class="system-grid">
+          <article class="system-card" data-open-tab="fuel">
+            <h3>Fuel and injection</h3>
+            <p class="flow">O₂ voltage → Lambda → STFT → Injector pulse width</p>
+            <dl>
+              <div><dt>Lambda</dt><dd id="overviewLambda">—</dd></div>
+              <div><dt>STFT</dt><dd id="overviewSTFT">—</dd></div>
+              <div><dt>Injector PW</dt><dd id="overviewInjectorPW">—</dd></div>
+            </dl>
+          </article>
+          <article class="system-card" data-open-tab="idle">
+            <h3>Idle and ignition</h3>
+            <p class="flow">ECT + RPM + load → RPM error → Idle duty and timing</p>
+            <dl>
+              <div><dt>Target RPM</dt><dd id="overviewTargetRPM">—</dd></div>
+              <div><dt>RPM error</dt><dd id="overviewRPMError">—</dd></div>
+              <div><dt>Idle duty</dt><dd id="overviewIdleDuty">—</dd></div>
+            </dl>
+          </article>
+          <article class="system-card" data-open-tab="cooling">
+            <h3>Cooling</h3>
+            <p class="flow">ECT1 + ECT2 → Plausibility → Fan and virtual pump</p>
+            <dl>
+              <div><dt>Control temp</dt><dd id="overviewControlTemp">—</dd></div>
+              <div><dt>Fan duty</dt><dd id="overviewFanDuty">—</dd></div>
+              <div><dt>Virtual pump</dt><dd id="overviewPumpDuty">—</dd></div>
+            </dl>
+          </article>
+          <article class="system-card" data-open-tab="startRun">
+            <h3>Start and run</h3>
+            <p class="flow">Authorisation + start request → State → Relays and enables</p>
+            <dl>
+              <div><dt>State</dt><dd id="overviewEngineState">—</dd></div>
+              <div><dt>Fuel pump</dt><dd id="overviewFuelPump">—</dd></div>
+              <div><dt>Injection</dt><dd id="overviewInjection">—</dd></div>
+            </dl>
+          </article>
+        </div>
+
+        <section class="explanation-card">
+          <h3>Current relationship summary</h3>
+          <p id="overviewExplanation">Run the simulation or change an input to inspect the relationships.</p>
+        </section>
+      </section>
+
+      <section id="fuel" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Fuel-control loop</p>
+            <h2>Fuel trim and injection control</h2>
+          </div>
+          <span id="closedLoopBadge" class="state-badge">Closed loop inactive</span>
+        </div>
+        <div class="dependency-flow">
+          <span>O₂ sensor voltage</span><b>→</b><span>Lambda estimate</span><b>→</b><span>STFT</span><b>→</b><span>Injector pulse width</span>
+        </div>
+        <div id="fuelValues" class="value-grid"></div>
+        <p id="fuelExplanation" class="live-explanation"></p>
+      </section>
+
+      <section id="idle" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Speed-control loop</p>
+            <h2>Idle-speed and ignition control</h2>
+          </div>
+          <span id="idleActiveBadge" class="state-badge">Idle inactive</span>
+        </div>
+        <div class="dependency-flow">
+          <span>ECT1 + actual RPM + accessory load</span><b>→</b><span>Target RPM and error</span><b>→</b><span>Idle duty and timing</span>
+        </div>
+        <div id="idleValues" class="value-grid"></div>
+        <p id="idleExplanation" class="live-explanation"></p>
+      </section>
+
+      <section id="cooling" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Thermal-control loop</p>
+            <h2>Dual-ECT cooling control</h2>
+          </div>
+          <span id="sensorAgreementBadge" class="state-badge">Sensors agree</span>
+        </div>
+        <div class="dependency-flow">
+          <span>ECT1 + ECT2 voltage</span><b>→</b><span>Temperature and plausibility</span><b>→</b><span>Fan duty and virtual pump duty</span>
+        </div>
+        <div id="coolingValues" class="value-grid"></div>
+        <p id="coolingExplanation" class="live-explanation"></p>
+      </section>
+
+      <section id="startRun" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">State-control sequence</p>
+            <h2>Start, run and fuel-pump control</h2>
+          </div>
+          <span id="startPermittedBadge" class="state-badge">Start not permitted</span>
+        </div>
+        <div id="stateStepper" class="state-stepper" aria-label="Engine state sequence"></div>
+        <div id="startRunValues" class="value-grid"></div>
+        <p id="startRunExplanation" class="live-explanation"></p>
+      </section>
+
+      <section class="chart-panel">
+        <div class="section-header compact">
+          <div>
+            <p class="eyebrow">Rolling history</p>
+            <h2>Live trend</h2>
+          </div>
+          <label class="chart-selector">
+            <span>Graph</span>
+            <select id="chartSelect">
+              <option value="fuel">Fuel</option>
+              <option value="idle">Idle</option>
+              <option value="cooling">Cooling</option>
+              <option value="startRun">Start/run</option>
+            </select>
+          </label>
+        </div>
+        <canvas id="trendCanvas" width="1200" height="360" aria-label="Live trend graph"></canvas>
+        <div id="chartLegend" class="chart-legend"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Prototype supplied as a functional reference for Codex integration. The physical 1NZ stage is separate and is not compared with this virtual model.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

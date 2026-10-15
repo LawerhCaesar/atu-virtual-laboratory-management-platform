@@ -46,6 +46,10 @@ The implemented platform slices include:
 
 ## Local setup
 
+The authenticated **Engine live data** section implements the four supplied
+educational engine models. See [integration and acceptance coverage](docs/engine-live-data-integration.md)
+for its route, preserved equations, simulation controls and test commands.
+
 For online QA using Render and Supabase, see [Render staging deployment](docs/render-staging.md).
 
 ```bash

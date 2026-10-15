@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST, require_safe
 
 from apps.accounts.models import User
 from apps.accounts.decorators import administrator_required
+from apps.accounts.decorators import roles_required
 from apps.auditlog.services import record_event
 from apps.academics.models import CourseOffering
 from apps.practicals.models import ApprovedResource, Assessment, PracticalSubmission, PracticalTask
@@ -37,6 +38,11 @@ def readiness(request):
     except DatabaseError:
         return JsonResponse({"status": "unavailable"}, status=503)
     return JsonResponse({"status": "ready"})
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def engine_live_data(request):
+    return render(request, "core/engine_live_data.html")
 
 
 @login_required

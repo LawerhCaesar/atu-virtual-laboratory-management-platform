@@ -6,6 +6,7 @@ from . import views
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/engine-live-data/", views.engine_live_data, name="engine_live_data"),
     path("health/ready/", views.readiness, name="readiness"),
     path("", views.home, name="home"),
     path("dashboard/", views.dashboard, name="dashboard"),
