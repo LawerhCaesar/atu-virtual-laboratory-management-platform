@@ -3,14 +3,24 @@ import os
 import re
 from pathlib import Path
 from urllib.parse import urlsplit
+from urllib.error import URLError
 
 import pytest
 from django.core.management import call_command
 from playwright.sync_api import sync_playwright
 
 from apps.accounts.models import User
+from apps.core import learning_facts
 from apps.core.models import AdministratorNotice, SupportRequest
 from apps.practicals.models import ApprovedResource, PracticalSubmission
+
+
+@pytest.fixture(autouse=True)
+def isolate_external_learning_source(monkeypatch):
+    # Browser runs must never depend on, or call, a third-party service.
+    def offline(topic):
+        raise URLError("External educational source disabled in browser tests")
+    monkeypatch.setattr(learning_facts, "fetch_excerpt", offline)
 
 
 @pytest.fixture

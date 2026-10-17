@@ -46,6 +46,20 @@ The implemented platform slices include:
 
 ## Local setup
 
+The public homepage includes **Did you know?** above sign-in. It randomly
+selects automotive educational excerpts from Wikipedia, with article attribution
+and CC BY-SA 4.0 links, and rotates every 60 seconds while the page is visible.
+Visitors can pause/resume or request another item. Topic selection stays within
+the platform's automotive scope; recently displayed items are excluded where
+possible, but this is random selection, not a promise of endlessly unique facts.
+The same-origin `/learning/fact/` endpoint bounds upstream responses and timeouts,
+allows no user-supplied source URLs or redirects, and shares a one-request-per-minute
+upstream cooldown/cache. No API key is required. Source-checked DOE/AFDC backup
+facts keep the card usable during outages; homepage rendering and sign-in never
+wait for a provider request. No JavaScript still displays a sourced backup fact.
+Browser tests mock the external source; unit tests verify caching, safe parsing
+and failure recovery without third-party calls.
+
 The authenticated **Virtual laboratory** entrance at `/virtual-lab/` starts
 with a choice of ICE, BEV, FCEV, Hybrid (HEV) and Vehicle Dynamics (VD).
 Each system has a separately branded model catalogue. Only ICE currently has

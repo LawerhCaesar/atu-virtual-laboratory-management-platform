@@ -15,6 +15,21 @@
     <dl class="engineering-fields">{% for system in systems %}<div><dt>{{ system.code }}</dt><dd>{{ system.name }}</dd></div>{% endfor %}</dl>
   </section>
   <section class="welcome-access" aria-labelledby="access-title">
+    <section class="welcome-learning" aria-labelledby="learning-title" data-fact-url="{% url 'core:learning_fact' %}" data-fact-id="{{ learning_fact.id }}">
+      <p class="eyebrow">A minute of discovery</p>
+      <h2 id="learning-title">Did you know?</h2>
+      <div id="learning-content" aria-live="off">
+        <h3 class="h5" id="learning-topic">{{ learning_fact.title }}</h3>
+        <p id="learning-text">{{ learning_fact.text }}</p>
+        <a id="learning-source" href="{{ learning_fact.source_url }}" target="_blank" rel="noopener noreferrer">Read more · {{ learning_fact.source_name }}</a>
+        <p class="learning-credit" id="learning-credit">{{ learning_fact.credit }}</p>
+        <a id="learning-license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" hidden>CC BY-SA 4.0</a>
+      </div>
+      <p class="learning-note" id="learning-note">Random automotive learning · Changes every 60 seconds. Facts may repeat over time.</p>
+      <div class="learning-actions"><button class="btn btn-sm btn-outline-secondary" id="learning-next" type="button" hidden>Another fact</button><button class="btn btn-sm btn-outline-secondary" id="learning-pause" type="button" aria-pressed="false" hidden>Pause rotation</button></div>
+      <p id="learning-announcement" class="visually-hidden" role="status"></p>
+      <noscript><p class="small mb-0">Enable JavaScript for random facts every minute. Sign-in works without it.</p></noscript>
+    </section>
     <p class="eyebrow">Secure platform access</p>
     <h2 id="access-title">Welcome to the platform</h2>
     <p class="text-secondary mb-4">Sign in to your approved workspace, or create a Student/Lecturer registration request.</p>
@@ -31,5 +46,6 @@
     <p class="access-footer">Accra Technical University · Faculty of Engineering</p>
   </section>
 </div>
+<script type="module" src="{% static 'js/learning-facts.mjs' %}"></script>
 {% endblock %}
 

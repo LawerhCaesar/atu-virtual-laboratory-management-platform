@@ -60,6 +60,14 @@ h1, h2 { color: #08162b; letter-spacing: -.035em; }
 .engineering-fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid #ffffff26; padding-top: 1rem; gap: .6rem; margin-bottom: 0; overflow-wrap: anywhere; }
 .engineering-fields dt { font-size: .8rem; letter-spacing: .06em; }
 .engineering-fields dd { font-size: .65rem; color: #c4cfdf; margin: .6rem 0 0; }
+.welcome-learning { padding: 1.4rem; margin-bottom: 2rem; border: 1px solid #d6dfec; border-top: 4px solid var(--atu-gold); border-radius: 1rem; background: linear-gradient(145deg, #fffaf0, #fff); }
+.welcome-learning h2 { font-size: 1.8rem; }
+.welcome-learning h3 { line-height: 1.35; }
+#learning-text { line-height: 1.65; overflow-wrap: anywhere; }
+#learning-source, #learning-license { font-size: .8rem; }
+.learning-credit, .learning-note { font-size: .75rem; color: #536273; margin: .6rem 0; }
+.learning-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.learning-actions .btn { min-height: 44px; }
 .welcome-access { background: radial-gradient(ellipse at 100% 0, #edf2fa, #fff 60%); padding: 2.25rem clamp(2rem, 6vw, 6rem); display: flex; flex-direction: column; justify-content: center; }
 .welcome-access h2 { font-size: clamp(1.8rem, 2.5vw, 2.3rem); line-height: 1.1; margin-bottom: 1rem; }
 .welcome-access > .eyebrow { color: #334c6a; font-size: .65rem; }

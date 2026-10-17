@@ -6,6 +6,7 @@ from . import views
 app_name = "core"
 
 urlpatterns = [
+    path("learning/fact/", views.learning_fact, name="learning_fact"),
     path("virtual-lab/", views.laboratory, name="laboratory"),
     path("virtual-lab/systems/<slug:system_slug>/", views.laboratory_system, name="laboratory_system"),
     path("virtual-lab/engine-live-data/", views.engine_live_data, name="engine_live_data"),

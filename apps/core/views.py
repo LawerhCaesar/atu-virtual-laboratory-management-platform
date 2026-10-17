@@ -22,10 +22,20 @@ from .forms import AdministratorNoticeForm, PlatformSettingsForm, SupportRequest
 from .models import AdministratorNotice, Notification, PlatformSettings, SupportRequest, is_internal_link
 from .services import cancel_notice, notice_recipients, notify, send_notice
 from .laboratory import ENGINE_MODEL_NAME, ENGINE_VIEW_KEYS, ICE_MODELS, SYSTEMS
+from .learning_facts import backup_fact, random_fact
 
 
 def home(request):
-    return render(request, "core/home.html", {"systems": SYSTEMS})
+    # Never make sign-in/page rendering wait for an external content provider.
+    return render(request, "core/home.html", {"systems": SYSTEMS, "learning_fact": backup_fact()})
+
+
+@never_cache
+@require_safe
+def learning_fact(request):
+    excluded = request.GET.getlist("exclude")[-10:]
+    excluded = [value[:100] for value in excluded]
+    return JsonResponse(random_fact(excluded))
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
