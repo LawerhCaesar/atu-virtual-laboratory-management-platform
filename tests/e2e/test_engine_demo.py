@@ -72,7 +72,7 @@ def test_engine_input_caps_pause_emergency_and_csv(page, demo_records, live_serv
     expect(page.locator("#engine-time")).to_have_text("0.00")
     expect(page.locator("#engine-emergency")).to_be_enabled()
     expect(page.locator("#engine-chart-status")).to_contain_text("0 recorded")
-    page.get_by_role("link", name="Back to dashboard").click()
+    page.get_by_role("link", name="Dashboard", exact=True).click()
     expect(page).to_have_url(live_server.url + "/dashboard/")
 
 
