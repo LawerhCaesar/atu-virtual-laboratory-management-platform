@@ -21,6 +21,10 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
     assert page.locator("#engine-cutaway").evaluate("e => Boolean(e.compareDocumentPosition(document.querySelector('.engine-input-panel')) & Node.DOCUMENT_POSITION_FOLLOWING)")
     expect(page.locator("#engine-state")).to_have_text("OFF")
     expect(page.locator("#engine-mode")).to_have_text("Paused")
+    assert page.locator("#cutaway-viewport").bounding_box()["y"] + 200 < 900
+    preview = Path("test-results/engine-cutaway")
+    preview.mkdir(parents=True, exist_ok=True)
+    page.screenshot(path=str(preview / f"embedded-top-{width}.png"), full_page=False)
     expect(page.get_by_role("img", name="Interactive generic four-cylinder", exact=False)).to_be_visible()
     if width == 390:
         expect(page.get_by_label("Animate motion", exact=True)).not_to_be_checked()

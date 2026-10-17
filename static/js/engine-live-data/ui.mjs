@@ -353,6 +353,7 @@ function initialise() {
   function closeCutaway(message = "3D view closed. Calculations and graphs are unchanged.") {
     cutaway?.dispose(); cutaway = null;
     byId("cutaway-workspace").hidden = true;
+    byId("cutaway-stage").hidden = true;
     byId("cutaway-unload").hidden = true;
     byId("cutaway-load").hidden = false;
     byId("cutaway-load").disabled = false;
@@ -367,11 +368,12 @@ function initialise() {
       const { createCutaway } = await import("./cutaway.bundle.mjs");
       if (pageGone) return;
       byId("cutaway-workspace").hidden = false;
+      byId("cutaway-stage").hidden = false;
       cutaway = createCutaway(root, simulation.result, () => closeCutaway("3D graphics context was lost. You can retry Load 3D engine; calculations and graphs remain available."));
       cutaway.sync(simulation.result, simulation.running);
       byId("cutaway-load").hidden = true;
       byId("cutaway-unload").hidden = false;
-      byId("cutaway-status").textContent = "3D ready · embedded on this page. Starts paused; use the simulation controls below.";
+      byId("cutaway-status").textContent = "3D ready · embedded here. Starts paused.";
     } catch {
       closeCutaway("3D is unavailable on this device or could not load. Enable WebGL 2 and retry, or continue using all calculations and graphs below.");
     } finally { cutawayLoading = false; }

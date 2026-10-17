@@ -43,7 +43,7 @@ without MATLAB, hardware access or network calculation requests.
 The simulation page automatically embeds the WebGL 2 view near the top,
 above the sensor forms. It starts paused/OFF, never automatically starting an
 engine sequence. The shared Run/Pause/Reset/CSV toolbar remains directly above
-the viewer, with a jump link to sensor/start controls for mobile use. The canvas
+the viewer's advanced options, directly below its canvas, with a jump link to sensor/start controls for mobile use. The canvas
 precedes advanced view options, and full safety/physical-stage limitations
 remain available in an expandable section. **Close 3D view** releases the GPU;
 **Load 3D engine** retries after closing or a graphics failure. The view
