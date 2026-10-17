@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CutawayClock, GEOMETRY, FIRING_ORDER, pistonPosition, cylinderPose } from "../../static/js/engine-live-data/kinematics.mjs";
+import { CutawayClock, GEOMETRY, FIRING_ORDER, pistonPosition, cylinderPose, valveLift } from "../../static/js/engine-live-data/kinematics.mjs";
 import { EngineSimulation } from "../../static/js/engine-live-data/controller.mjs";
 
 test("generic slider-crank geometry preserves rod length and exact dead centres", () => {
@@ -51,4 +51,25 @@ test("adding a cutaway observer cannot alter calculations, history or CSV", () =
   assert.deepEqual(a.result, b.result);
   assert.equal(a.csv(), b.csv());
   assert.ok(clock.angle > 0);
+});
+
+test("illustrative valve lift is continuous, bounded and closed at stroke boundaries", () => {
+  for (const start of [180, 360]) {
+    assert.equal(valveLift(start, start), 0);
+    assert.equal(valveLift(start + 180, start), 0);
+    assert.equal(valveLift(start + 90, start), 1);
+    assert.ok(valveLift(start + .001, start) < 1e-8);
+    for (let degree = 0; degree < 720; degree++) assert.ok(valveLift(degree, start) >= 0 && valveLift(degree, start) <= 1);
+  }
+});
+
+test("qualitative command animation follows duty, virtual steps, playback and emergency gating", () => {
+  const clock = new CutawayClock();
+  const snapshot = { inputs: { EngineSpeed: 800, EmergencyStop: 0 }, outputs: { EngineState: 0, FanDuty: 50, WaterPumpDuty: 100 } };
+  clock.advance(snapshot, 1);
+  assert.equal(clock.angle, 0);
+  assert.equal(clock.fanAngle, 36); assert.equal(clock.pumpAngle, 72);
+  snapshot.inputs.EmergencyStop = 1; clock.advance(snapshot, 1);
+  assert.equal(clock.fanAngle, 36); assert.equal(clock.pumpAngle, 72);
+  clock.reset(); assert.equal(clock.fanAngle, 0); assert.equal(clock.pumpAngle, 0);
 });

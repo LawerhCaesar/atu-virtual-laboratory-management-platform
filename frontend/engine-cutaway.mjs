@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CutawayClock, cylinderPose } from "../static/js/engine-live-data/kinematics.mjs";
+import { CutawayClock, cylinderPose, FIRING_ORDER } from "../static/js/engine-live-data/kinematics.mjs";
 
 // The renderer consumes snapshots; it never writes to the engineering model.
 export function createCutaway(root, initial, onFailure) {
@@ -42,6 +42,26 @@ export function createCutaway(root, initial, onFailure) {
     return mesh(new THREE.CylinderGeometry(radius, radius, length, 24), mat, parent, position);
   }
   const shaft = cylinder(.095, 4.9, blue); shaft.rotation.z = Math.PI / 2;
+  const flywheel = new THREE.Group(); flywheel.position.set(-2.35, 0, 0); scene.add(flywheel);
+  const rim = mesh(new THREE.TorusGeometry(.46, .06, 10, 40), silver, flywheel);
+  rim.rotation.y = Math.PI / 2;
+  for (let index = 0; index < 6; index++) {
+    const spoke = mesh(new THREE.BoxGeometry(.07, .8, .05), gold, flywheel);
+    spoke.rotation.x = index * Math.PI / 3;
+  }
+  const cams = [];
+  for (const z of [-.2, .2]) {
+    const cam = new THREE.Group(); cam.position.set(0, 2.48, z); scene.add(cam);
+    const axle = cylinder(.045, 4.4, dark, cam); axle.rotation.z = Math.PI / 2;
+    for (let index = 0; index < 4; index++) {
+      const rotor = new THREE.Group(); rotor.position.x = (index - 1.5) * 1.1;
+      rotor.rotation.x = -FIRING_ORDER.indexOf(index + 1) * Math.PI / 2 + (z < 0 ? Math.PI * .75 : Math.PI * 1.25);
+      cam.add(rotor);
+      const lobe = mesh(new THREE.SphereGeometry(.09, 12, 8), gold, rotor, [0, .05, 0]);
+      lobe.scale.set(.6, 1.15, 1);
+    }
+    cams.push(cam);
+  }
   const base = mesh(new THREE.BoxGeometry(5.1, .15, 1.8), dark, scene, [0, -.55, 0]);
   base.material = dark;
   const cylinders = [];
@@ -76,12 +96,22 @@ export function createCutaway(root, initial, onFailure) {
     const injectorMat = material(0x775020, { emissive: 0xeab84d, emissiveIntensity: 0 });
     const injector = mesh(new THREE.ConeGeometry(.085, .25, 16), injectorMat, scene, [x, 1.9, -.5]);
     injector.rotation.x = -.5;
+    const gasMat = material(0x326fbc, { transparent: true, opacity: .12, depthWrite: false, metalness: 0, roughness: 1 });
+    const gas = cylinder(.31, 1, gasMat, scene, [x, 1.8, 0]);
+    const intakeFlow = new THREE.Group(), exhaustFlow = new THREE.Group();
+    scene.add(intakeFlow, exhaustFlow);
+    for (const [flow, color, direction] of [[intakeFlow, 0x326fbc, -1], [exhaustFlow, 0x75808a, 1]]) {
+      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(x, 2.05, direction * .18), new THREE.Vector3(x, 2.1, direction * .5), new THREE.Vector3(x, 2, direction * .85)]);
+      mesh(new THREE.TubeGeometry(curve, 12, .06, 8, false), material(color, { transparent: true, opacity: .18, depthWrite: false }), scene);
+      const beadMat = material(color, { metalness: 0 });
+      for (let bead = 0; bead < 4; bead++) mesh(new THREE.SphereGeometry(.035, 8, 6), beadMat, flow);
+    }
     const text = document.createElement("li");
     const title = document.createElement("strong"); title.textContent = `Cylinder ${index + 1}`;
     const stroke = document.createElement("span"); text.append(title, stroke); cylinderList.append(text);
     const tag = document.createElement("span"); tag.className = "cutaway-tag"; tag.textContent = `C${index + 1}`;
     tag.setAttribute("aria-hidden", "true"); host.append(tag);
-    cylinders.push({ x, piston, rod, pin, arms, intake, exhaust, spark, injector, stroke, tag });
+    cylinders.push({ x, piston, rod, pin, arms, intake, exhaust, spark, injector, gas, intakeFlow, exhaustFlow, stroke, tag });
   }
   // Separate command markers, not a mechanical fan/pump speed model.
   const fanMat = material(0x536273), coolantMat = material(0x2857b5);
@@ -92,6 +122,9 @@ export function createCutaway(root, initial, onFailure) {
     mesh(new THREE.BoxGeometry(.13, .28, .04), fanMat, group, [0, .17, 0]);
   }
   const coolant = mesh(new THREE.TorusGeometry(.24, .055, 10, 32), coolantMat, scene, [-2.75, 1.25, 0]);
+  const coolantFlow = new THREE.Group(); coolantFlow.position.copy(coolant.position); scene.add(coolantFlow);
+  const flowMat = material(0x237d93, { metalness: 0 });
+  for (let bead = 0; bead < 5; bead++) mesh(new THREE.SphereGeometry(.045, 8, 6), flowMat, coolantFlow);
   const grid = new THREE.GridHelper(8, 16, 0xa6b6ca, 0xdce4ed); grid.position.y = -.64; scene.add(grid);
 
   const signals = [
@@ -110,16 +143,24 @@ export function createCutaway(root, initial, onFailure) {
   const clock = new CutawayClock();
   clock.scale = Number($("cutaway-speed").value);
   casing.visible = $("cutaway-casing").checked;
-  let result = initial, running = false, angle = 0, previous = 0, frameId, dirty = true, disposed = false;
+  let result = initial, running = false, angle = 0, fanAngle = 0, pumpAngle = 0, frameId, dirty = true, disposed = false;
+  let interpolation = { angle: 0, fan: 0, pump: 0, at: 0, target: 0, fanTarget: 0, pumpTarget: 0 };
   const abort = new AbortController();
   const animate = $("cutaway-animate");
+  const effects = $("cutaway-effects");
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (!animate.dataset.initialised) {
-    animate.checked = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    animate.checked = !motionPreference.matches;
+    effects.checked = animate.checked;
     animate.dataset.initialised = "true";
   }
   const listen = (id, event, callback) => $(id).addEventListener(event, callback, { signal: abort.signal });
+  motionPreference.addEventListener("change", event => {
+    if (event.matches) { animate.checked = false; effects.checked = false; sync(result, running); }
+  }, { signal: abort.signal });
   listen("cutaway-speed", "change", () => { clock.scale = Number($("cutaway-speed").value); sync(result, running); });
   listen("cutaway-animate", "change", () => { angle = clock.angle; dirty = true; sync(result, running); });
+  listen("cutaway-effects", "change", () => { dirty = true; });
   listen("cutaway-casing", "change", () => { casing.visible = $("cutaway-casing").checked; dirty = true; });
   listen("cutaway-left", "click", () => { camera.position.applyAxisAngle(up, -.25); controls.update(); dirty = true; });
   listen("cutaway-right", "click", () => { camera.position.applyAxisAngle(up, .25); controls.update(); dirty = true; });
@@ -145,11 +186,22 @@ export function createCutaway(root, initial, onFailure) {
       pump: `${o.WaterPumpDuty.toFixed(2)} %`, fuel: o.FuelPumpState ? "ON" : "OFF", starter: o.StarterState ? "ON" : "OFF",
     };
     for (const [key, value] of Object.entries(content)) values[key].textContent = value;
-    if (!running) angle = clock.angle;
+    if (i.EmergencyStop) {
+      // Discard visual interpolation lag immediately: no post-stop coasting.
+      clock.angle = angle; clock.fanAngle = fanAngle; clock.pumpAngle = pumpAngle;
+    }
+    if (clock.angle !== interpolation.target || clock.fanAngle !== interpolation.fanTarget || clock.pumpAngle !== interpolation.pumpTarget) {
+      interpolation = { angle, fan: fanAngle, pump: pumpAngle, at: performance.now(), target: clock.angle, fanTarget: clock.fanAngle, pumpTarget: clock.pumpAngle };
+    }
+    if (!running) { angle = clock.angle; fanAngle = clock.fanAngle; pumpAngle = clock.pumpAngle; }
     dirty = true;
   }
   function draw() {
-    const { outputs: o } = result;
+    const { inputs: i, outputs: o } = result;
+    const moving = [2, 3].includes(o.EngineState) && !i.EmergencyStop;
+    const slowCycle = i.EngineSpeed * clock.scale <= 300;
+    flywheel.rotation.x = angle * Math.PI / 180;
+    for (const cam of cams) cam.rotation.x = angle * Math.PI / 360;
     for (const [index, c] of cylinders.entries()) {
       const pose = cylinderPose(index + 1, angle, o);
       c.piston.position.y = pose.piston;
@@ -164,27 +216,58 @@ export function createCutaway(root, initial, onFailure) {
         arm.position.set(c.x + (armIndex ? .22 : -.22), pose.pinY / 2, pose.pinZ / 2);
         arm.scale.y = crankVector.length(); arm.quaternion.setFromUnitVectors(up, crankVector.clone().normalize());
       }
-      c.intake.position.y = 2.05 - (pose.intake ? .12 : 0);
-      c.exhaust.position.y = 2.05 - (pose.exhaust ? .12 : 0);
-      c.spark.material.emissiveIntensity = pose.spark ? 2 : 0;
+      c.intake.position.y = 2.05 - pose.intakeLift * .12;
+      c.exhaust.position.y = 2.05 - pose.exhaustLift * .12;
+      // Avoid repeated bright flashes at high visual cycle frequencies.
+      c.spark.material.emissiveIntensity = o.IgnitionEnable ? (slowCycle && pose.spark ? .8 : .18) : 0;
       c.injector.material.emissiveIntensity = o.InjectionEnable ? Math.min(o.InjectorPW / 5, 1.5) : 0;
+      const top = 1.94, bottom = pose.piston + .13;
+      c.gas.scale.y = Math.max(.04, top - bottom); c.gas.position.y = (top + bottom) / 2;
+      c.gas.visible = effects.checked && moving;
+      const colors = [0xbc673a, 0x75808a, 0x326fbc, 0xb88d35];
+      const strokeIndex = Math.floor(pose.cycle / 180);
+      const color = new THREE.Color(colors[strokeIndex]);
+      if (slowCycle) {
+        const blend = Math.min(1, (pose.cycle % 180) / 25);
+        c.gas.material.color.set(colors[(strokeIndex + 3) % 4]).lerp(color, blend);
+      } else c.gas.material.color.set(0x75808a);
+      for (const [flow, active, direction] of [[c.intakeFlow, pose.intakeLift, -1], [c.exhaustFlow, pose.exhaustLift, 1]]) {
+        flow.visible = effects.checked && moving && slowCycle && active > .05;
+        for (const [bead, node] of flow.children.entries()) {
+          const phase = ((pose.cycle % 180) / 180 * 2 + bead / 4) % 1;
+          const distance = direction < 0 ? .85 - phase * .65 : .2 + phase * .65;
+          node.position.set(c.x, 2.05, direction * distance);
+        }
+      }
       const label = `${pose.stroke} · ${pose.cycle.toFixed(0)}°${pose.spark ? " · spark" : ""}`;
       if (c.stroke.textContent !== label) c.stroke.textContent = label;
       const point = new THREE.Vector3(c.x, 2.65, 0).project(camera);
       c.tag.style.left = `${(point.x + 1) * 50}%`; c.tag.style.top = `${(1 - point.y) * 50}%`;
     }
     fanMat.color.set(o.FanDuty > 0 ? 0x2857b5 : 0x536273);
-    fan.scale.setScalar(.85 + o.FanDuty / 100 * .15);
+    fan.rotation.z = fanAngle * Math.PI / 180;
     coolantMat.color.setHSL(.6 * (1 - Math.min(1, Math.max(0, (o.ControlTemperature + 20) / 155))), .7, .4);
     coolant.rotation.z = 0; // Colour is a temperature marker, not fluid flow.
+    coolantFlow.visible = effects.checked && o.WaterPumpDuty > 0 && !i.EmergencyStop;
+    for (const [bead, node] of coolantFlow.children.entries()) {
+      const a = pumpAngle * Math.PI / 180 + bead * Math.PI * 2 / 5;
+      node.position.set(Math.cos(a) * .24, Math.sin(a) * .24, 0);
+    }
     host.dataset.phase = angle.toFixed(4);
+    host.dataset.fanPhase = fanAngle.toFixed(4);
+    host.dataset.effects = effects.checked ? "on" : "off";
     renderer.render(scene, camera);
     dirty = false;
   }
   function frame(time) {
     if (disposed) return;
-    const dt = Math.min(.1, Math.max(0, (time - previous) / 1000)); previous = time;
-    if (running && animate.checked) { angle += (clock.angle - angle) * Math.min(1, dt * 25); dirty = true; }
+    if (running && animate.checked && !result.inputs.EmergencyStop) {
+      const blend = Math.min(1, Math.max(0, (time - interpolation.at) / 200));
+      angle = interpolation.angle + (interpolation.target - interpolation.angle) * blend;
+      fanAngle = interpolation.fan + (interpolation.fanTarget - interpolation.fan) * blend;
+      pumpAngle = interpolation.pump + (interpolation.pumpTarget - interpolation.pump) * blend;
+      dirty = true;
+    }
     if (dirty && !document.hidden) draw();
     frameId = requestAnimationFrame(frame);
   }
@@ -203,7 +286,7 @@ export function createCutaway(root, initial, onFailure) {
   return {
     sync,
     advance(snapshot, dt) { if (animate.checked) clock.advance(snapshot, dt); },
-    reset() { clock.reset(); angle = 0; dirty = true; },
+    reset() { clock.reset(); angle = 0; fanAngle = 0; pumpAngle = 0; interpolation = { angle: 0, fan: 0, pump: 0, at: 0, target: 0, fanTarget: 0, pumpTarget: 0 }; dirty = true; },
     dispose,
   };
 }

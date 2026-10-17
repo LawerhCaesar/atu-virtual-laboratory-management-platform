@@ -22,6 +22,7 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
     expect(page.get_by_role("img", name="Interactive generic four-cylinder", exact=False)).to_be_visible()
     if width == 390:
         expect(page.get_by_label("Animate motion", exact=True)).not_to_be_checked()
+        expect(page.get_by_label("Illustrative flow effects", exact=True)).not_to_be_checked()
         page.get_by_label("Animate motion", exact=True).check()
     page.clock.install()
     page.get_by_label("Ignition switch", exact=True).check()
@@ -34,9 +35,15 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
     page.get_by_role("button", name="Pause", exact=True).click()
     page.clock.run_for(100)
     phase = page.locator("#cutaway-viewport").get_attribute("data-phase")
+    fan_phase = page.locator("#cutaway-viewport").get_attribute("data-fan-phase")
     assert float(phase) > 0
     page.clock.run_for(1000)
     assert page.locator("#cutaway-viewport").get_attribute("data-phase") == phase
+    assert page.locator("#cutaway-viewport").get_attribute("data-fan-phase") == fan_phase
+    page.get_by_label("Illustrative flow effects", exact=True).uncheck()
+    page.clock.run_for(100)
+    expect(page.locator("#cutaway-viewport")).to_have_attribute("data-effects", "off")
+    page.get_by_label("Illustrative flow effects", exact=True).check()
     virtual_time = page.locator("#engine-time").inner_text()
     page.get_by_label("Visual playback scale", exact=True).select_option("0.1")
     page.get_by_role("button", name="Rotate left", exact=True).click()
@@ -64,6 +71,25 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
     page.get_by_role("button", name="Reset", exact=True).click()
     page.clock.run_for(100)
     assert float(page.locator("#cutaway-viewport").get_attribute("data-phase")) == 0
+    assert float(page.locator("#cutaway-viewport").get_attribute("data-fan-phase")) == 0
+    if width == 1280:
+        page.get_by_label("Ignition switch", exact=True).check()
+        page.get_by_label("Fingerprint authorised", exact=True).check()
+        page.get_by_role("button", name="Voice/manual start request", exact=True).click()
+        page.get_by_role("button", name="Run", exact=True).click()
+        page.clock.run_for(2800)
+        page.get_by_role("button", name="Emergency stop", exact=True).click()
+        page.clock.run_for(100)
+        stopped = page.locator("#cutaway-viewport").get_attribute("data-phase")
+        stopped_fan = page.locator("#cutaway-viewport").get_attribute("data-fan-phase")
+        page.clock.run_for(1000)
+        assert page.locator("#cutaway-viewport").get_attribute("data-phase") == stopped
+        assert page.locator("#cutaway-viewport").get_attribute("data-fan-phase") == stopped_fan
+        page.get_by_role("button", name="Pause", exact=True).click()
+    if width == 1280:
+        page.emulate_media(reduced_motion="reduce")
+        expect(page.get_by_label("Animate motion", exact=True)).not_to_be_checked()
+        expect(page.get_by_label("Illustrative flow effects", exact=True)).not_to_be_checked()
     page.get_by_role("button", name="Close 3D view", exact=True).click()
     expect(page.locator("#cutaway-workspace")).to_be_hidden()
     assert not page.locator("#cutaway-viewport canvas").count()

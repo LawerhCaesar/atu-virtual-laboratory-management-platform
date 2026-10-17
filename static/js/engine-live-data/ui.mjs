@@ -108,6 +108,7 @@ function initialise() {
     return `${Number(value).toFixed(places)} ${unit(key)}`;
   }
   let activeView = "overview";
+  let viewAnimation = null;
   let interval = null;
   const inputs = {};
 
@@ -199,6 +200,13 @@ function initialise() {
     return card;
   }
   function renderStructure() {
+    viewAnimation?.cancel();
+    if (byId("engine-system").animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      viewAnimation = byId(activeView === "overview" ? "engine-overview" : "engine-system").animate(
+        [{ transform: "translateY(7px)" }, { transform: "translateY(0)" }],
+        { duration: 220, easing: "ease-out" },
+      );
+    }
     byId("engine-overview").hidden = activeView !== "overview";
     byId("engine-system").hidden = activeView === "overview";
     for (const button of byId("engine-tabs").children) {

@@ -76,6 +76,34 @@ spark gating/advance, motion gating/scaling, unchanged model/CSV, desktop/mobile
 WebGL interaction, pause/reset/emergency stop, reduced motion, keyboard camera
 controls, local asset failure, context loss and accessible text alternatives.
 
+### Animation and transition refinement
+
+The cutaway now includes smooth sinusoidal-squared valve lift, half-speed
+illustrative overhead camshafts, a rotating flywheel, translucent stroke-colour
+volumes and optional directional intake/exhaust markers. These teach cycle
+sequence and mechanism motion; the gas volumes are **not** combustion, pressure,
+fuel-spray or heat-transfer results. Flow markers and fan rotation use arbitrary
+teaching cadence (600 rpm at 100% duty before playback scaling), not an actuator
+speed/flow prediction. Fan and virtual-pump motion observe calculated duty
+commands, completed virtual steps, Pause, Reset and emergency-stop gating.
+
+The scene linearly interpolates toward each completed batch's visual phase over
+200 ms rather than changing the solver cadence. It introduces a visual-only
+lag of up to one batch; exact numeric readouts and recorded CSV remain unchanged.
+At visual crank rates above 300 rpm (2.5 four-stroke cycles/s per cylinder),
+stroke colours become steady neutral, flow markers are suppressed and the
+enabled spark indicator stays steady to avoid rapid flashing. There is no
+flame strobe. **Illustrative flow effects** can be disabled separately.
+Reduced-motion defaults disable both animation and effects; changing the system
+preference to reduced motion while the view is open also stops them.
+
+`static/css/motion.css` provides modest entrance, card/button hover/focus and
+native cross-document view transitions where supported. It does not intercept
+links, submissions, approvals or logout. Engine system-view changes use a short
+transform-only reveal. No text/background colour interpolation, continuously
+looping decorative animation, new library or hidden-until-JavaScript content
+is introduced. Reduced-motion preferences disable these transitions.
+
 ## Reference UI alignment (17 October 2026)
 
 The existing Django interface now follows the supplied reference site's navy,

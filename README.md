@@ -54,6 +54,8 @@ The same page offers **Load 3D engine**: an optional, locally served generic
 four-cylinder cutaway with slow motion, camera controls and live command
 readouts. It illustrates the calculations; it is not a validated Toyota 1NZ
 mechanical/combustion model and does not change assessment or CSV data.
+Optional stroke/flow effects and smooth mechanism animation accompany subtle
+interface transitions; reduced-motion preferences are respected throughout.
 
 For online QA using Render and Supabase, see [Render staging deployment](docs/render-staging.md).
 
