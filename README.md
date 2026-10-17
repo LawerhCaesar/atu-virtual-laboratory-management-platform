@@ -50,7 +50,7 @@ The authenticated **Virtual laboratory** entrance at `/virtual-lab/` starts
 with a choice of ICE, BEV, FCEV, Hybrid (HEV) and Vehicle Dynamics (VD).
 Each system has a separately branded model catalogue. Only ICE currently has
 implemented models: the other environments explicitly show that simulations
-are not yet available, rather than substituting combustion-engine models.
+have no simulations added, with no speculative model entries or launch links.
 The ICE catalogue implements the four supplied educational engine models.
 See [integration and acceptance coverage](docs/engine-live-data-integration.md)
 for its route, preserved equations, simulation controls and test commands.

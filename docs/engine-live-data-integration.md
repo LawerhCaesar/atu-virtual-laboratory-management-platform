@@ -15,7 +15,8 @@ dependency, frontend framework, API or deployment.
 - Navigation: **Virtual laboratory** and each role's **Choose a system** card
   open `/virtual-lab/`. Select ICE, BEV, FCEV, Hybrid or Vehicle Dynamics, then
   enter its branded catalogue at `/virtual-lab/systems/<slug>/`. Only ICE has
-  implemented models; other catalogues explicitly have no launch links.
+  implemented models; other catalogues contain just an empty-state message,
+  with no speculative/future model listings or launch links.
   ICE offers all four connected model views via allowlisted `?view=` values
   (`fuel`, `idle`, `cooling`, `startRun`), plus the complete overview.
   Selection affects presentation only; the solver and 3D scene remain shared,

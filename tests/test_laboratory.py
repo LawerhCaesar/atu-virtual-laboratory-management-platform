@@ -37,7 +37,12 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             for model in ICE_MODELS:
                 assert f'?view={model["key"]}'.encode() in environment.content
         else:
-            assert b"Models not yet available" in environment.content
+            assert b"No simulations added yet" in environment.content
+            assert b"Scope for future models" not in environment.content
+            assert b"lab-model-grid" not in environment.content
+            assert b"lab-launch" not in environment.content
+            for placeholder in [b"Battery behaviour", b"Fuel-cell stack", b"Hydrogen supply", b"Power split", b"Regenerative braking", b"Longitudinal motion", b"Ride and suspension"]:
+                assert placeholder not in environment.content
             assert reverse("core:engine_live_data").encode() not in environment.content
     assert client.get(reverse("core:laboratory_system", args=["unknown"])).status_code == 404
     for key in ["fuel", "idle", "cooling", "startRun", "invalid"]:

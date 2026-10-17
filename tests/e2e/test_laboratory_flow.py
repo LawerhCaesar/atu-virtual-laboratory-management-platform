@@ -39,7 +39,9 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
         expect(page.get_by_role("heading", name=system["name"], exact=True)).to_be_visible()
         colours.add(page.locator(".lab-system-hero").evaluate("e => getComputedStyle(e).backgroundColor"))
         if system["slug"] != "ice":
-            expect(page.get_by_role("heading", name="Models not yet available", exact=True)).to_be_visible()
+            expect(page.get_by_role("heading", name="No simulations added yet", exact=True)).to_be_visible()
+            expect(page.locator(".lab-model-grid article, .lab-launch")).to_have_count(0)
+            expect(page.get_by_text("Scope for future models", exact=False)).to_have_count(0)
             expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
         else:
             expect(page.locator(".lab-model-grid article")).to_have_count(4)
