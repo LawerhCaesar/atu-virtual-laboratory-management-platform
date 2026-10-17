@@ -9,4 +9,5 @@
   <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:student_task_list' %}"><span class="metric">{{ submission_count }}</span><strong>My submissions</strong><span>Review attempt and submission status from each task.</span></a></div>
   <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:result_list' %}"><span class="metric">{{ released_result_count }}</span><strong>Released results</strong><span>View released feedback and grades.</span></a></div>
 </div>
+{% include "includes/engine_workspace_card.html" %}
 {% endblock %}

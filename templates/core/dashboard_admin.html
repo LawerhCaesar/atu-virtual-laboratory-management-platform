@@ -16,4 +16,5 @@
   <div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'core:platform_settings' %}"><strong>Platform settings</strong><span>Configure support contacts and educational help guidance.</span></a></div>
   {% if user.is_staff %}<div class="col-md-6 col-xl-4"><a class="dashboard-card" href="{% url 'admin:index' %}"><strong>Academic administration</strong><span>Maintain faculties, departments, programmes and academic periods in the restricted administration console.</span></a></div>{% endif %}
 </div>
+{% include "includes/engine_workspace_card.html" %}
 {% endblock %}

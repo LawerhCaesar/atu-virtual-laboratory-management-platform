@@ -10,4 +10,5 @@
   <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:review_queue' %}"><span class="metric">{{ review_count }}</span><strong>Submissions awaiting review</strong><span>Open evidence, return work or save an assessment.</span></a></div>
   <div class="col-md-4"><a class="dashboard-card" href="{% url 'practicals:review_queue' %}"><strong>Assessment records</strong><span>Manage feedback, scores and controlled result release.</span></a></div>
 </div>
+{% include "includes/engine_workspace_card.html" %}
 {% endblock %}

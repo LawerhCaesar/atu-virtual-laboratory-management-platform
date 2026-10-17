@@ -13,6 +13,7 @@ dependency, frontend framework, API or deployment.
 
 - Route: `/virtual-lab/engine-live-data/`, named `core:engine_live_data`.
 - Navigation: **Engine live data** in the existing authenticated navigation.
+  Each role's dashboard also provides an **Open engine simulations** card.
 - Access: existing active Administrator, Lecturer and Student roles, with the
   existing first-login password-change and suspension controls intact.
 - Layout: `templates/base.html`, existing Bootstrap controls, panels, colours,
@@ -36,6 +37,21 @@ dependency, frontend framework, API or deployment.
 
 The static modules load with the authenticated page; calculations then run
 without MATLAB, hardware access or network calculation requests.
+
+## Reference UI alignment (17 October 2026)
+
+The existing Django interface now follows the supplied reference site's navy,
+gold, serif headings, pale workspace surfaces, rounded cards and two-column
+welcome/access composition. The university crest was sourced from the same
+official asset displayed by the reference:
+https://atu.edu.gh/wp-content/uploads/2024/07/ATU-LOGO-AUTHENTIC-edit-1024x980.png
+and is served locally as `static/atu-crest.png`, without third-party page requests.
+The cohort photo remains an explicitly labelled placeholder.
+
+Role cards lead to the existing secure login; they do not grant a selected role,
+add prototype/sample credentials or bypass approval. Forms, CSRF protection,
+role checks, assessments, evidence access, calculations and database schema are
+unchanged. The reference Site itself was not modified.
 
 ## Requirement coverage and evidence
 

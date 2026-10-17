@@ -1,23 +1,35 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}ATU Virtual Laboratory Management Platform{% endblock %}
+{% block body_class %}welcome-page{% endblock %}
+{% block main_class %}welcome-main{% endblock %}
 {% block content %}
-<section class="hero rounded-4 p-4 p-md-5 mb-5">
-  <div class="row align-items-center g-4">
-    <div class="col-lg-8">
-      <p class="eyebrow mb-2">Automotive Engineering</p>
-      <h1 class="display-5 fw-bold">Practical assessment, organised in one secure platform.</h1>
-      <p class="lead text-secondary mt-3">Lecturers set structured practical tasks, students submit evidence, and approved demonstration resources remain connected to the academic record.</p>
-      <div class="d-flex flex-wrap gap-2 mt-4">
-        <a class="btn btn-primary btn-lg" href="{% url 'accounts:register' %}">Request an account</a>
-        <a class="btn btn-outline-secondary btn-lg" href="{% url 'accounts:login' %}">Sign in</a>
-      </div>
+<div class="welcome-layout">
+  <section class="welcome-story" aria-labelledby="welcome-title">
+    <div class="welcome-brand"><img src="{% static 'atu-crest.png' %}" alt="Accra Technical University crest" width="56" height="56"><div><strong>Accra Technical University</strong><span>Virtual Laboratory Management Platform</span></div></div>
+    <div class="cohort-placeholder"><img src="{% static 'atu-crest.png' %}" alt="" width="62" height="62"><div><strong>Cohort group photograph</strong><span>The real class picture will be placed here.</span></div></div>
+    <p class="story-eyebrow">The people behind the platform</p>
+    <h1 id="welcome-title">Developed by the first cohort of <em>MTech Automotive Engineering.</em></h1>
+    <p class="story-description">A student-led practical-learning initiative created to support applied automotive education, simulation and collaborative research at ATU.</p>
+    <div class="story-rule" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <dl class="engineering-fields"><div><dt>BEV</dt><dd>Battery Electric Vehicle</dd></div><div><dt>HEV</dt><dd>Hybrid Electric Vehicle</dd></div><div><dt>ICE</dt><dd>Internal Combustion Engine</dd></div><div><dt>VD</dt><dd>Vehicle Dynamics</dd></div></dl>
+  </section>
+  <section class="welcome-access" aria-labelledby="access-title">
+    <p class="eyebrow">Secure platform access</p>
+    <h2 id="access-title">Welcome to the platform</h2>
+    <p class="text-secondary mb-4">Sign in to your approved workspace, or create a Student/Lecturer registration request.</p>
+    {% if user.is_authenticated %}<a class="btn btn-primary welcome-action" href="{% url 'core:dashboard' %}">Return to your dashboard <span aria-hidden="true">→</span></a>{% endif %}
+    <div class="role-cards" aria-label="Platform workspaces">
+      <a href="{% url 'accounts:login' %}" class="role-card"><span class="role-monogram">AD</span><span><strong>Administrator</strong><small>System administration</small></span><span class="role-arrow" aria-hidden="true">→</span></a>
+      <a href="{% url 'accounts:login' %}" class="role-card"><span class="role-monogram">LE</span><span><strong>Lecturer</strong><small>Teaching and assessment</small></span><span class="role-arrow" aria-hidden="true">→</span></a>
+      <a href="{% url 'accounts:login' %}" class="role-card"><span class="role-monogram">ST</span><span><strong>Student</strong><small>Practical learning workspace</small></span><span class="role-arrow" aria-hidden="true">→</span></a>
     </div>
-  </div>
-</section>
-<div class="row g-4">
-  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Structured assessment</h2><p>Access assigned practical questions, evidence requirements and deadlines.</p></div></div>
-  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Approved resources</h2><p>Use only the simulations, demonstrations and practical concepts approved for the course.</p></div></div>
-  <div class="col-md-4"><div class="feature-card h-100"><h2 class="h5">Traceable records</h2><p>Keep submissions, feedback, results and key activity events connected and auditable.</p></div></div>
+    <a class="btn btn-primary welcome-action" href="{% url 'accounts:login' %}">Sign in <span aria-hidden="true">→</span></a>
+    <a class="btn btn-outline-secondary welcome-action" href="{% url 'accounts:register' %}">Request an account</a>
+    <p class="access-note">New accounts remain Pending Approval until verified by Admin. Administrator accounts are not publicly registered. Your approved account determines your role.</p>
+    <a class="role-card help-card" href="{% url 'core:help' %}"><span class="role-monogram">?</span><span><strong>General Help</strong><small>Access guide, account support and common questions</small></span><span class="role-arrow" aria-hidden="true">→</span></a>
+    <p class="access-footer">Accra Technical University · Faculty of Engineering</p>
+  </section>
 </div>
 {% endblock %}
 
