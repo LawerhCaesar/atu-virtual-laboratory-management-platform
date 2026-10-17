@@ -38,6 +38,19 @@
 .engine-input .form-label { font-size: .9rem; margin-bottom: .25rem; }
 .engine-input small { display: block; color: #536273; }
 .engine-input input[type=number] { min-width: 0; }
+.engine-number-adjustment { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: .4rem; align-items: center; }
+.engine-number-adjustment input { text-align: center; font-size: 1rem; min-height: 44px; font-variant-numeric: tabular-nums; }
+.engine-nudge { min-height: 44px; padding: .35rem; font-size: 1.25rem; font-weight: 700; }
+.engine-input .form-range { height: 44px; margin: .35rem 0 0; }
+.engine-input .form-range::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: calc((.5rem - 26px) / 2); border: 2px solid white; box-shadow: 0 0 0 1px #2857b5; }
+.engine-input .form-range::-moz-range-thumb { width: 22px; height: 22px; border: 2px solid white; box-shadow: 0 0 0 1px #2857b5; }
+.engine-input-default { min-height: 44px; margin: .5rem 0; }
+.engine-input-panel .form-switch { min-height: 44px; }
+.engine-input-panel .form-switch .form-check-input { width: 2.75em; height: 1.5em; margin-left: -3.25em; cursor: pointer; }
+.engine-input-panel .form-switch .form-check-label { padding: .15rem 0 .5rem; cursor: pointer; }
+.engine-preset-picker { padding-top: 1rem; }
+#engine-preset, #engine-input-search, #engine-input-search-clear { min-height: 44px; }
+#engine-input-title, #engine-cutaway { scroll-margin-top: 9rem; }
 .engine-accepted { min-height: 1.2rem; font-size: .8rem; color: #854000; }
 .engine-stepper { display: flex; flex-wrap: wrap; list-style: none; padding: 0; gap: .4rem; }
 .engine-stepper li { border: 1px solid #abb8c6; border-radius: .4rem; padding: .4rem .65rem; font-size: .8rem; }
@@ -60,7 +73,7 @@
 .engine-overview-grid .engine-flow { font-size: .8rem; }
 #engine-chart { display: block; width: 100%; height: auto; background: #fff; }
 #engine-chart text { fill: var(--atu-ink); font: 12px system-ui, sans-serif; }
-.engine-input-panel .form-switch { padding-left: 2.5em; }
+.engine-input-panel .form-switch { padding-left: 3.25em; }
 @media (max-width: 991px) {
   .engine-layout { grid-template-columns: 1fr; }
   .engine-input-panel { display: block; position: static; max-height: none; overflow: visible; }

@@ -26,20 +26,26 @@
   <div class="engine-layout mt-4">
     <aside class="content-panel mt-0 engine-input-panel" aria-labelledby="engine-input-title" tabindex="0">
       <h2 id="engine-input-title" class="h4">Student inputs</h2>
-      <p class="small text-secondary">Only inputs are editable. All values are capped before calculations.</p>
+      <p class="small text-secondary">Drag a slider, tap −/+ or type a value. Readings update immediately; Run advances virtual time. All inputs stay within the model's accepted limits.</p>
+      <a class="small" href="#engine-cutaway">Back to 3D visualization</a>
       <button class="btn btn-sm btn-outline-secondary d-lg-none mb-3" id="engine-toggle-inputs" type="button" aria-expanded="true" aria-controls="engine-input-controls">Hide input controls</button>
       <div id="engine-input-controls">
-      <div id="engine-inputs"></div>
+      <div class="engine-preset-picker">
+        <label for="engine-preset" class="form-label fw-semibold">Demonstration preset</label>
+        <select class="form-select" id="engine-preset"></select>
+        <button id="engine-load-preset" class="btn btn-outline-secondary w-100 mt-2" type="button">Load preset</button>
+        <p class="small text-secondary mt-2">Presets change inputs only. Enable ignition and authorisation, press Start, then Run to follow the start sequence.</p>
+      </div>
       <div class="mt-3">
         <button class="btn btn-outline-primary w-100 mb-2" id="engine-start" type="button">Voice/manual start request</button>
         <button class="btn btn-outline-secondary w-100 mb-2" id="engine-stop" type="button">Normal stop request</button>
         <button class="btn btn-danger w-100" id="engine-emergency" type="button" aria-pressed="false">Emergency stop</button>
         <p class="small mt-2" id="engine-emergency-notice">Emergency stop stays latched until Reset. Start/stop requests last 0.5 s of virtual time.</p>
       </div>
-      <label for="engine-preset" class="form-label fw-semibold mt-3">Demonstration preset</label>
-      <select class="form-select" id="engine-preset"></select>
-      <button id="engine-load-preset" class="btn btn-outline-secondary w-100 mt-2" type="button">Load preset</button>
-      <p class="small text-secondary mt-2">Presets change inputs only. Enable ignition and authorisation, press Start, then Run to follow the start sequence.</p>
+      <label for="engine-input-search" class="form-label fw-semibold mt-3">Find an input</label>
+      <div class="d-flex gap-2"><input id="engine-input-search" class="form-control" type="search" placeholder="Try RPM, voltage or ignition" aria-describedby="engine-input-search-status"><button id="engine-input-search-clear" class="btn btn-outline-secondary" type="button">Clear</button></div>
+      <p id="engine-input-search-status" class="small text-secondary mt-2" role="status">All inputs shown.</p>
+      <div id="engine-inputs"></div>
       <p class="small text-secondary">Reset restores all sensor and operating defaults, pauses time and clears history.</p>
       </div>
     </aside>

@@ -119,6 +119,7 @@ function initialise() {
       const definition = metadata[name];
       if (["StartRequest", "StopRequest", "EmergencyStop"].includes(name)) continue;
       const wrapper = make("div", undefined, "engine-input");
+      wrapper.dataset.inputSearch = `${label(name)} ${definition.label} ${name} ${meanings[name]}`.toLowerCase();
       const help = make("small", meanings[name]);
       help.id = `help-${name}`;
       if (definition.control === "toggle") {
@@ -139,6 +140,7 @@ function initialise() {
         number.step = definition.unit === "V" ? "0.01" : "1";
         number.value = definition.default;
         number.setAttribute("aria-describedby", `${help.id} accepted-${name}`);
+        number.inputMode = definition.unit === "V" ? "decimal" : "numeric";
         const range = make("input"); range.type = "range"; range.className = "form-range";
         range.min = definition.min; range.max = definition.max; range.step = number.step; range.value = definition.default;
         range.setAttribute("aria-label", `${label(name)} slider`);
@@ -146,20 +148,62 @@ function initialise() {
         const bounds = make("small", `Allowed: ${definition.min}–${definition.max} ${definition.unit}`);
         const accepted = make("div", "", "engine-accepted");
         accepted.id = `accepted-${name}`; accepted.setAttribute("role", "status");
-        number.addEventListener("change", () => {
+        const editNumber = () => {
           simulation.setInput(name, number.value === "" ? NaN : Number(number.value));
           render();
-        });
+        };
+        number.addEventListener("input", editNumber);
+        number.addEventListener("change", editNumber);
         range.addEventListener("input", () => {
           simulation.setInput(name, Number(range.value)); number.value = range.value; render();
         });
-        wrapper.append(text, number, range, bounds, help, accepted);
+        const adjustment = make("div", undefined, "engine-number-adjustment");
+        const step = name === "EngineSpeed" ? 50 : Number(number.step);
+        for (const [symbol, direction, verb] of [["−", -1, "Decrease"], ["+", 1, "Increase"]]) {
+          const button = make("button", symbol, "btn btn-outline-secondary engine-nudge");
+          button.type = "button";
+          button.setAttribute("aria-label", `${verb} ${label(name)}`);
+          button.title = `${verb} by ${step} ${definition.unit}`;
+          button.addEventListener("click", () => {
+            const value = simulation.result.inputs[name] + direction * step;
+            const bounded = Math.min(definition.max, Math.max(definition.min, value));
+            number.value = Number(bounded.toFixed(2));
+            simulation.setInput(name, Number(number.value)); render();
+          });
+          adjustment.append(button);
+        }
+        adjustment.insertBefore(number, adjustment.lastChild);
+        const restore = make("button", `Default: ${definition.default} ${definition.unit}`, "btn btn-sm btn-outline-secondary engine-input-default");
+        restore.type = "button";
+        restore.setAttribute("aria-label", `Restore ${label(name)} default`);
+        restore.addEventListener("click", () => {
+          number.value = definition.default;
+          simulation.setInput(name, definition.default); render();
+        });
+        wrapper.append(text, adjustment, range, bounds, restore, help, accepted);
         inputs[name] = { number, range, accepted };
       }
       fieldset.append(wrapper);
     }
     byId("engine-inputs").append(fieldset);
   }
+  const filterInputs = () => {
+    const query = byId("engine-input-search").value.trim().toLowerCase();
+    let visible = 0;
+    root.querySelectorAll(".engine-input-group").forEach(group => {
+      let groupVisible = 0;
+      group.querySelectorAll(".engine-input").forEach(input => {
+        input.hidden = !input.dataset.inputSearch.includes(query);
+        if (!input.hidden) groupVisible += 1;
+      });
+      group.hidden = groupVisible === 0; visible += groupVisible;
+    });
+    byId("engine-input-search-status").textContent = query ? `${visible} matching inputs. Hidden inputs keep their values.` : "All inputs shown.";
+  };
+  byId("engine-input-search").addEventListener("input", filterInputs);
+  byId("engine-input-search-clear").addEventListener("click", () => {
+    byId("engine-input-search").value = ""; filterInputs(); byId("engine-input-search").focus();
+  });
   for (const [code, stateLabel] of Object.entries(ENGINE_STATE_LABELS)) {
     const item = make("li", stateLabel); item.dataset.state = code;
     byId("engine-stepper").append(item);

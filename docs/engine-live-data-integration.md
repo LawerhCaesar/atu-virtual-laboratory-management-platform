@@ -32,6 +32,12 @@ dependency, frontend framework, API or deployment.
 - State: `controller.mjs` owns raw/capped inputs, internal state, running status,
   momentary requests and history. Calculations advance in 0.05-second steps;
   the browser batches four calculations per 200 ms render.
+- Input editing: large sliders, 44-pixel minus/plus controls, direct numeric
+  entry and individual numeric-default buttons share the same controller.
+  RPM nudge buttons use 50 rpm; voltage uses 0.01 V; other nudges use 1 unit.
+  Numeric editing recalculates immediately without advancing virtual time.
+  Presets/start/stop controls precede the sensor list. A local search hides
+  nonmatching inputs without changing their values or the emergency-stop latch.
 - Lifecycle: page navigation clears the interval. Pausing preserves virtual
   time, state and recorded history. Reset restores all defaults, OFF, paused
   status and empty history. Emergency stop also works while paused and stays
