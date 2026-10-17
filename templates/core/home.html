@@ -12,13 +12,13 @@
     <h1 id="welcome-title">Developed by the first cohort of <em>MTech Automotive Engineering.</em></h1>
     <p class="story-description">A student-led practical-learning initiative created to support applied automotive education, simulation and collaborative research at ATU.</p>
     <div class="story-rule" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-    <dl class="engineering-fields"><div><dt>BEV</dt><dd>Battery Electric Vehicle</dd></div><div><dt>HEV</dt><dd>Hybrid Electric Vehicle</dd></div><div><dt>ICE</dt><dd>Internal Combustion Engine</dd></div><div><dt>VD</dt><dd>Vehicle Dynamics</dd></div></dl>
+    <dl class="engineering-fields">{% for system in systems %}<div><dt>{{ system.code }}</dt><dd>{{ system.name }}</dd></div>{% endfor %}</dl>
   </section>
   <section class="welcome-access" aria-labelledby="access-title">
     <p class="eyebrow">Secure platform access</p>
     <h2 id="access-title">Welcome to the platform</h2>
     <p class="text-secondary mb-4">Sign in to your approved workspace, or create a Student/Lecturer registration request.</p>
-    {% if user.is_authenticated %}<a class="btn btn-primary welcome-action" href="{% url 'core:dashboard' %}">Return to your dashboard <span aria-hidden="true">→</span></a>{% endif %}
+    {% if user.is_authenticated %}<a class="btn btn-primary welcome-action" href="{% url 'core:dashboard' %}">Return to your dashboard <span aria-hidden="true">→</span></a>{% if user.is_platform_active %}<a class="btn btn-outline-secondary welcome-action" href="{% url 'core:laboratory' %}">Choose a laboratory system</a>{% endif %}{% endif %}
     <div class="role-cards" aria-label="Platform workspaces">
       <a href="{% url 'accounts:login' %}" class="role-card"><span class="role-monogram">AD</span><span><strong>Administrator</strong><small>System administration</small></span><span class="role-arrow" aria-hidden="true">→</span></a>
       <a href="{% url 'accounts:login' %}" class="role-card"><span class="role-monogram">LE</span><span><strong>Lecturer</strong><small>Teaching and assessment</small></span><span class="role-arrow" aria-hidden="true">→</span></a>

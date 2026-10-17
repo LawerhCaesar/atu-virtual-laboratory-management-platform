@@ -107,7 +107,7 @@ function initialise() {
       : ["InjectorPW", "BaseInjectorPW", "LambdaEstimate"].includes(key) ? 4 : 2;
     return `${Number(value).toFixed(places)} ${unit(key)}`;
   }
-  let activeView = "overview";
+  let activeView = Object.hasOwn(systems, root.dataset.initialView) ? root.dataset.initialView : "overview";
   let viewAnimation = null;
   let interval = null;
   const inputs = {};

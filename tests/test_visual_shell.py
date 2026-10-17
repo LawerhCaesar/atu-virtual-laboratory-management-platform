@@ -25,7 +25,7 @@ def test_every_dashboard_exposes_installed_engine(client, role):
     client.force_login(user)
     response = client.get(reverse("core:dashboard"))
     assert response.status_code == 200
-    assert b"Open engine simulations" in response.content
-    assert reverse("core:engine_live_data").encode() in response.content
+    assert b"Choose a system" in response.content
+    assert reverse("core:laboratory").encode() in response.content
     assert b"No physical hardware is connected" in response.content
     assert b"Return to your dashboard" in client.get(reverse("core:home")).content

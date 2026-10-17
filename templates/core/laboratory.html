@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Choose a system · ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/laboratory.css' %}">
+<div class="page-heading"><div><p class="eyebrow">ATU virtual laboratory · Step 1 of 3</p><h1>Choose your system</h1><p class="text-secondary">Select a system, explore its models, then launch a simulation.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:dashboard' %}">Back to dashboard</a></div>
+<div class="lab-system-grid">
+{% for system in systems %}
+  <article class="lab-system-card lab-theme-{{ system.slug }}">
+    <span class="lab-code" aria-hidden="true">{{ system.code }}</span>
+    <h2 class="h3">{{ system.name }}</h2><p>{{ system.description }}</p>
+    <p class="lab-availability">{% if system.slug == 'ice' %}4 learning models available{% else %}Workspace ready · Models not yet available{% endif %}</p>
+    <a class="btn lab-enter" href="{% url 'core:laboratory_system' system.slug %}">Enter {{ system.code }} environment <span aria-hidden="true">→</span></a>
+  </article>
+{% endfor %}
+</div>
+{% endblock %}

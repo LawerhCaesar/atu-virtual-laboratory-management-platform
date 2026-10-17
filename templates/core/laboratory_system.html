@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ system.code }} environment · ATU Virtual Laboratory{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/laboratory.css' %}">
+<div class="lab-environment lab-theme-{{ system.slug }}">
+  <nav class="mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> <span aria-hidden="true">/</span> <span aria-current="page">{{ system.code }}</span></nav>
+  <header class="lab-system-hero"><p class="lab-step">{{ system.code }} laboratory · Step 2 of 3</p><h1>{{ system.name }}</h1><p class="lab-tagline">{{ system.tagline }}</p><p>{{ system.description }}</p></header>
+  <section class="mt-4" aria-labelledby="model-catalogue-title">
+    <div class="page-heading"><div><p class="eyebrow">{{ system.code }} model catalogue</p><h2 id="model-catalogue-title">{% if models %}Choose a learning model{% else %}Models not yet available{% endif %}</h2></div>{% if models %}<a class="btn btn-outline-secondary" href="{% url 'core:engine_live_data' %}">Open complete engine simulation</a>{% endif %}</div>
+    {% if models %}
+    <p class="text-secondary">Four connected learning models share one educational engine simulation, its inputs and embedded 3D cutaway. Each link opens the selected model view; nothing runs until you press Run.</p>
+    <div class="lab-model-grid">{% for model in models %}<article class="content-panel mt-0"><p class="eyebrow">Available · {{ system.code }}</p><h3 class="h4">{{ model.title }}</h3><p>{{ model.description }}</p><a class="btn lab-launch" href="{% url 'core:engine_live_data' %}?view={{ model.key }}">Simulate {{ model.title|lower }}</a></article>{% endfor %}</div>
+    <p class="small text-secondary mt-3">Simplified educational equations, not OEM calibration. The four models are not independent vehicle powertrain solvers. No physical hardware is controlled.</p>
+    {% else %}
+    <div class="content-panel mt-0"><p>No {{ system.code }} simulation has been installed or validated in the supplied package. This environment is reserved for system-specific models; the ICE simulator is not substituted here.</p><h3 class="h5">Scope for future models — not runnable</h3><ul>{% for topic in system.topics %}<li>{{ topic }}</li>{% endfor %}</ul><p class="small text-secondary mb-0">A model specification, implementation and verification are required before simulation launch becomes available.</p></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

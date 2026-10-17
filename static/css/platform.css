@@ -57,7 +57,7 @@ h1, h2 { color: #08162b; letter-spacing: -.035em; }
 .story-rule { display: flex; gap: .45rem; margin: 1.8rem 0 3rem; }
 .story-rule span { width: 1.4rem; height: .25rem; background: #ffffff40; border-radius: 1rem; }
 .story-rule span:last-child { width: 2.5rem; background: #fff; }
-.engineering-fields { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #ffffff26; padding-top: 1rem; gap: .8rem; margin-bottom: 0; }
+.engineering-fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid #ffffff26; padding-top: 1rem; gap: .6rem; margin-bottom: 0; overflow-wrap: anywhere; }
 .engineering-fields dt { font-size: .8rem; letter-spacing: .06em; }
 .engineering-fields dd { font-size: .65rem; color: #c4cfdf; margin: .6rem 0 0; }
 .welcome-access { background: radial-gradient(ellipse at 100% 0, #edf2fa, #fff 60%); padding: 2.25rem clamp(2rem, 6vw, 6rem); display: flex; flex-direction: column; justify-content: center; }

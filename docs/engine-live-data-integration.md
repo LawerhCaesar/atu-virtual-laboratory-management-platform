@@ -12,8 +12,16 @@ therefore uses local ES modules and accessible SVG plots without adding a
 dependency, frontend framework, API or deployment.
 
 - Route: `/virtual-lab/engine-live-data/`, named `core:engine_live_data`.
-- Navigation: **Engine live data** in the existing authenticated navigation.
-  Each role's dashboard also provides an **Open engine simulations** card.
+- Navigation: **Virtual laboratory** and each role's **Choose a system** card
+  open `/virtual-lab/`. Select ICE, BEV, FCEV, Hybrid or Vehicle Dynamics, then
+  enter its branded catalogue at `/virtual-lab/systems/<slug>/`. Only ICE has
+  implemented models; other catalogues explicitly have no launch links.
+  ICE offers all four connected model views via allowlisted `?view=` values
+  (`fuel`, `idle`, `cooling`, `startRun`), plus the complete overview.
+  Selection affects presentation only; the solver and 3D scene remain shared,
+  OFF and paused until Run. Invalid view values fall back to Overview.
+  Existing direct engine bookmarks still work; navigation always starts with
+  system selection and simulation breadcrumbs return to the ICE catalogue.
 - Access: existing active Administrator, Lecturer and Student roles, with the
   existing first-login password-change and suspension controls intact.
 - Layout: `templates/base.html`, existing Bootstrap controls, panels, colours,

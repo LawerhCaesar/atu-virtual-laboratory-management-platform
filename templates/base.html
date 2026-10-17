@@ -20,7 +20,7 @@
         {% if user.is_authenticated %}
           <a class="nav-link text-white" href="{% url 'core:dashboard' %}">Dashboard</a>
           {% if user.is_platform_active %}
-            <a class="nav-link text-white" href="{% url 'core:engine_live_data' %}">Engine live data</a>
+            <a class="nav-link text-white" href="{% url 'core:laboratory' %}">Virtual laboratory</a>
           {% endif %}
           <a class="nav-link text-white" href="{% url 'core:notification_list' %}">Notifications{% if unread_notification_count %} <span class="badge text-bg-warning">{{ unread_notification_count }}</span>{% endif %}</a>
           <span class="text-white-50 d-none d-md-inline">{{ user.full_name }}</span>

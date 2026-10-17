@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import DatabaseError, connection, transaction
 from django.db.models import Count, Q
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -21,10 +21,26 @@ from apps.practicals.models import ApprovedResource, Assessment, PracticalSubmis
 from .forms import AdministratorNoticeForm, PlatformSettingsForm, SupportRequestForm, SupportResponseForm
 from .models import AdministratorNotice, Notification, PlatformSettings, SupportRequest, is_internal_link
 from .services import cancel_notice, notice_recipients, notify, send_notice
+from .laboratory import ICE_MODELS, SYSTEMS
 
 
 def home(request):
-    return render(request, "core/home.html")
+    return render(request, "core/home.html", {"systems": SYSTEMS})
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def laboratory(request):
+    return render(request, "core/laboratory.html", {"systems": SYSTEMS})
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def laboratory_system(request, system_slug):
+    system = next((item for item in SYSTEMS if item["slug"] == system_slug), None)
+    if system is None:
+        raise Http404("Unknown laboratory system")
+    return render(request, "core/laboratory_system.html", {
+        "system": system, "models": ICE_MODELS if system_slug == "ice" else (),
+    })
 
 
 @never_cache
@@ -42,7 +58,11 @@ def readiness(request):
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def engine_live_data(request):
-    return render(request, "core/engine_live_data.html")
+    requested_view = request.GET.get("view", "overview")
+    allowed_views = {model["key"] for model in ICE_MODELS}
+    return render(request, "core/engine_live_data.html", {
+        "initial_view": requested_view if requested_view in allowed_views else "overview",
+    })
 
 
 @login_required
