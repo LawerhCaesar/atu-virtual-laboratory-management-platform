@@ -34,8 +34,13 @@ def test_system_catalogues_are_scoped_to_system(client, role):
         assert environment.status_code == 200
         assert system["name"].encode() in environment.content
         if system["slug"] == "ice":
+            assert len(ICE_MODELS) == 1
             for model in ICE_MODELS:
-                assert f'?view={model["key"]}'.encode() in environment.content
+                assert model["title"].encode() in environment.content
+                assert reverse(model["route_name"]).encode() in environment.content
+            assert b"?view=" not in environment.content
+            assert b"4 learning models" not in response.content
+            assert b"1 simulation model available" in response.content
         else:
             assert b"No simulations added yet" in environment.content
             assert b"Scope for future models" not in environment.content

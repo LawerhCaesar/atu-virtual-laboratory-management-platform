@@ -17,8 +17,8 @@ def open_engine(page, demo_records, live_server):
     expect(page).to_have_url(live_server.url + "/dashboard/")
     page.get_by_role("link", name="Virtual laboratory", exact=True).click()
     page.get_by_role("link", name="Enter ICE environment", exact=True).click()
-    page.get_by_role("link", name="Open complete engine simulation", exact=True).click()
-    expect(page.get_by_role("heading", name="Engine Live-Data Demonstration", exact=True)).to_be_visible()
+    page.get_by_role("link", name="Open Engine Live Data Demonstration", exact=True).click()
+    expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_be_visible()
     expect(page.locator("#engine-tabs button")).to_have_count(5)
 
 

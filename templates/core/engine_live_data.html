@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Engine Live-Data Demonstration · ATU Virtual Laboratory{% endblock %}
+{% block title %}{{ model_name }} · ATU Virtual Laboratory{% endblock %}
 {% block body_class %}engine-page{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/engine-live-data.css' %}">
@@ -8,7 +8,7 @@
 <section id="engine-demo" aria-labelledby="engine-title" data-initial-view="{{ initial_view }}">
   <nav aria-label="Laboratory navigation" class="small mb-2"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'ice' %}">ICE environment</a> / <span aria-current="page">Simulation</span></nav>
   <div class="page-heading">
-    <div><p class="eyebrow lab-simulation-label">ICE laboratory · Step 3 of 3</p><h1 id="engine-title">Engine Live-Data Demonstration</h1>
+    <div><p class="eyebrow lab-simulation-label">ICE laboratory · Step 3 of 3</p><h1 id="engine-title">{{ model_name }}</h1>
       <p class="text-secondary mb-0">Change virtual sensor inputs to explore ECU calculations, actuator commands and engine operating states.</p></div>
     <a href="{% url 'core:laboratory_system' 'ice' %}" class="btn btn-outline-secondary">Back to ICE models</a>
   </div>

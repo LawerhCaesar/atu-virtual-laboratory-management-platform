@@ -1,4 +1,4 @@
-# Engine Live-Data Demonstration integration
+# Engine Live Data Demonstration integration
 
 Specification: the supplied `Engine_Live_Data_Codex_Virtual_Platform_Package`,
 revision 2026-10-12. Implementation date: 15 October 2026.
@@ -17,8 +17,10 @@ dependency, frontend framework, API or deployment.
   enter its branded catalogue at `/virtual-lab/systems/<slug>/`. Only ICE has
   implemented models; other catalogues contain just an empty-state message,
   with no speculative/future model listings or launch links.
-  ICE offers all four connected model views via allowlisted `?view=` values
-  (`fuel`, `idle`, `cooling`, `startRun`), plus the complete overview.
+  ICE lists exactly one model, **Engine Live Data Demonstration**. Its four
+  learning sections remain inside the simulation, alongside Overview.
+  Legacy deep links still accept allowlisted `?view=` values (`fuel`, `idle`,
+  `cooling`, `startRun`); these do not create separate model entries.
   Selection affects presentation only; the solver and 3D scene remain shared,
   OFF and paused until Run. Invalid view values fall back to Overview.
   Existing direct engine bookmarks still work; navigation always starts with

@@ -18,9 +18,10 @@ SYSTEMS = (
      "description": "The Vehicle Dynamics laboratory environment."},
 )
 
+ENGINE_MODEL_NAME = "Engine Live Data Demonstration"
+ENGINE_VIEW_KEYS = frozenset({"fuel", "idle", "cooling", "startRun"})
+
 ICE_MODELS = (
-    {"key": "fuel", "title": "Fuel and injection", "description": "Oxygen feedback, fuel correction and injector pulse width."},
-    {"key": "idle", "title": "Idle and ignition", "description": "Target idle, RPM error and commanded ignition timing."},
-    {"key": "cooling", "title": "Cooling", "description": "Virtual temperature sensors, fan duty and electric-water-pump duty."},
-    {"key": "startRun", "title": "Start and run", "description": "Authorisation, priming, cranking, running and shutdown."},
+    {"title": ENGINE_MODEL_NAME, "route_name": "core:engine_live_data",
+     "description": "Explore fuel and injection, idle and ignition, cooling, and start/run relationships in one simulation with an embedded 3D engine."},
 )

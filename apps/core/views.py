@@ -21,7 +21,7 @@ from apps.practicals.models import ApprovedResource, Assessment, PracticalSubmis
 from .forms import AdministratorNoticeForm, PlatformSettingsForm, SupportRequestForm, SupportResponseForm
 from .models import AdministratorNotice, Notification, PlatformSettings, SupportRequest, is_internal_link
 from .services import cancel_notice, notice_recipients, notify, send_notice
-from .laboratory import ICE_MODELS, SYSTEMS
+from .laboratory import ENGINE_MODEL_NAME, ENGINE_VIEW_KEYS, ICE_MODELS, SYSTEMS
 
 
 def home(request):
@@ -59,9 +59,9 @@ def readiness(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def engine_live_data(request):
     requested_view = request.GET.get("view", "overview")
-    allowed_views = {model["key"] for model in ICE_MODELS}
     return render(request, "core/engine_live_data.html", {
-        "initial_view": requested_view if requested_view in allowed_views else "overview",
+        "initial_view": requested_view if requested_view in ENGINE_VIEW_KEYS else "overview",
+        "model_name": ENGINE_MODEL_NAME,
     })
 
 

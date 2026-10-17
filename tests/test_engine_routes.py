@@ -30,7 +30,7 @@ def test_active_academic_roles_can_open_engine_page(client, role):
     client.force_login(user)
     response = client.get(reverse("core:engine_live_data"))
     assert response.status_code == 200
-    assert b"Engine Live-Data Demonstration" in response.content
+    assert b"Engine Live Data Demonstration" in response.content
     assert b"physical 1NZ setup has no electric water pump" in response.content
     assert response.content.index(b'id="engine-cutaway"') < response.content.index(b'id="engine-input-title"')
 
