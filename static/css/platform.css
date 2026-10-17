@@ -4,6 +4,10 @@
   --atu-gold: #e8c568;
   --atu-ink: #152238;
   --atu-mist: #f4f7fb;
+  --bs-link-color: #2857b5;
+  --bs-link-color-rgb: 40, 87, 181;
+  --bs-link-hover-color: #172e52;
+  --bs-link-hover-color-rgb: 23, 46, 82;
 }
 
 html, body { min-height: 100%; }
@@ -103,7 +107,7 @@ a.dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem r
 .atu-form-field select,
 .atu-form-field textarea { display: block; box-sizing: border-box; width: 100%; max-width: 100%; padding: .6rem .75rem; border: 1px solid #abb8c6; border-radius: .45rem; }
 .atu-form-field textarea { min-height: 8rem; resize: vertical; }
-.btn-primary { background: var(--atu-blue); border-color: var(--atu-blue); }
+.btn-primary { background-color: var(--atu-navy); border-color: var(--atu-navy); }
 .text-break { overflow-wrap: anywhere; }
 @media (max-width: 575px) {
   .platform-nav .container { align-items: flex-start; }
