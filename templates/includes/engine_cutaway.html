@@ -1,0 +1,30 @@
+<section class="content-panel engine-embedded mt-3" id="engine-cutaway" aria-labelledby="cutaway-title">
+  <h2 class="h4" id="cutaway-title">Interactive 3D engine cutaway</h2>
+  <p class="small text-secondary" id="cutaway-description">Embedded educational engine—not a calibrated Toyota model or a vehicle/hardware control system. RPM is an input, not a performance prediction.</p>
+  <div class="d-flex gap-2 flex-wrap mb-2">
+    <button class="btn btn-sm btn-outline-primary" type="button" id="cutaway-load" hidden>Load 3D engine</button>
+    <button class="btn btn-sm btn-outline-secondary" type="button" id="cutaway-unload" hidden>Close 3D view</button>
+  </div>
+  <p class="small" id="cutaway-status" role="status">Loading the embedded 3D engine. Calculations remain available while it loads.</p>
+  <div id="cutaway-workspace">
+    <div class="cutaway-viewport" id="cutaway-viewport"><p class="cutaway-loading">The engine will appear here automatically. It starts paused.</p></div>
+    <div class="cutaway-controls mt-3">
+      <div><label for="cutaway-speed" class="form-label">Visual playback scale</label><select class="form-select form-select-sm" id="cutaway-speed"><option value="0.02">0.02× · slow motion</option><option value="0.1">0.1× · slow motion</option><option value="1">1× · real-time rate</option></select></div>
+      <label><input type="checkbox" id="cutaway-animate" checked> Animate motion</label>
+      <label><input type="checkbox" id="cutaway-effects" checked> Illustrative flow effects</label>
+      <label><input type="checkbox" id="cutaway-casing" checked> Transparent casing</label>
+    </div>
+    <p class="small text-secondary">Playback changes only the illustration—not simulation time, calculations or CSV. At high RPM, screen sampling can make real-time rotation appear stationary or reversed; use slow motion.</p>
+    <div class="cutaway-legend" aria-label="Illustrative stroke colours"><span style="--stroke-color:#326fbc">Intake</span><span style="--stroke-color:#b88d35">Compression</span><span style="--stroke-color:#bc673a">Power</span><span style="--stroke-color:#75808a">Exhaust</span></div>
+    <p class="small text-secondary mt-2">Gas colours, moving flow markers and fan rotation are qualitative teaching effects—not calculated combustion, fuel spray, coolant flow or fan RPM. No flashing flame effects are used.</p>
+    <div class="d-flex flex-wrap gap-2 mt-2" role="group" aria-label="3D camera controls">
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="cutaway-left">Rotate left</button><button type="button" class="btn btn-sm btn-outline-secondary" id="cutaway-right">Rotate right</button><button type="button" class="btn btn-sm btn-outline-secondary" id="cutaway-in">Zoom in</button><button type="button" class="btn btn-sm btn-outline-secondary" id="cutaway-out">Zoom out</button><button type="button" class="btn btn-sm btn-outline-secondary" id="cutaway-camera">Reset camera</button>
+    </div>
+    <p class="small text-secondary mt-2">Drag to orbit; pinch or scroll to zoom. The labelled buttons provide keyboard access.</p>
+    <dl class="cutaway-signals" id="cutaway-signals"></dl>
+    <ol class="cutaway-cylinders" id="cutaway-cylinders" aria-label="Illustrative cylinder strokes"></ol>
+    <details class="small mt-3"><summary>Component key and accuracy limits</summary>
+      <p class="mt-2">Assumed firing order 1–3–4–2, with idealised four-stroke valve timing—not Toyota geometry or validated combustion data.</p><ul><li>Silver pistons, gold connecting rods and blue crankshaft: generic slider-crank geometry, with a 0.36:1.25 crank/rod ratio in arbitrary scene units.</li><li>Green intake valves and orange exhaust valves: idealised stroke boundaries with smooth lift, no valve overlap or variable valve timing. The overhead shafts turn at half crank speed; their lobes are illustrative, not real cam profiles.</li><li>Amber injector indicators show enabled injection and commanded pulse width; injection phasing, spray flow and fuel mass are not calculated. Blue and grey moving markers show only the idealised intake/exhaust direction.</li><li>Spark indicators position the calculated ignition advance relative to an assumed firing TDC. They are not measured ignition events; high-speed playback uses a steady enabled indicator to avoid rapid flashing.</li><li>The coolant marker changes with calculated control temperature; it is not a temperature field or heat-transfer solution. Fan and virtual electric-pump readouts are duty commands; their animations use an illustrative rate, not measured RPM or flow.</li><li>The separate physical 1NZ setup has no electric water pump. No cylinder pressure, torque, power, fuel consumption or combustion accuracy is claimed.</li></ul>
+    </details>
+  </div>
+</section>

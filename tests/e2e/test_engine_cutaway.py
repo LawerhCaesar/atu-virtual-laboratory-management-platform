@@ -16,9 +16,11 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
     open_engine(page, demo_records, live_server)
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    assert not page.locator("#cutaway-viewport canvas").count()
-    page.get_by_role("button", name="Load 3D engine", exact=True).click()
     expect(page.locator("#cutaway-status")).to_contain_text("3D ready")
+    assert page.locator("#engine-demo > #engine-cutaway").count() == 1
+    assert page.locator("#engine-cutaway").evaluate("e => Boolean(e.compareDocumentPosition(document.querySelector('.engine-input-panel')) & Node.DOCUMENT_POSITION_FOLLOWING)")
+    expect(page.locator("#engine-state")).to_have_text("OFF")
+    expect(page.locator("#engine-mode")).to_have_text("Paused")
     expect(page.get_by_role("img", name="Interactive generic four-cylinder", exact=False)).to_be_visible()
     if width == 390:
         expect(page.get_by_label("Animate motion", exact=True)).not_to_be_checked()
@@ -103,9 +105,8 @@ def test_3d_cutaway_tracks_simulation_and_remains_accessible(page, demo_records,
 
 
 def test_3d_failure_does_not_break_calculations(page, demo_records, live_server):
-    open_engine(page, demo_records, live_server)
     page.route("**/cutaway.bundle.mjs", lambda route: route.abort())
-    page.get_by_role("button", name="Load 3D engine", exact=True).click()
+    open_engine(page, demo_records, live_server)
     expect(page.locator("#cutaway-status")).to_contain_text("3D is unavailable")
     expect(page.get_by_role("button", name="Load 3D engine", exact=True)).to_be_enabled()
     page.get_by_role("button", name="Cooling", exact=True).click()

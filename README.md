@@ -50,8 +50,8 @@ The authenticated **Engine live data** section implements the four supplied
 educational engine models. See [integration and acceptance coverage](docs/engine-live-data-integration.md)
 for its route, preserved equations, simulation controls and test commands.
 
-The same page offers **Load 3D engine**: an optional, locally served generic
-four-cylinder cutaway with slow motion, camera controls and live command
+The same page embeds an automatically loaded, locally served generic
+four-cylinder cutaway above the sensor inputs, with slow motion, camera controls and live command
 readouts. It illustrates the calculations; it is not a validated Toyota 1NZ
 mechanical/combustion model and does not change assessment or CSV data.
 Optional stroke/flow effects and smooth mechanism animation accompany subtle

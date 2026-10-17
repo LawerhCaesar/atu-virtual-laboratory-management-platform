@@ -7,7 +7,7 @@ if (root) initialise();
 
 function initialise() {
   const simulation = new EngineSimulation();
-  let cutaway = null, pageGone = false;
+  let cutaway = null, pageGone = false, cutawayLoading = false, cutawayClosed = false;
   const byId = id => document.getElementById(id);
   const make = (tag, text, className) => {
     const node = document.createElement(tag);
@@ -358,7 +358,9 @@ function initialise() {
     byId("cutaway-load").disabled = false;
     byId("cutaway-status").textContent = message;
   }
-  byId("cutaway-load").addEventListener("click", async () => {
+  async function loadCutaway() {
+    if (cutaway || cutawayLoading || pageGone) return;
+    cutawayLoading = true; cutawayClosed = false;
     byId("cutaway-load").disabled = true;
     byId("cutaway-status").textContent = "Loading the local 3D renderer…";
     try {
@@ -369,13 +371,15 @@ function initialise() {
       cutaway.sync(simulation.result, simulation.running);
       byId("cutaway-load").hidden = true;
       byId("cutaway-unload").hidden = false;
-      byId("cutaway-status").textContent = "3D ready. Motion follows completed virtual-time steps while Run is active; Pause freezes it. Stroke labels are illustrative, not measured engine events.";
+      byId("cutaway-status").textContent = "3D ready · embedded on this page. Starts paused; use the simulation controls below.";
     } catch {
       closeCutaway("3D is unavailable on this device or could not load. Enable WebGL 2 and retry, or continue using all calculations and graphs below.");
-    }
-  });
-  byId("cutaway-unload").addEventListener("click", () => closeCutaway());
+    } finally { cutawayLoading = false; }
+  }
+  byId("cutaway-load").addEventListener("click", loadCutaway);
+  byId("cutaway-unload").addEventListener("click", () => { cutawayClosed = true; closeCutaway(); });
   window.addEventListener("pagehide", () => { pageGone = true; pause(); closeCutaway(); });
-  window.addEventListener("pageshow", () => { pageGone = false; });
+  window.addEventListener("pageshow", event => { pageGone = false; if (event.persisted && !cutawayClosed) loadCutaway(); });
   renderStructure(); render();
+  loadCutaway();
 }

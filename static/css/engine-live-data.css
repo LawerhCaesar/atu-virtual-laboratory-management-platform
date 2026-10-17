@@ -2,6 +2,11 @@
 #engine-demo .btn { transition: transform 160ms ease, box-shadow 160ms ease; }
 .engine-input-panel { align-self: start; padding: 1.2rem; position: sticky; top: 6rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
 .engine-results { min-width: 0; }
+.engine-embedded { margin-bottom: 1.25rem; }
+.engine-embedded .cutaway-viewport { height: 420px; }
+.cutaway-loading { display: grid; place-items: center; height: 100%; margin: 0; padding: 1rem; text-align: center; color: #435467; }
+.engine-model-limits { padding: .75rem 1rem; border: 1px solid #ffe2a3; border-radius: .75rem; background: #fff9e9; }
+@media (max-width: 575px) { .engine-embedded { padding: 1rem; } .engine-embedded .cutaway-viewport { height: 320px; } }
 .cutaway-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; font-size: .85rem; }
 .cutaway-controls .form-label { margin-bottom: .25rem; }
 .cutaway-controls input { margin-right: .35rem; }

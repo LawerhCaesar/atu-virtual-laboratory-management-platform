@@ -32,6 +32,7 @@ def test_active_academic_roles_can_open_engine_page(client, role):
     assert response.status_code == 200
     assert b"Engine Live-Data Demonstration" in response.content
     assert b"physical 1NZ setup has no electric water pump" in response.content
+    assert response.content.index(b'id="engine-cutaway"') < response.content.index(b'id="engine-input-title"')
 
 
 @pytest.mark.django_db
