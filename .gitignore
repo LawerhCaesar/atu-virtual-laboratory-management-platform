@@ -12,6 +12,7 @@ playwright-report/
 test-results/
 .DS_Store
 node_modules/
+.pnpm-store/
 backups/
 deploy/tls/
 .env.production

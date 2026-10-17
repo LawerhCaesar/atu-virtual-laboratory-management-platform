@@ -2,6 +2,20 @@
 #engine-demo .btn { transition: none; }
 .engine-input-panel { align-self: start; padding: 1.2rem; position: sticky; top: 6rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
 .engine-results { min-width: 0; }
+.cutaway-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; font-size: .85rem; }
+.cutaway-controls .form-label { margin-bottom: .25rem; }
+.cutaway-controls input { margin-right: .35rem; }
+.cutaway-viewport { height: 370px; position: relative; overflow: hidden; border: 1px solid #dce4ed; border-radius: .8rem; background: #eef3fa; touch-action: pan-y; }
+.cutaway-viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.cutaway-tag { position: absolute; transform: translate(-50%, -50%); pointer-events: none; color: #fff; background: #172e52; padding: .15rem .35rem; border-radius: .3rem; font-size: .7rem; }
+.cutaway-signals { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: 1rem 0; }
+.cutaway-signals > div { background: var(--atu-mist); border-radius: .5rem; padding: .65rem; }
+.cutaway-signals dt { font-size: .75rem; color: #435467; font-weight: 500; }
+.cutaway-signals dd { margin: .2rem 0 0; font-size: .9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cutaway-cylinders { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; padding: 0; list-style: none; font-size: .8rem; }
+.cutaway-cylinders li { border-top: 3px solid #536273; padding-top: .4rem; }
+.cutaway-cylinders strong, .cutaway-cylinders span { display: block; }
+@media (max-width: 575px) { .cutaway-viewport { height: 290px; } .cutaway-cylinders { grid-template-columns: repeat(2, 1fr); } }
 .engine-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; position: sticky; top: 0; z-index: 10; background: white; }
 .engine-input-group { border: 0; border-top: 1px solid #dce4ed; margin: 1rem 0 0; padding: 1rem 0 0; min-width: 0; }
 .engine-input-group legend { float: none; width: auto; font-size: 1rem; font-weight: 700; }

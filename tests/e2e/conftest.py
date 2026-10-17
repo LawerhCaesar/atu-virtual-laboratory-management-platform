@@ -45,6 +45,9 @@ def browser(django_db_setup):
     try:
         with sync_playwright() as playwright:
             options = {"headless": True}
+            # Deterministic software WebGL for the optional cutaway in headless CI.
+            # These flags apply only to this disposable test browser.
+            options["args"] = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]
             if os.getenv("ATU_BROWSER_CHANNEL"):
                 options["channel"] = os.environ["ATU_BROWSER_CHANNEL"]
             instance = playwright.chromium.launch(**options)

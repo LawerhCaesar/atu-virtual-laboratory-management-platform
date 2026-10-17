@@ -5,6 +5,7 @@
 __pycache__
 *.pyc
 node_modules
+.pnpm-store
 media
 staticfiles
 backups

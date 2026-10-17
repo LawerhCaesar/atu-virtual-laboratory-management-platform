@@ -1,4 +1,4 @@
-import { EngineSimulation } from "./controller.mjs";
+import { EngineSimulation, STEP } from "./controller.mjs";
 import { SPEC } from "./spec.mjs";
 import { ENGINE_STATE_LABELS, describeCurrentRelationship } from "./model.mjs";
 
@@ -7,6 +7,7 @@ if (root) initialise();
 
 function initialise() {
   const simulation = new EngineSimulation();
+  let cutaway = null, pageGone = false;
   const byId = id => document.getElementById(id);
   const make = (tag, text, className) => {
     const node = document.createElement(tag);
@@ -302,12 +303,16 @@ function initialise() {
     root.querySelectorAll("[data-explanation]").forEach(node => { node.textContent = sentences[node.dataset.explanation]; });
     if (activeView !== "overview") byId("engine-explanation").textContent = sentences[activeView];
     drawChart();
+    cutaway?.sync(simulation.result, simulation.running);
   }
   function pause() { clearInterval(interval); interval = null; simulation.running = false; render(); }
   byId("engine-run").addEventListener("click", () => {
     if (interval !== null) return;
     simulation.running = true;
-    interval = setInterval(() => { for (let i = 0; i < 4; i++) simulation.step(); render(); }, 200);
+    interval = setInterval(() => {
+      for (let i = 0; i < 4; i++) { simulation.step(); cutaway?.advance(simulation.result, STEP); }
+      render();
+    }, 200);
     render();
   });
   byId("engine-toggle-inputs").addEventListener("click", () => {
@@ -319,6 +324,7 @@ function initialise() {
   byId("engine-pause").addEventListener("click", pause);
   byId("engine-reset").addEventListener("click", () => {
     pause(); simulation.reset();
+    cutaway?.reset();
     for (const [name, control] of Object.entries(inputs)) if (control.number) control.number.value = simulation.rawInputs[name];
     render();
   });
@@ -336,6 +342,32 @@ function initialise() {
     document.body.append(anchor); anchor.click(); anchor.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
-  window.addEventListener("pagehide", pause);
+  function closeCutaway(message = "3D view closed. Calculations and graphs are unchanged.") {
+    cutaway?.dispose(); cutaway = null;
+    byId("cutaway-workspace").hidden = true;
+    byId("cutaway-unload").hidden = true;
+    byId("cutaway-load").hidden = false;
+    byId("cutaway-load").disabled = false;
+    byId("cutaway-status").textContent = message;
+  }
+  byId("cutaway-load").addEventListener("click", async () => {
+    byId("cutaway-load").disabled = true;
+    byId("cutaway-status").textContent = "Loading the local 3D renderer…";
+    try {
+      const { createCutaway } = await import("./cutaway.bundle.mjs");
+      if (pageGone) return;
+      byId("cutaway-workspace").hidden = false;
+      cutaway = createCutaway(root, simulation.result, () => closeCutaway("3D graphics context was lost. You can retry Load 3D engine; calculations and graphs remain available."));
+      cutaway.sync(simulation.result, simulation.running);
+      byId("cutaway-load").hidden = true;
+      byId("cutaway-unload").hidden = false;
+      byId("cutaway-status").textContent = "3D ready. Motion follows completed virtual-time steps while Run is active; Pause freezes it. Stroke labels are illustrative, not measured engine events.";
+    } catch {
+      closeCutaway("3D is unavailable on this device or could not load. Enable WebGL 2 and retry, or continue using all calculations and graphs below.");
+    }
+  });
+  byId("cutaway-unload").addEventListener("click", () => closeCutaway());
+  window.addEventListener("pagehide", () => { pageGone = true; pause(); closeCutaway(); });
+  window.addEventListener("pageshow", () => { pageGone = false; });
   renderStructure(); render();
 }

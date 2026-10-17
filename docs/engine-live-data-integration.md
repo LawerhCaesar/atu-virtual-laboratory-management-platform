@@ -38,6 +38,44 @@ dependency, frontend framework, API or deployment.
 The static modules load with the authenticated page; calculations then run
 without MATLAB, hardware access or network calculation requests.
 
+## Optional 3D cutaway (17 October 2026)
+
+Choose **Load 3D engine** on the simulation page. The on-demand WebGL 2 view
+uses a locally bundled Three.js renderer, no CDN, external model or new backend.
+`frontend/engine-cutaway.mjs` is the editable renderer source;
+`static/js/engine-live-data/kinematics.mjs` contains testable presentation-only
+geometry. `node scripts/sync_assets.mjs` reproducibly builds the checked-in
+`cutaway.bundle.mjs` and copies the Three.js licence. Render serves that bundle
+without requiring Node at runtime. Dependencies are pinned in the lockfile;
+package install scripts are disabled. CI checks bundle reproducibility.
+
+Motion advances only on completed 0.05-second simulation steps, using the
+student-selected RPM during CRANK/RUN. Run/Pause, Reset and emergency stop share
+the existing model controls. Slow-motion scaling affects only visual crank
+phase, never solver time, input values, recorded history or CSV. Smooth drawing
+interpolates the visual angle between updates; it is not an extra solver.
+Turning off animation freezes the illustrative phase. Reduced-motion users
+start with motion disabled. Graphics failure/context loss leaves the existing
+calculations and graphs available. Closing the view releases GPU resources.
+
+This is a **generic educational mechanism, not an accurate 1NZ digital twin**:
+arbitrary scene geometry (crank radius 0.36, rod length 1.25), assumed firing
+order 1–3–4–2 and idealised stroke-boundary valves without overlap or VVT.
+Piston motion uses the slider-crank equation and preserves rod length. Cylinder
+zero is firing TDC; power/exhaust/intake/compression each occupy 180 crank
+degrees. Spark indicators apply the calculated advance to that assumed cycle.
+Injection indicators show enable and pulse-width magnitude; no measured
+injection phase, flow or spray is implied. The coolant marker is a temperature
+indicator, not a thermal field. Fan/virtual-pump readouts are duty commands,
+not measured RPM or fluid flow. No torque, combustion pressure, power, fuel
+consumption or physical validation is claimed. High-speed screen aliasing is
+explicitly disclosed; default playback is 0.02×.
+
+Tests cover dead centres, connecting-rod length, stroke/firing-order mapping,
+spark gating/advance, motion gating/scaling, unchanged model/CSV, desktop/mobile
+WebGL interaction, pause/reset/emergency stop, reduced motion, keyboard camera
+controls, local asset failure, context loss and accessible text alternatives.
+
 ## Reference UI alignment (17 October 2026)
 
 The existing Django interface now follows the supplied reference site's navy,
