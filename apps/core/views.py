@@ -73,6 +73,7 @@ def readiness(request):
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def engine_live_data(request):
+    """Retained for restoration; deliberately not registered in the URL configuration."""
     requested_view = request.GET.get("view", "overview")
     return render(request, "core/engine_live_data.html", {
         "initial_view": requested_view if requested_view in ENGINE_VIEW_KEYS else "overview",

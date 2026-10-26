@@ -16,7 +16,8 @@ def open_fuel(page, demo_records, live_server):
     page.get_by_role("button", name="Sign in", exact=True).click()
     page.get_by_role("link", name="Virtual laboratory", exact=True).click()
     page.get_by_role("link", name="Enter ICE environment", exact=True).click()
-    expect(page.locator(".lab-model-grid article")).to_have_count(2)
+    expect(page.locator(".lab-model-grid article")).to_have_count(1)
+    expect(page.get_by_role("link", name="Open Engine Live Data Demonstration", exact=True)).to_have_count(0)
     page.get_by_role("link", name="Open Fuel Delivery Optimisation", exact=True).click()
     expect(page.get_by_role("heading", name="Fuel Delivery Optimisation", exact=True)).to_be_visible()
     expect(page.locator("#fuel-kpis [data-fuel-output]")).to_have_count(14)
@@ -65,7 +66,7 @@ def test_fuel_defaults_deterministic_time_export_and_comparison(page, demo_recor
     expect(page.locator("#fuel-comparison")).not_to_be_visible()
 
 
-def test_fuel_feedback_motion_pause_validation_and_independent_engine(page, demo_records, live_server):
+def test_fuel_feedback_motion_pause_validation_and_fresh_navigation(page, demo_records, live_server):
     open_fuel(page, demo_records, live_server)
     page.clock.install()
     page.get_by_label("Measured lambda (ratio)", exact=True).fill("1.05")
@@ -102,9 +103,12 @@ def test_fuel_feedback_motion_pause_validation_and_independent_engine(page, demo
     page.get_by_role("button",name="Injector",exact=True).click()
     expect(page.locator("#fuel-component-explanation")).to_contain_text("dead time")
     page.get_by_role("link",name="Back to ICE models",exact=True).click()
-    page.get_by_role("link",name="Open Engine Live Data Demonstration",exact=True).click()
-    expect(page.locator("#engine-state")).to_have_text("OFF")
-    expect(page.locator("#engine-time")).to_have_text("0.00")
+    expect(page.locator(".lab-model-grid article")).to_have_count(1)
+    expect(page.get_by_role("link",name="Open Engine Live Data Demonstration",exact=True)).to_have_count(0)
+    page.get_by_role("link",name="Open Fuel Delivery Optimisation",exact=True).click()
+    expect(page.locator("#fuel-mode")).to_have_text("Paused")
+    expect(page.locator("#fuel-time")).to_have_text("0.00")
+    expect(output(page,"cumulativeFuelG")).to_have_text("0.000")
 
 
 @pytest.mark.parametrize("width", [1280, 390])

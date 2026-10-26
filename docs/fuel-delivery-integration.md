@@ -1,8 +1,11 @@
 # Fuel Delivery Optimisation integration
 
-Fuel Delivery Optimisation is the second model under ICE. Engine Live Data
-Demonstration and its calculation, controller, template, 3D assets and tests
-are not changed by this addition.
+Fuel Delivery Optimisation is currently the only active model under ICE.
+It was originally added as the second model without changing Engine Live Data
+Demonstration. That module was subsequently withdrawn on 26 October 2026;
+its source and assets are retained but its catalogue entry and route are removed.
+The withdrawal does not change Fuel Delivery Optimisation's inputs, equations,
+visualisation, controls or exports.
 
 ## Entry and access
 

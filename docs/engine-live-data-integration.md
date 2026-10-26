@@ -1,5 +1,31 @@
 # Engine Live Data Demonstration integration
 
+## Current status: temporarily withdrawn (26 October 2026)
+
+The module is no longer listed in ICE and its URL is not registered. Requests
+to `/virtual-lab/engine-live-data/`, including old `?view=` bookmarks, return 404
+for every role and unauthenticated visitors. Fuel Delivery Optimisation remains
+the only active ICE simulation. No coursework, submissions or uploaded files
+were deleted.
+
+The view, templates, calculation modules, controller and 3D assets are retained
+unchanged for restoration. The unfinished UI restyling was not included. Pure
+model/controller/kinematics checks still run; the two engine browser-test modules
+are explicitly skipped while the page is withdrawn. New route/catalogue tests
+assert that the withdrawn module cannot be opened or launched.
+
+Withdrawal verification: 191 non-browser tests passed, plus seven Fuel Delivery
+and system-navigation browser checks at desktop/mobile widths. The eight archived
+engine browser cases are skipped explicitly. Django checks pass and no database
+migration is required.
+
+To restore later, re-register `core:engine_live_data`, add its entry to
+`ICE_MODELS`, remove the explicit engine UI-test skips and update withdrawal
+assertions/documentation before running the full model and browser suites.
+
+The remaining sections are the historical implementation record, not a
+description of currently available navigation or routes.
+
 Specification: the supplied `Engine_Live_Data_Codex_Virtual_Platform_Package`,
 revision 2026-10-12. Implementation date: 15 October 2026.
 

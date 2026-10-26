@@ -10,7 +10,6 @@ urlpatterns = [
     path("learning/fact/", views.learning_fact, name="learning_fact"),
     path("virtual-lab/", views.laboratory, name="laboratory"),
     path("virtual-lab/systems/<slug:system_slug>/", views.laboratory_system, name="laboratory_system"),
-    path("virtual-lab/engine-live-data/", views.engine_live_data, name="engine_live_data"),
     path("health/ready/", views.readiness, name="readiness"),
     path("", views.home, name="home"),
     path("dashboard/", views.dashboard, name="dashboard"),

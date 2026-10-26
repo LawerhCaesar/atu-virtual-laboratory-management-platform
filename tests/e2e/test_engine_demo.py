@@ -6,7 +6,11 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import expect
 
-pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
+pytestmark = [
+    pytest.mark.e2e,
+    pytest.mark.django_db(transaction=True),
+    pytest.mark.skip(reason="Engine Live Data Demonstration is temporarily withdrawn; UI coverage retained for restoration."),
+]
 
 
 def open_engine(page, demo_records, live_server):

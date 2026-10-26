@@ -6,7 +6,11 @@ from playwright.sync_api import expect
 
 from tests.e2e.test_engine_demo import open_engine
 
-pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
+pytestmark = [
+    pytest.mark.e2e,
+    pytest.mark.django_db(transaction=True),
+    pytest.mark.skip(reason="Engine Live Data Demonstration is temporarily withdrawn; UI coverage retained for restoration."),
+]
 
 
 @pytest.mark.parametrize("width", [1280, 390])

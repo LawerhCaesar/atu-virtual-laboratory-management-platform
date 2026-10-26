@@ -62,25 +62,20 @@ and failure recovery without third-party calls.
 
 The authenticated **Virtual laboratory** entrance at `/virtual-lab/` starts
 with a choice of ICE, BEV, FCEV, Hybrid (HEV) and Vehicle Dynamics (VD).
-Each system has a separately branded model catalogue. ICE has two configured
-simulations: **Engine Live Data Demonstration**, containing four
-learning sections (fuel/injection, idle/ignition, cooling and start/run).
-These are sections of one model, not four separate catalogue entries.
-The second model, **Fuel Delivery Optimisation**, has its own inputs, animated
+Each system has a separately branded model catalogue. ICE currently has one
+active simulation: **Fuel Delivery Optimisation**, with its own inputs, animated
 fuel-path schematic, deterministic fuel-trim/consumption calculations, plots,
 baseline comparison and exports. See [fuel-delivery integration and source
 verification](docs/fuel-delivery-integration.md).
 The other environments have no simulations added, with no speculative model
 entries or launch links.
-See [integration and acceptance coverage](docs/engine-live-data-integration.md)
-for its route, preserved equations, simulation controls and test commands.
 
-The same page embeds an automatically loaded, locally served generic
-four-cylinder cutaway above the sensor inputs, with slow motion, camera controls and live command
-readouts. It illustrates the calculations; it is not a validated Toyota 1NZ
-mechanical/combustion model and does not change assessment or CSV data.
-Optional stroke/flow effects and smooth mechanism animation accompany subtle
-interface transitions; reduced-motion preferences are respected throughout.
+**Engine Live Data Demonstration is temporarily withdrawn.** It is absent
+from the catalogue and its former `/virtual-lab/engine-live-data/` route,
+including `?view=` bookmarks, returns 404. Its source, equations, templates,
+3D assets and historical UI tests are retained for possible restoration;
+the pure model/controller tests still run. See the [archived integration and
+restoration notes](docs/engine-live-data-integration.md).
 
 For online QA using Render and Supabase, see [Render staging deployment](docs/render-staging.md).
 
