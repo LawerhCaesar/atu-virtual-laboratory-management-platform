@@ -1,0 +1,49 @@
+.fuel-toolbar { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; border-top: 4px solid #91411c; }
+.fuel-scenario { display: flex; gap: .5rem; align-items: end; flex-wrap: wrap; }
+.fuel-scenario label { width: 100%; }
+.fuel-scenario select { width: auto; max-width: 100%; }
+.fuel-clock { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; width: 100%; font-variant-numeric: tabular-nums; }
+#fuel-mode { color: #91411c; font-weight: 700; }
+.fuel-workbench { display: grid; grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.fuel-input-panel { padding: 1.25rem; max-height: 90vh; overflow: auto; position: sticky; top: 1rem; }
+.fuel-output-area { min-width: 0; }
+.fuel-input-panel fieldset { border-top: 1px solid #d5deea; padding-top: 1rem; margin-top: 1rem; min-width: 0; }
+.fuel-input-panel legend { float: none; font-size: 1rem; font-weight: 700; }
+.fuel-input { margin: .75rem 0 1.25rem; }
+.fuel-input label { font-size: .85rem; font-weight: 600; }
+.fuel-input small { font-size: .75rem; color: #536273; display: block; }
+.fuel-number { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: .35rem; margin-top: .3rem; }
+.fuel-number .btn { padding: .3rem; }
+.fuel-number input { min-width: 0; text-align: center; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.fuel-delivery-page .btn, .fuel-number input, .fuel-delivery-page .form-select { min-height: 44px; }
+.fuel-input .form-range { min-height: 44px; margin-top: .25rem; }
+.fuel-field-error { color: #a1271c !important; min-height: 1rem; }
+.fuel-visual { border-top: 4px solid #91411c; }
+#fuel-schematic { width: 100%; display: block; background: radial-gradient(ellipse at 70% 30%, #28496c, #10213d); border-radius: .9rem; margin-top: 1rem; }
+.fuel-svg-label { fill: #e3eaf4; font: 13px system-ui, sans-serif; letter-spacing: .02em; }
+.fuel-svg-value { fill: #f4d482; font: bold 23px system-ui, sans-serif; }
+.fuel-mixture { align-self: start; padding: .4rem .75rem; background: #e6f6ed; color: #126445; border-radius: 2rem; font-weight: 700; font-size: .8rem; }
+.fuel-mixture[data-mixture="rich"] { background: #fff0d9; color: #854000; }
+.fuel-mixture[data-mixture="lean"] { background: #e6f1ff; color: #204f91; }
+.fuel-component-buttons { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+.fuel-component-buttons [aria-pressed="true"] { color: white; background: #172e52; }
+.fuel-gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: .8rem; }
+.fuel-gauges progress { display: block; width: 100%; height: 1rem; accent-color: #91411c; }
+.fuel-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.fuel-kpis > div { padding: .8rem; background: #f4f7fb; border: 1px solid #dde5ee; border-radius: .6rem; }
+.fuel-kpis dt { font-size: .75rem; font-weight: 500; color: #536273; }
+.fuel-kpis dd { margin: .35rem 0 0; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fuel-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.fuel-charts figure { border: 1px solid #d5deea; border-radius: .7rem; padding: .8rem; min-width: 0; margin: 0; }
+.fuel-charts figcaption { font-weight: 600; }
+.fuel-charts svg { width: 100%; display: block; }
+.fuel-charts svg text { font: 12px system-ui, sans-serif; fill: #435467; }
+.fuel-legend { font-size: .75rem; margin-bottom: .25rem; }
+.fuel-legend span { display: inline-block; margin-right: 1rem; }
+.fuel-table-scroll { overflow-x: auto; }
+.fuel-compare-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem 0; }
+.fuel-compare-bars progress { width: 100%; height: 1.5rem; accent-color: #91411c; display: block; }
+#fuel-input-title, #fuel-analysis-title { scroll-margin-top: 1rem; }
+@media (max-width: 991px) { .fuel-workbench { grid-template-columns: 1fr; } .fuel-output-area { grid-row: 1; } .fuel-input-panel { position: static; max-height: none; } #fuel-input-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } }
+@media (max-width: 575px) { .fuel-kpis, .fuel-gauges, .fuel-charts, #fuel-input-fields { grid-template-columns: minmax(0, 1fr); } .fuel-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .fuel-visual, .fuel-output-area .content-panel { padding: 1rem; } .fuel-scenario select { width: 100%; } }
+.fuel-delivery-page [hidden] { display: none !important; }

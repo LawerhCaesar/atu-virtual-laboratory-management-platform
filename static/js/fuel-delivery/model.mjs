@@ -1,0 +1,131 @@
+/** Deterministic translation of the supplied Fuel Delivery implementation script.
+ * Educational relationships only; no hardware control or OEM calibration.
+ * @typedef {{simulationTimeS:number, ltftPct:number, ltftIntegralPct:number, cumulativeFuelG:number}} FuelState
+ * @typedef {Record<string, number|boolean>} FuelInputs
+ */
+export const MODULE_ID = "fuel-delivery-optimisation";
+export const MODULE_VERSION = "1.0.0";
+export const CONSTANTS = Object.freeze({cylinderCount: 4, stoichiometricAfr: 14.7,
+  fuelDensityGPerCc: 0.745, referenceRailPressureKPa: 300, defaultDurationS: 30, defaultTimeStepS: 0.1});
+// Bounds are classroom guidance, not silently applied input caps.
+export const FIELDS = [
+  ["engineSpeedRpm", "Engine speed", "rpm", 2500, 600, 6000, 50, "Engine operating condition"],
+  ["engineLoadPct", "Engine load", "%", 35, 0, 100, 1, "Engine operating condition"],
+  ["airFlowGps", "Air flow", "g/s", 25, 2, 200, 0.1, "Engine operating condition"],
+  ["coolantTempC", "Coolant temperature", "°C", 90, -10, 110, 1, "Engine operating condition"],
+  ["brakeTorqueNm", "Brake torque", "N m", 80, 0, 300, 1, "Engine operating condition"],
+  ["targetLambda", "Target lambda", "ratio", 1, 0.85, 1.10, 0.01, "Mixture and feedback"],
+  ["measuredLambda", "Measured lambda", "ratio", 1, 0.8, 1.2, 0.01, "Mixture and feedback"],
+  ["closedLoopEnabled", "Closed-loop fuel control", "", true, 0, 1, 1, "Mixture and feedback"],
+  ["ltftLearningGainPerS", "LTFT learning gain", "1/s", 0.003, 0, 0.01, 0.001, "Mixture and feedback"],
+  ["fuelRailPressureKPa", "Fuel-rail pressure", "kPa", 300, 200, 400, 1, "Injector and fuel system"],
+  ["batteryVoltageV", "Battery voltage", "V", 14, 10, 15, 0.1, "Injector and fuel system"],
+  ["injectorRatedFlowCcMin", "Injector rated flow", "cc/min", 220, 150, 500, 1, "Injector and fuel system"],
+  ["injectorFlowBiasPct", "Injector flow bias", "%", 0, -20, 20, 1, "Injector and fuel system"],
+  ["accelerationEnrichmentPct", "Acceleration enrichment", "%", 0, 0, 30, 1, "Injector and fuel system"],
+  ["fuelOptimisationScale", "Fuel optimisation scale", "ratio", 1, 0.85, 1.05, 0.01, "Optimisation and simulation"],
+  ["simulationDurationS", "Simulation duration", "s", 30, 5, 120, 1, "Optimisation and simulation"],
+  ["timeStepS", "Calculation step", "s", 0.1, 0.02, 1, 0.02, "Advanced settings"],
+].map(([key, label, unit, value, min, max, step, group]) => ({key, label, unit, value, min, max, step, group}));
+export const DEFAULTS = Object.freeze(Object.fromEntries(FIELDS.map(f => [f.key, f.value])));
+export const PRESETS = [
+  ["Warm cruise", {}],
+  ["Idle", {engineSpeedRpm: 800, engineLoadPct: 15, airFlowGps: 4, brakeTorqueNm: 15}],
+  ["Acceleration", {engineSpeedRpm: 3500, engineLoadPct: 65, airFlowGps: 60, accelerationEnrichmentPct: 10, brakeTorqueNm: 140}],
+  ["High load", {engineSpeedRpm: 4500, engineLoadPct: 95, airFlowGps: 95, brakeTorqueNm: 200}],
+  ["Cold operation", {coolantTempC: 20}],
+  ["Lean feedback demonstration", {measuredLambda: 1.05}],
+  ["Rich feedback demonstration", {measuredLambda: 0.95}],
+];
+export const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+export const initialState = () => ({simulationTimeS: 0, ltftPct: 0, ltftIntegralPct: 0, cumulativeFuelG: 0});
+
+export function validate(input) {
+  const errors = {}, warnings = [];
+  for (const f of FIELDS) {
+    const value = input[f.key];
+    if (f.key === "closedLoopEnabled") {
+      if (typeof value !== "boolean") errors[f.key] = "Choose on or off.";
+    } else if (!Number.isFinite(value) || Math.abs(value) > 1e6) {
+      errors[f.key] = "Enter a finite number with magnitude no greater than 1,000,000.";
+    } else if (value < f.min || value > f.max) warnings.push(`${f.label} is outside the suggested ${f.min}–${f.max} ${f.unit} range.`);
+  }
+  for (const key of ["engineSpeedRpm", "airFlowGps", "targetLambda", "measuredLambda", "fuelRailPressureKPa", "injectorRatedFlowCcMin", "simulationDurationS", "timeStepS"])
+    if (input[key] <= 0) errors[key] = "Must be greater than zero.";
+  for (const key of ["engineLoadPct", "brakeTorqueNm", "ltftLearningGainPerS", "accelerationEnrichmentPct"])
+    if (input[key] < 0) errors[key] = "Must not be negative.";
+  if (input.injectorFlowBiasPct <= -100) errors.injectorFlowBiasPct = "Must be greater than −100% to deliver positive fuel.";
+  // Explicit simulation limits keep a run below 6,001 records on mobile.
+  for (const key of ["fuelOptimisationScale", "simulationDurationS", "timeStepS"]) {
+    const f = FIELDS.find(f => f.key === key);
+    if (input[key] < f.min || input[key] > f.max) errors[key] = `Use ${f.min}–${f.max} ${f.unit}.`;
+  }
+  return {valid: !Object.keys(errors).length, errors, warnings};
+}
+
+/** One source of equations for previews, time steps, plots and comparisons.
+ * @param {FuelInputs} input @param {FuelState} previous @param {number} dt
+ */
+export function evaluate(input, previous = initialState(), dt = 0) {
+  const validation = validate(input);
+  if (!validation.valid) throw new Error(Object.entries(validation.errors).map(([k, v]) => `${k}: ${v}`).join(" "));
+  if (!Number.isFinite(dt) || dt < 0 || dt > 1) throw new Error("Calculation step must be between zero (preview) and 1 s.");
+  if (![previous.simulationTimeS, previous.ltftPct, previous.cumulativeFuelG].every(Number.isFinite) || previous.simulationTimeS < 0 || previous.cumulativeFuelG < 0 || Math.abs(previous.ltftPct) > 20) throw new Error("Invalid simulation state.");
+  const previousIntegral = previous.ltftIntegralPct ?? previous.ltftPct;
+  if (!Number.isFinite(previousIntegral)) throw new Error("Invalid LTFT integrator state.");
+  const i = input, c = CONSTANTS;
+  const injectionEventsPerSecond = i.engineSpeedRpm * c.cylinderCount / 120;
+  const airMassMgPerEvent = i.airFlowGps * 1000 / injectionEventsPerSecond;
+  const targetAfr = c.stoichiometricAfr * i.targetLambda;
+  const baseFuelMgPerEvent = airMassMgPerEvent / targetAfr;
+  const warmupFactor = 1 + 0.25 * clamp((80 - i.coolantTempC) / 60, 0, 1);
+  const loadFactor = 1 + clamp((i.engineLoadPct - 70) * 0.002, 0, 0.06);
+  const accelerationFactor = 1 + i.accelerationEnrichmentPct / 100;
+  const baselineCorrectedFuelMgPerEvent = baseFuelMgPerEvent * warmupFactor * loadFactor * accelerationFactor;
+  const lambdaError = i.measuredLambda - i.targetLambda;
+  const stftPct = clamp(lambdaError * 120 * (i.closedLoopEnabled ? 1 : 0), -25, 25);
+  // SLX blocks 516 -> 517: unconstrained integrator, then output saturation.
+  // The supplied MD instead clamps the accumulator; preserve the SLX topology.
+  const ltftIntegralPct = previousIntegral + stftPct * i.ltftLearningGainPerS * dt;
+  const ltftPct = clamp(ltftIntegralPct, -20, 20);
+  const fuelTrimFactor = (1 + stftPct / 100) * (1 + ltftPct / 100);
+  const recommendedFuelScale = clamp(i.measuredLambda / i.targetLambda, 0.85, 1.05);
+  const commandedFuelMgPerEvent = baselineCorrectedFuelMgPerEvent * fuelTrimFactor * i.fuelOptimisationScale;
+  const injectorBiasFactor = 1 + i.injectorFlowBiasPct / 100;
+  const finalFuelMgPerEvent = commandedFuelMgPerEvent * injectorBiasFactor;
+  const correctedInjectorFlowMgPerMs = i.injectorRatedFlowCcMin * Math.sqrt(i.fuelRailPressureKPa / c.referenceRailPressureKPa) * c.fuelDensityGPerCc / 60;
+  const injectorDeadTimeMs = clamp(1 + 0.08 * (14 - i.batteryVoltageV), 0.6, 2);
+  const injectorPulseWidthMs = finalFuelMgPerEvent / correctedInjectorFlowMgPerMs + injectorDeadTimeMs;
+  const rawDutyCyclePct = injectorPulseWidthMs * i.engineSpeedRpm / 1200;
+  const injectorDutyCyclePct = clamp(rawDutyCyclePct, 0, 100);
+  const predictedLambda = i.measuredLambda / (fuelTrimFactor * i.fuelOptimisationScale * injectorBiasFactor);
+  const fuelSavingPct = 100 * (baselineCorrectedFuelMgPerEvent - finalFuelMgPerEvent) / baselineCorrectedFuelMgPerEvent;
+  const fuelFlowGps = finalFuelMgPerEvent * injectionEventsPerSecond / 1000;
+  const fuelFlowLph = fuelFlowGps * 3.6 / c.fuelDensityGPerCc;
+  const cumulativeFuelG = previous.cumulativeFuelG + fuelFlowGps * dt;
+  const brakePowerKw = i.brakeTorqueNm * 2 * Math.PI * i.engineSpeedRpm / 60 / 1000;
+  const bsfcGPerKWh = fuelFlowGps * 3600 / clamp(brakePowerKw, 0.1, 1000000);
+  const state = {simulationTimeS: previous.simulationTimeS + dt, ltftPct, ltftIntegralPct, cumulativeFuelG};
+  const integrationVector = [finalFuelMgPerEvent, injectorPulseWidthMs, injectorDutyCyclePct, predictedLambda, fuelFlowGps, cumulativeFuelG, bsfcGPerKWh, fuelSavingPct];
+  const outputs = {injectionEventsPerSecond, airMassMgPerEvent, targetAfr, baseFuelMgPerEvent,
+    warmupFactor, loadFactor, accelerationFactor, baselineCorrectedFuelMgPerEvent, lambdaError,
+    stftPct, ltftPct, fuelTrimFactor, recommendedFuelScale, commandedFuelMgPerEvent,
+    finalFuelMgPerEvent, correctedInjectorFlowMgPerMs, injectorDeadTimeMs, injectorPulseWidthMs,
+    injectorDutyCyclePct, rawDutyCyclePct, predictedLambda, fuelSavingPct, fuelFlowGps, fuelFlowLph,
+    cumulativeFuelG, brakePowerKw, bsfcGPerKWh};
+  if (!Object.values(outputs).every(Number.isFinite)) throw new Error("Inputs produce non-finite results; choose a classroom-range scenario.");
+  const warnings = [...validation.warnings];
+  if (injectorDutyCyclePct >= 100) warnings.push("Injector saturation: requested duty reaches or exceeds 100%. Fuel delivery is a theoretical command, not a saturation-limited prediction.");
+  else if (injectorDutyCyclePct > 85) warnings.push("Injector duty cycle exceeds the 85% educational limit.");
+  if (predictedLambda < 0.85 || predictedLambda > 1.10) warnings.push("Predicted lambda is outside the 0.85–1.10 educational band.");
+  const offTarget = Math.abs(predictedLambda - i.targetLambda) > 0.03;
+  if (fuelSavingPct > 0 && offTarget) warnings.push("Apparent fuel saving moves lambda more than 0.03 from target; do not treat this as an acceptable optimisation.");
+  if (brakePowerKw < 0.1) warnings.push("BSFC is not meaningful at near-zero brake power; the compatibility vector retains a protected numerical value.");
+  const optimisationAcceptable = !warnings.length && !offTarget;
+  return {state, outputs, integrationVector, status: {valid: true, severity: warnings.length ? "warning" : offTarget ? "caution" : "normal", warnings, optimisationAcceptable}};
+}
+
+export function stepFuelDeliveryModel(input, state, dt) {
+  if (!Number.isFinite(dt) || dt <= 0) throw new Error("Time step must be greater than zero.");
+  return evaluate(input, state, dt);
+}

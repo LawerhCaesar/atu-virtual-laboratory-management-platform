@@ -44,8 +44,9 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.get_by_text("Scope for future models", exact=False)).to_have_count(0)
             expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
         else:
-            expect(page.locator(".lab-model-grid article")).to_have_count(1)
+            expect(page.locator(".lab-model-grid article")).to_have_count(2)
             expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_be_visible()
+            expect(page.get_by_role("heading", name="Fuel Delivery Optimisation", exact=True)).to_be_visible()
         check_page(system["slug"])
         page.get_by_role("link", name="All systems", exact=True).click()
     assert len(colours) == 5
@@ -58,4 +59,4 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
         expect(page.locator("#engine-state")).to_have_text("OFF")
         expect(page.locator("#engine-time")).to_have_text("0.00")
     page.get_by_role("link", name="Back to ICE models", exact=True).click()
-    expect(page.locator(".lab-model-grid article")).to_have_count(1)
+    expect(page.locator(".lab-model-grid article")).to_have_count(2)

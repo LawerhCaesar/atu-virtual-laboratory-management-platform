@@ -1,0 +1,2127 @@
+{
+  "source": "Fuel_Delivery_Optimisation_All_In_One.slx",
+  "sha256": "655656079f3411e887056eac1bdf68978f3d4da28ac2861b2b31cd16224fa492",
+  "systems": {
+    "system_100": {
+      "blocks": [
+        {
+          "sid": "101",
+          "type": "Inport",
+          "name": "Engine Speed rpm",
+          "parameters": {}
+        },
+        {
+          "sid": "102",
+          "type": "Inport",
+          "name": "Engine Load pct",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "103",
+          "type": "Inport",
+          "name": "Air Flow g_per_s",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "104",
+          "type": "Inport",
+          "name": "Target Lambda",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "105",
+          "type": "Inport",
+          "name": "Measured Lambda",
+          "parameters": {
+            "Port": "5"
+          }
+        },
+        {
+          "sid": "106",
+          "type": "Inport",
+          "name": "Coolant Temp C",
+          "parameters": {
+            "Port": "6"
+          }
+        },
+        {
+          "sid": "107",
+          "type": "Inport",
+          "name": "Fuel Rail Pressure kPa",
+          "parameters": {
+            "Port": "7"
+          }
+        },
+        {
+          "sid": "108",
+          "type": "Inport",
+          "name": "Battery Voltage V",
+          "parameters": {
+            "Port": "8"
+          }
+        },
+        {
+          "sid": "109",
+          "type": "Inport",
+          "name": "Injector Rated Flow cc_per_min",
+          "parameters": {
+            "Port": "9"
+          }
+        },
+        {
+          "sid": "110",
+          "type": "Inport",
+          "name": "Injector Flow Bias pct",
+          "parameters": {
+            "Port": "10"
+          }
+        },
+        {
+          "sid": "111",
+          "type": "Inport",
+          "name": "Acceleration Enrichment pct",
+          "parameters": {
+            "Port": "11"
+          }
+        },
+        {
+          "sid": "112",
+          "type": "Inport",
+          "name": "Brake Torque Nm",
+          "parameters": {
+            "Port": "12"
+          }
+        },
+        {
+          "sid": "113",
+          "type": "Inport",
+          "name": "Closed Loop Enable 0_or_1",
+          "parameters": {
+            "Port": "13"
+          }
+        },
+        {
+          "sid": "114",
+          "type": "Inport",
+          "name": "Fuel Optimisation Scale",
+          "parameters": {
+            "Port": "14"
+          }
+        },
+        {
+          "sid": "115",
+          "type": "Inport",
+          "name": "LTFT Learning Gain",
+          "parameters": {
+            "Port": "15"
+          }
+        },
+        {
+          "sid": "200",
+          "type": "SubSystem",
+          "name": "1. BASE FUEL AND\nOPERATING CORRECTIONS",
+          "parameters": {}
+        },
+        {
+          "sid": "201",
+          "type": "SubSystem",
+          "name": "2. LAMBDA FUEL-TRIM\nCONTROLLER",
+          "parameters": {}
+        },
+        {
+          "sid": "202",
+          "type": "SubSystem",
+          "name": "3. INJECTOR FUEL\nDELIVERY",
+          "parameters": {}
+        },
+        {
+          "sid": "203",
+          "type": "SubSystem",
+          "name": "4. FUEL CONSUMPTION\nAND PERFORMANCE",
+          "parameters": {}
+        },
+        {
+          "sid": "116",
+          "type": "Outport",
+          "name": "OUT - Base Fuel mg_per_event",
+          "parameters": {}
+        },
+        {
+          "sid": "117",
+          "type": "Outport",
+          "name": "OUT - Final Fuel mg_per_event",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "118",
+          "type": "Outport",
+          "name": "OUT - Pulse Width ms",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "119",
+          "type": "Outport",
+          "name": "OUT - Duty Cycle pct",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "120",
+          "type": "Outport",
+          "name": "OUT - Predicted Lambda",
+          "parameters": {
+            "Port": "5"
+          }
+        },
+        {
+          "sid": "121",
+          "type": "Outport",
+          "name": "OUT - STFT pct",
+          "parameters": {
+            "Port": "6"
+          }
+        },
+        {
+          "sid": "122",
+          "type": "Outport",
+          "name": "OUT - LTFT pct",
+          "parameters": {
+            "Port": "7"
+          }
+        },
+        {
+          "sid": "123",
+          "type": "Outport",
+          "name": "OUT - Fuel Flow g_per_s",
+          "parameters": {
+            "Port": "8"
+          }
+        },
+        {
+          "sid": "124",
+          "type": "Outport",
+          "name": "OUT - Fuel Flow L_per_h",
+          "parameters": {
+            "Port": "9"
+          }
+        },
+        {
+          "sid": "125",
+          "type": "Outport",
+          "name": "OUT - Cumulative Fuel g",
+          "parameters": {
+            "Port": "10"
+          }
+        },
+        {
+          "sid": "126",
+          "type": "Outport",
+          "name": "OUT - Brake Power kW",
+          "parameters": {
+            "Port": "11"
+          }
+        },
+        {
+          "sid": "127",
+          "type": "Outport",
+          "name": "OUT - BSFC g_per_kWh",
+          "parameters": {
+            "Port": "12"
+          }
+        },
+        {
+          "sid": "128",
+          "type": "Outport",
+          "name": "OUT - Fuel Saving pct",
+          "parameters": {
+            "Port": "13"
+          }
+        },
+        {
+          "sid": "129",
+          "type": "Outport",
+          "name": "OUT - Recommended Fuel Scale",
+          "parameters": {
+            "Port": "14"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": "101#out:1",
+          "to": [
+            "200#in:1",
+            "202#in:8",
+            "203#in:4"
+          ]
+        },
+        {
+          "from": "102#out:1",
+          "to": [
+            "200#in:2"
+          ]
+        },
+        {
+          "from": "103#out:1",
+          "to": [
+            "200#in:3"
+          ]
+        },
+        {
+          "from": "104#out:1",
+          "to": [
+            "200#in:4",
+            "201#in:1"
+          ]
+        },
+        {
+          "from": "106#out:1",
+          "to": [
+            "200#in:5"
+          ]
+        },
+        {
+          "from": "111#out:1",
+          "to": [
+            "200#in:6"
+          ]
+        },
+        {
+          "from": "105#out:1",
+          "to": [
+            "201#in:2",
+            "202#in:9"
+          ]
+        },
+        {
+          "from": "113#out:1",
+          "to": [
+            "201#in:3"
+          ]
+        },
+        {
+          "from": "115#out:1",
+          "to": [
+            "201#in:4"
+          ]
+        },
+        {
+          "from": "200#out:3",
+          "to": [
+            "202#in:1"
+          ]
+        },
+        {
+          "from": "201#out:3",
+          "to": [
+            "202#in:2"
+          ]
+        },
+        {
+          "from": "114#out:1",
+          "to": [
+            "202#in:3"
+          ]
+        },
+        {
+          "from": "110#out:1",
+          "to": [
+            "202#in:4"
+          ]
+        },
+        {
+          "from": "109#out:1",
+          "to": [
+            "202#in:5"
+          ]
+        },
+        {
+          "from": "107#out:1",
+          "to": [
+            "202#in:6"
+          ]
+        },
+        {
+          "from": "108#out:1",
+          "to": [
+            "202#in:7"
+          ]
+        },
+        {
+          "from": "202#out:1",
+          "to": [
+            "203#in:1",
+            "117#in:1"
+          ]
+        },
+        {
+          "from": "200#out:1",
+          "to": [
+            "203#in:2"
+          ]
+        },
+        {
+          "from": "112#out:1",
+          "to": [
+            "203#in:3"
+          ]
+        },
+        {
+          "from": "200#out:2",
+          "to": [
+            "116#in:1"
+          ]
+        },
+        {
+          "from": "202#out:2",
+          "to": [
+            "118#in:1"
+          ]
+        },
+        {
+          "from": "202#out:3",
+          "to": [
+            "119#in:1"
+          ]
+        },
+        {
+          "from": "202#out:4",
+          "to": [
+            "120#in:1"
+          ]
+        },
+        {
+          "from": "201#out:1",
+          "to": [
+            "121#in:1"
+          ]
+        },
+        {
+          "from": "201#out:2",
+          "to": [
+            "122#in:1"
+          ]
+        },
+        {
+          "from": "203#out:1",
+          "to": [
+            "123#in:1"
+          ]
+        },
+        {
+          "from": "203#out:2",
+          "to": [
+            "124#in:1"
+          ]
+        },
+        {
+          "from": "203#out:3",
+          "to": [
+            "125#in:1"
+          ]
+        },
+        {
+          "from": "203#out:4",
+          "to": [
+            "126#in:1"
+          ]
+        },
+        {
+          "from": "203#out:5",
+          "to": [
+            "127#in:1"
+          ]
+        },
+        {
+          "from": "202#out:5",
+          "to": [
+            "128#in:1"
+          ]
+        },
+        {
+          "from": "201#out:4",
+          "to": [
+            "129#in:1"
+          ]
+        }
+      ]
+    },
+    "system_200": {
+      "blocks": [
+        {
+          "sid": "401",
+          "type": "Inport",
+          "name": "Engine Speed rpm",
+          "parameters": {}
+        },
+        {
+          "sid": "402",
+          "type": "Inport",
+          "name": "Engine Load pct",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "403",
+          "type": "Inport",
+          "name": "Air Flow g_per_s",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "404",
+          "type": "Inport",
+          "name": "Target Lambda",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "405",
+          "type": "Inport",
+          "name": "Coolant Temp C",
+          "parameters": {
+            "Port": "5"
+          }
+        },
+        {
+          "sid": "406",
+          "type": "Inport",
+          "name": "Acceleration Enrichment pct",
+          "parameters": {
+            "Port": "6"
+          }
+        },
+        {
+          "sid": "410",
+          "type": "Fcn",
+          "name": "Injection Events per second",
+          "parameters": {
+            "Expr": "u(1)*4/120"
+          }
+        },
+        {
+          "sid": "412",
+          "type": "Mux",
+          "name": "Air flow and Events",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "413",
+          "type": "Fcn",
+          "name": "Air mass mg per event",
+          "parameters": {
+            "Expr": "u(1)*1000/u(2)"
+          }
+        },
+        {
+          "sid": "415",
+          "type": "Fcn",
+          "name": "Target AFR",
+          "parameters": {
+            "Expr": "14.7*u(1)"
+          }
+        },
+        {
+          "sid": "417",
+          "type": "Mux",
+          "name": "Air mass and AFR",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "418",
+          "type": "Fcn",
+          "name": "Base Fuel mg per event",
+          "parameters": {
+            "Expr": "u(1)/u(2)"
+          }
+        },
+        {
+          "sid": "420",
+          "type": "Fcn",
+          "name": "Warm-up Normalised",
+          "parameters": {
+            "Expr": "(80-u(1))/60"
+          }
+        },
+        {
+          "sid": "421",
+          "type": "Saturate",
+          "name": "Warm-up Limit 0 to 1",
+          "parameters": {
+            "UpperLimit": "1",
+            "LowerLimit": "0"
+          }
+        },
+        {
+          "sid": "422",
+          "type": "Gain",
+          "name": "Warm-up Enrichment 25pct",
+          "parameters": {
+            "Gain": "0.25"
+          }
+        },
+        {
+          "sid": "423",
+          "type": "Constant",
+          "name": "Warm-up Base 1",
+          "parameters": {
+            "Value": "1"
+          }
+        },
+        {
+          "sid": "424",
+          "type": "Sum",
+          "name": "Warm-up Factor",
+          "parameters": {
+            "Inputs": "++",
+            "IconShape": "rectangular"
+          }
+        },
+        {
+          "sid": "426",
+          "type": "Fcn",
+          "name": "Load above 70 pct",
+          "parameters": {
+            "Expr": "u(1)-70"
+          }
+        },
+        {
+          "sid": "427",
+          "type": "Gain",
+          "name": "Load Enrichment Gain",
+          "parameters": {
+            "Gain": "0.002"
+          }
+        },
+        {
+          "sid": "428",
+          "type": "Saturate",
+          "name": "Load Enrichment Limit",
+          "parameters": {
+            "UpperLimit": "0.06",
+            "LowerLimit": "0"
+          }
+        },
+        {
+          "sid": "429",
+          "type": "Constant",
+          "name": "Load Base 1",
+          "parameters": {
+            "Value": "1"
+          }
+        },
+        {
+          "sid": "430",
+          "type": "Sum",
+          "name": "Load Factor",
+          "parameters": {
+            "Inputs": "++",
+            "IconShape": "rectangular"
+          }
+        },
+        {
+          "sid": "432",
+          "type": "Fcn",
+          "name": "Acceleration Factor",
+          "parameters": {
+            "Expr": "1+u(1)/100"
+          }
+        },
+        {
+          "sid": "434",
+          "type": "Mux",
+          "name": "Fuel and Correction Factors",
+          "parameters": {
+            "Inputs": "4"
+          }
+        },
+        {
+          "sid": "435",
+          "type": "Fcn",
+          "name": "Baseline Corrected Fuel",
+          "parameters": {
+            "Expr": "u(1)*u(2)*u(3)*u(4)"
+          }
+        },
+        {
+          "sid": "436",
+          "type": "Outport",
+          "name": "OUT - Events per second",
+          "parameters": {}
+        },
+        {
+          "sid": "437",
+          "type": "Outport",
+          "name": "OUT - Base Fuel mg_per_event",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "438",
+          "type": "Outport",
+          "name": "OUT - Baseline Corrected Fuel",
+          "parameters": {
+            "Port": "3"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": "401#out:1",
+          "to": [
+            "410#in:1"
+          ]
+        },
+        {
+          "from": "410#out:1",
+          "to": [
+            "411#in:1",
+            "412#in:2",
+            "436#in:1"
+          ]
+        },
+        {
+          "from": "403#out:1",
+          "to": [
+            "412#in:1"
+          ]
+        },
+        {
+          "from": "412#out:1",
+          "to": [
+            "413#in:1"
+          ]
+        },
+        {
+          "from": "413#out:1",
+          "to": [
+            "414#in:1",
+            "417#in:1"
+          ]
+        },
+        {
+          "from": "404#out:1",
+          "to": [
+            "415#in:1"
+          ]
+        },
+        {
+          "from": "415#out:1",
+          "to": [
+            "416#in:1",
+            "417#in:2"
+          ]
+        },
+        {
+          "from": "417#out:1",
+          "to": [
+            "418#in:1"
+          ]
+        },
+        {
+          "from": "418#out:1",
+          "to": [
+            "419#in:1",
+            "437#in:1",
+            "434#in:1"
+          ]
+        },
+        {
+          "from": "405#out:1",
+          "to": [
+            "420#in:1"
+          ]
+        },
+        {
+          "from": "420#out:1",
+          "to": [
+            "421#in:1"
+          ]
+        },
+        {
+          "from": "421#out:1",
+          "to": [
+            "422#in:1"
+          ]
+        },
+        {
+          "from": "422#out:1",
+          "to": [
+            "424#in:1"
+          ]
+        },
+        {
+          "from": "423#out:1",
+          "to": [
+            "424#in:2"
+          ]
+        },
+        {
+          "from": "424#out:1",
+          "to": [
+            "425#in:1",
+            "434#in:2"
+          ]
+        },
+        {
+          "from": "402#out:1",
+          "to": [
+            "426#in:1"
+          ]
+        },
+        {
+          "from": "426#out:1",
+          "to": [
+            "427#in:1"
+          ]
+        },
+        {
+          "from": "427#out:1",
+          "to": [
+            "428#in:1"
+          ]
+        },
+        {
+          "from": "428#out:1",
+          "to": [
+            "430#in:1"
+          ]
+        },
+        {
+          "from": "429#out:1",
+          "to": [
+            "430#in:2"
+          ]
+        },
+        {
+          "from": "430#out:1",
+          "to": [
+            "431#in:1",
+            "434#in:3"
+          ]
+        },
+        {
+          "from": "406#out:1",
+          "to": [
+            "432#in:1"
+          ]
+        },
+        {
+          "from": "432#out:1",
+          "to": [
+            "433#in:1",
+            "434#in:4"
+          ]
+        },
+        {
+          "from": "434#out:1",
+          "to": [
+            "435#in:1"
+          ]
+        },
+        {
+          "from": "435#out:1",
+          "to": [
+            "438#in:1"
+          ]
+        }
+      ]
+    },
+    "system_201": {
+      "blocks": [
+        {
+          "sid": "501",
+          "type": "Inport",
+          "name": "Target Lambda",
+          "parameters": {}
+        },
+        {
+          "sid": "502",
+          "type": "Inport",
+          "name": "Measured Lambda",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "503",
+          "type": "Inport",
+          "name": "Closed Loop Enable",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "504",
+          "type": "Inport",
+          "name": "LTFT Learning Gain",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "510",
+          "type": "Sum",
+          "name": "Lambda Error measured_minus_target",
+          "parameters": {
+            "Inputs": "+-",
+            "IconShape": "rectangular"
+          }
+        },
+        {
+          "sid": "511",
+          "type": "Gain",
+          "name": "STFT Proportional Gain",
+          "parameters": {
+            "Gain": "120"
+          }
+        },
+        {
+          "sid": "512",
+          "type": "Product",
+          "name": "Closed-loop Enable",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "513",
+          "type": "Saturate",
+          "name": "STFT Limit plus_minus_25pct",
+          "parameters": {
+            "UpperLimit": "25",
+            "LowerLimit": "-25"
+          }
+        },
+        {
+          "sid": "515",
+          "type": "Product",
+          "name": "LTFT Learning Input",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "516",
+          "type": "Integrator",
+          "name": "LTFT Slow Learner",
+          "parameters": {
+            "InitialCondition": "0"
+          }
+        },
+        {
+          "sid": "517",
+          "type": "Saturate",
+          "name": "LTFT Limit plus_minus_20pct",
+          "parameters": {
+            "UpperLimit": "20",
+            "LowerLimit": "-20"
+          }
+        },
+        {
+          "sid": "519",
+          "type": "Mux",
+          "name": "STFT and LTFT",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "520",
+          "type": "Fcn",
+          "name": "Combined Fuel Trim Factor",
+          "parameters": {
+            "Expr": "(1+u(1)/100)*(1+u(2)/100)"
+          }
+        },
+        {
+          "sid": "522",
+          "type": "Mux",
+          "name": "Measured and Target Lambda",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "523",
+          "type": "Fcn",
+          "name": "Recommended Fuel Scale Raw",
+          "parameters": {
+            "Expr": "u(1)/u(2)"
+          }
+        },
+        {
+          "sid": "524",
+          "type": "Saturate",
+          "name": "Recommended Scale Limit",
+          "parameters": {
+            "UpperLimit": "1.05",
+            "LowerLimit": "0.85"
+          }
+        },
+        {
+          "sid": "525",
+          "type": "Outport",
+          "name": "OUT - STFT pct",
+          "parameters": {}
+        },
+        {
+          "sid": "526",
+          "type": "Outport",
+          "name": "OUT - LTFT pct",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "527",
+          "type": "Outport",
+          "name": "OUT - Fuel Trim Factor",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "528",
+          "type": "Outport",
+          "name": "OUT - Recommended Fuel Scale",
+          "parameters": {
+            "Port": "4"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": "502#out:1",
+          "to": [
+            "510#in:1",
+            "522#in:1"
+          ]
+        },
+        {
+          "from": "501#out:1",
+          "to": [
+            "510#in:2",
+            "522#in:2"
+          ]
+        },
+        {
+          "from": "510#out:1",
+          "to": [
+            "511#in:1"
+          ]
+        },
+        {
+          "from": "511#out:1",
+          "to": [
+            "512#in:1"
+          ]
+        },
+        {
+          "from": "503#out:1",
+          "to": [
+            "512#in:2"
+          ]
+        },
+        {
+          "from": "512#out:1",
+          "to": [
+            "513#in:1"
+          ]
+        },
+        {
+          "from": "513#out:1",
+          "to": [
+            "514#in:1",
+            "515#in:1",
+            "519#in:1",
+            "525#in:1"
+          ]
+        },
+        {
+          "from": "504#out:1",
+          "to": [
+            "515#in:2"
+          ]
+        },
+        {
+          "from": "515#out:1",
+          "to": [
+            "516#in:1"
+          ]
+        },
+        {
+          "from": "516#out:1",
+          "to": [
+            "517#in:1"
+          ]
+        },
+        {
+          "from": "517#out:1",
+          "to": [
+            "518#in:1",
+            "519#in:2",
+            "526#in:1"
+          ]
+        },
+        {
+          "from": "519#out:1",
+          "to": [
+            "520#in:1"
+          ]
+        },
+        {
+          "from": "520#out:1",
+          "to": [
+            "521#in:1",
+            "527#in:1"
+          ]
+        },
+        {
+          "from": "522#out:1",
+          "to": [
+            "523#in:1"
+          ]
+        },
+        {
+          "from": "523#out:1",
+          "to": [
+            "524#in:1"
+          ]
+        },
+        {
+          "from": "524#out:1",
+          "to": [
+            "529#in:1",
+            "528#in:1"
+          ]
+        }
+      ]
+    },
+    "system_202": {
+      "blocks": [
+        {
+          "sid": "601",
+          "type": "Inport",
+          "name": "Baseline Corrected Fuel",
+          "parameters": {}
+        },
+        {
+          "sid": "602",
+          "type": "Inport",
+          "name": "Fuel Trim Factor",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "603",
+          "type": "Inport",
+          "name": "Optimisation Scale",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "604",
+          "type": "Inport",
+          "name": "Injector Bias pct",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "605",
+          "type": "Inport",
+          "name": "Rated Flow cc_per_min",
+          "parameters": {
+            "Port": "5"
+          }
+        },
+        {
+          "sid": "606",
+          "type": "Inport",
+          "name": "Rail Pressure kPa",
+          "parameters": {
+            "Port": "6"
+          }
+        },
+        {
+          "sid": "607",
+          "type": "Inport",
+          "name": "Battery Voltage V",
+          "parameters": {
+            "Port": "7"
+          }
+        },
+        {
+          "sid": "608",
+          "type": "Inport",
+          "name": "Engine Speed rpm",
+          "parameters": {
+            "Port": "8"
+          }
+        },
+        {
+          "sid": "609",
+          "type": "Inport",
+          "name": "Measured Lambda",
+          "parameters": {
+            "Port": "9"
+          }
+        },
+        {
+          "sid": "610",
+          "type": "Mux",
+          "name": "Baseline Trim and Optimisation",
+          "parameters": {
+            "Inputs": "3"
+          }
+        },
+        {
+          "sid": "611",
+          "type": "Fcn",
+          "name": "Commanded Fuel mg per event",
+          "parameters": {
+            "Expr": "u(1)*u(2)*u(3)"
+          }
+        },
+        {
+          "sid": "613",
+          "type": "Fcn",
+          "name": "Injector Bias Factor",
+          "parameters": {
+            "Expr": "1+u(1)/100"
+          }
+        },
+        {
+          "sid": "614",
+          "type": "Product",
+          "name": "Actual Delivered Fuel",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "616",
+          "type": "Mux",
+          "name": "Rated Flow and Rail Pressure",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "617",
+          "type": "Fcn",
+          "name": "Corrected Injector Flow mg_per_ms",
+          "parameters": {
+            "Expr": "u(1)*sqrt(u(2)/300)*0.745/60"
+          }
+        },
+        {
+          "sid": "619",
+          "type": "Fcn",
+          "name": "Injector Dead Time Raw ms",
+          "parameters": {
+            "Expr": "1+0.08*(14-u(1))"
+          }
+        },
+        {
+          "sid": "620",
+          "type": "Saturate",
+          "name": "Dead Time Limit",
+          "parameters": {
+            "UpperLimit": "2.0",
+            "LowerLimit": "0.6"
+          }
+        },
+        {
+          "sid": "622",
+          "type": "Mux",
+          "name": "Fuel Flow and Dead Time",
+          "parameters": {
+            "Inputs": "3"
+          }
+        },
+        {
+          "sid": "623",
+          "type": "Fcn",
+          "name": "Injector Pulse Width ms",
+          "parameters": {
+            "Expr": "u(1)/u(2)+u(3)"
+          }
+        },
+        {
+          "sid": "625",
+          "type": "Mux",
+          "name": "Pulse Width and RPM",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "626",
+          "type": "Fcn",
+          "name": "Injector Duty Cycle pct",
+          "parameters": {
+            "Expr": "u(1)*u(2)/1200"
+          }
+        },
+        {
+          "sid": "627",
+          "type": "Saturate",
+          "name": "Duty Cycle Limit",
+          "parameters": {
+            "UpperLimit": "100",
+            "LowerLimit": "0"
+          }
+        },
+        {
+          "sid": "629",
+          "type": "Mux",
+          "name": "Lambda Correction Inputs",
+          "parameters": {
+            "Inputs": "4"
+          }
+        },
+        {
+          "sid": "630",
+          "type": "Fcn",
+          "name": "Predicted Lambda after Correction",
+          "parameters": {
+            "Expr": "u(1)/(u(2)*u(3)*u(4))"
+          }
+        },
+        {
+          "sid": "632",
+          "type": "Mux",
+          "name": "Baseline and Actual Fuel",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "633",
+          "type": "Fcn",
+          "name": "Fuel Saving pct",
+          "parameters": {
+            "Expr": "100*(u(1)-u(2))/u(1)"
+          }
+        },
+        {
+          "sid": "635",
+          "type": "Outport",
+          "name": "OUT - Actual Fuel mg_per_event",
+          "parameters": {}
+        },
+        {
+          "sid": "636",
+          "type": "Outport",
+          "name": "OUT - Pulse Width ms",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "637",
+          "type": "Outport",
+          "name": "OUT - Duty Cycle pct",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "638",
+          "type": "Outport",
+          "name": "OUT - Predicted Lambda",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "639",
+          "type": "Outport",
+          "name": "OUT - Fuel Saving pct",
+          "parameters": {
+            "Port": "5"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": "601#out:1",
+          "to": [
+            "610#in:1",
+            "632#in:1"
+          ]
+        },
+        {
+          "from": "602#out:1",
+          "to": [
+            "610#in:2",
+            "629#in:2"
+          ]
+        },
+        {
+          "from": "603#out:1",
+          "to": [
+            "610#in:3",
+            "629#in:3"
+          ]
+        },
+        {
+          "from": "610#out:1",
+          "to": [
+            "611#in:1"
+          ]
+        },
+        {
+          "from": "611#out:1",
+          "to": [
+            "612#in:1",
+            "614#in:1"
+          ]
+        },
+        {
+          "from": "604#out:1",
+          "to": [
+            "613#in:1"
+          ]
+        },
+        {
+          "from": "613#out:1",
+          "to": [
+            "614#in:2",
+            "629#in:4"
+          ]
+        },
+        {
+          "from": "614#out:1",
+          "to": [
+            "615#in:1",
+            "622#in:1",
+            "632#in:2",
+            "635#in:1"
+          ]
+        },
+        {
+          "from": "605#out:1",
+          "to": [
+            "616#in:1"
+          ]
+        },
+        {
+          "from": "606#out:1",
+          "to": [
+            "616#in:2"
+          ]
+        },
+        {
+          "from": "616#out:1",
+          "to": [
+            "617#in:1"
+          ]
+        },
+        {
+          "from": "617#out:1",
+          "to": [
+            "618#in:1",
+            "622#in:2"
+          ]
+        },
+        {
+          "from": "607#out:1",
+          "to": [
+            "619#in:1"
+          ]
+        },
+        {
+          "from": "619#out:1",
+          "to": [
+            "620#in:1"
+          ]
+        },
+        {
+          "from": "620#out:1",
+          "to": [
+            "621#in:1",
+            "622#in:3"
+          ]
+        },
+        {
+          "from": "622#out:1",
+          "to": [
+            "623#in:1"
+          ]
+        },
+        {
+          "from": "623#out:1",
+          "to": [
+            "624#in:1",
+            "625#in:1",
+            "636#in:1"
+          ]
+        },
+        {
+          "from": "608#out:1",
+          "to": [
+            "625#in:2"
+          ]
+        },
+        {
+          "from": "625#out:1",
+          "to": [
+            "626#in:1"
+          ]
+        },
+        {
+          "from": "626#out:1",
+          "to": [
+            "627#in:1"
+          ]
+        },
+        {
+          "from": "627#out:1",
+          "to": [
+            "628#in:1",
+            "637#in:1"
+          ]
+        },
+        {
+          "from": "609#out:1",
+          "to": [
+            "629#in:1"
+          ]
+        },
+        {
+          "from": "629#out:1",
+          "to": [
+            "630#in:1"
+          ]
+        },
+        {
+          "from": "630#out:1",
+          "to": [
+            "631#in:1",
+            "638#in:1"
+          ]
+        },
+        {
+          "from": "632#out:1",
+          "to": [
+            "633#in:1"
+          ]
+        },
+        {
+          "from": "633#out:1",
+          "to": [
+            "634#in:1",
+            "639#in:1"
+          ]
+        }
+      ]
+    },
+    "system_203": {
+      "blocks": [
+        {
+          "sid": "701",
+          "type": "Inport",
+          "name": "Actual Fuel mg_per_event",
+          "parameters": {}
+        },
+        {
+          "sid": "702",
+          "type": "Inport",
+          "name": "Injection Events per second",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "703",
+          "type": "Inport",
+          "name": "Brake Torque Nm",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "704",
+          "type": "Inport",
+          "name": "Engine Speed rpm",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "710",
+          "type": "Mux",
+          "name": "Fuel mass and Events",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "711",
+          "type": "Fcn",
+          "name": "Fuel Flow g_per_s",
+          "parameters": {
+            "Expr": "u(1)*u(2)/1000"
+          }
+        },
+        {
+          "sid": "713",
+          "type": "Fcn",
+          "name": "Fuel Flow L_per_h",
+          "parameters": {
+            "Expr": "u(1)*3.6/0.745"
+          }
+        },
+        {
+          "sid": "715",
+          "type": "Integrator",
+          "name": "Cumulative Fuel Used g",
+          "parameters": {
+            "InitialCondition": "0"
+          }
+        },
+        {
+          "sid": "717",
+          "type": "Mux",
+          "name": "Torque and RPM",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "718",
+          "type": "Fcn",
+          "name": "Brake Power kW",
+          "parameters": {
+            "Expr": "u(1)*2*pi*u(2)/60/1000"
+          }
+        },
+        {
+          "sid": "720",
+          "type": "Saturate",
+          "name": "Power minimum for BSFC",
+          "parameters": {
+            "UpperLimit": "1000000",
+            "LowerLimit": "0.1"
+          }
+        },
+        {
+          "sid": "721",
+          "type": "Mux",
+          "name": "Fuel Flow and Power",
+          "parameters": {
+            "Inputs": "2"
+          }
+        },
+        {
+          "sid": "722",
+          "type": "Fcn",
+          "name": "BSFC g_per_kWh",
+          "parameters": {
+            "Expr": "u(1)*3600/u(2)"
+          }
+        },
+        {
+          "sid": "724",
+          "type": "Outport",
+          "name": "OUT - Fuel Flow g_per_s",
+          "parameters": {}
+        },
+        {
+          "sid": "725",
+          "type": "Outport",
+          "name": "OUT - Fuel Flow L_per_h",
+          "parameters": {
+            "Port": "2"
+          }
+        },
+        {
+          "sid": "726",
+          "type": "Outport",
+          "name": "OUT - Cumulative Fuel g",
+          "parameters": {
+            "Port": "3"
+          }
+        },
+        {
+          "sid": "727",
+          "type": "Outport",
+          "name": "OUT - Brake Power kW",
+          "parameters": {
+            "Port": "4"
+          }
+        },
+        {
+          "sid": "728",
+          "type": "Outport",
+          "name": "OUT - BSFC g_per_kWh",
+          "parameters": {
+            "Port": "5"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "from": "701#out:1",
+          "to": [
+            "710#in:1"
+          ]
+        },
+        {
+          "from": "702#out:1",
+          "to": [
+            "710#in:2"
+          ]
+        },
+        {
+          "from": "710#out:1",
+          "to": [
+            "711#in:1"
+          ]
+        },
+        {
+          "from": "711#out:1",
+          "to": [
+            "712#in:1",
+            "713#in:1",
+            "715#in:1",
+            "721#in:1",
+            "724#in:1"
+          ]
+        },
+        {
+          "from": "713#out:1",
+          "to": [
+            "714#in:1",
+            "725#in:1"
+          ]
+        },
+        {
+          "from": "715#out:1",
+          "to": [
+            "716#in:1",
+            "726#in:1"
+          ]
+        },
+        {
+          "from": "703#out:1",
+          "to": [
+            "717#in:1"
+          ]
+        },
+        {
+          "from": "704#out:1",
+          "to": [
+            "717#in:2"
+          ]
+        },
+        {
+          "from": "717#out:1",
+          "to": [
+            "718#in:1"
+          ]
+        },
+        {
+          "from": "718#out:1",
+          "to": [
+            "719#in:1",
+            "720#in:1",
+            "727#in:1"
+          ]
+        },
+        {
+          "from": "720#out:1",
+          "to": [
+            "721#in:2"
+          ]
+        },
+        {
+          "from": "721#out:1",
+          "to": [
+            "722#in:1"
+          ]
+        },
+        {
+          "from": "722#out:1",
+          "to": [
+            "723#in:1",
+            "728#in:1"
+          ]
+        }
+      ]
+    },
+    "system_root": {
+      "blocks": [
+        {
+          "sid": "1",
+          "type": "Constant",
+          "name": "Engine Speed rpm",
+          "parameters": {
+            "Value": "2500"
+          }
+        },
+        {
+          "sid": "2",
+          "type": "Constant",
+          "name": "Engine Load pct",
+          "parameters": {
+            "Value": "35"
+          }
+        },
+        {
+          "sid": "3",
+          "type": "Constant",
+          "name": "Air Flow g_per_s",
+          "parameters": {
+            "Value": "25"
+          }
+        },
+        {
+          "sid": "4",
+          "type": "Constant",
+          "name": "Target Lambda",
+          "parameters": {
+            "Value": "1.0"
+          }
+        },
+        {
+          "sid": "5",
+          "type": "Constant",
+          "name": "Measured Lambda",
+          "parameters": {
+            "Value": "1.0"
+          }
+        },
+        {
+          "sid": "6",
+          "type": "Constant",
+          "name": "Coolant Temp C",
+          "parameters": {
+            "Value": "90"
+          }
+        },
+        {
+          "sid": "7",
+          "type": "Constant",
+          "name": "Fuel Rail Pressure kPa",
+          "parameters": {
+            "Value": "300"
+          }
+        },
+        {
+          "sid": "8",
+          "type": "Constant",
+          "name": "Battery Voltage V",
+          "parameters": {
+            "Value": "14"
+          }
+        },
+        {
+          "sid": "9",
+          "type": "Constant",
+          "name": "Injector Rated Flow cc_per_min",
+          "parameters": {
+            "Value": "220"
+          }
+        },
+        {
+          "sid": "10",
+          "type": "Constant",
+          "name": "Injector Flow Bias pct",
+          "parameters": {
+            "Value": "0"
+          }
+        },
+        {
+          "sid": "11",
+          "type": "Constant",
+          "name": "Acceleration Enrichment pct",
+          "parameters": {
+            "Value": "0"
+          }
+        },
+        {
+          "sid": "12",
+          "type": "Constant",
+          "name": "Brake Torque Nm",
+          "parameters": {
+            "Value": "80"
+          }
+        },
+        {
+          "sid": "13",
+          "type": "Constant",
+          "name": "Closed Loop Enable 0_or_1",
+          "parameters": {
+            "Value": "1"
+          }
+        },
+        {
+          "sid": "14",
+          "type": "Constant",
+          "name": "Fuel Optimisation Scale",
+          "parameters": {
+            "Value": "1.0"
+          }
+        },
+        {
+          "sid": "15",
+          "type": "Constant",
+          "name": "LTFT Learning Gain",
+          "parameters": {
+            "Value": "0.003"
+          }
+        },
+        {
+          "sid": "100",
+          "type": "SubSystem",
+          "name": "FUEL DELIVERY AND CONSUMPTION MODEL\n(double-click to inspect)",
+          "parameters": {}
+        },
+        {
+          "sid": "36",
+          "type": "Mux",
+          "name": "Build Integration Output Vector",
+          "parameters": {
+            "Inputs": "8"
+          }
+        },
+        {
+          "sid": "37",
+          "type": "Outport",
+          "name": "OUT - Integration Output Vector",
+          "parameters": {}
+        }
+      ],
+      "wires": [
+        {
+          "from": "1#out:1",
+          "to": [
+            "100#in:1"
+          ]
+        },
+        {
+          "from": "2#out:1",
+          "to": [
+            "100#in:2"
+          ]
+        },
+        {
+          "from": "3#out:1",
+          "to": [
+            "100#in:3"
+          ]
+        },
+        {
+          "from": "4#out:1",
+          "to": [
+            "100#in:4"
+          ]
+        },
+        {
+          "from": "5#out:1",
+          "to": [
+            "100#in:5",
+            "34#in:1"
+          ]
+        },
+        {
+          "from": "6#out:1",
+          "to": [
+            "100#in:6"
+          ]
+        },
+        {
+          "from": "7#out:1",
+          "to": [
+            "100#in:7"
+          ]
+        },
+        {
+          "from": "8#out:1",
+          "to": [
+            "100#in:8"
+          ]
+        },
+        {
+          "from": "9#out:1",
+          "to": [
+            "100#in:9"
+          ]
+        },
+        {
+          "from": "10#out:1",
+          "to": [
+            "100#in:10"
+          ]
+        },
+        {
+          "from": "11#out:1",
+          "to": [
+            "100#in:11"
+          ]
+        },
+        {
+          "from": "12#out:1",
+          "to": [
+            "100#in:12"
+          ]
+        },
+        {
+          "from": "13#out:1",
+          "to": [
+            "100#in:13"
+          ]
+        },
+        {
+          "from": "14#out:1",
+          "to": [
+            "100#in:14"
+          ]
+        },
+        {
+          "from": "15#out:1",
+          "to": [
+            "100#in:15"
+          ]
+        },
+        {
+          "from": "100#out:1",
+          "to": [
+            "20#in:1"
+          ]
+        },
+        {
+          "from": "100#out:2",
+          "to": [
+            "21#in:1",
+            "36#in:1"
+          ]
+        },
+        {
+          "from": "100#out:3",
+          "to": [
+            "22#in:1",
+            "36#in:2"
+          ]
+        },
+        {
+          "from": "100#out:4",
+          "to": [
+            "23#in:1",
+            "36#in:3"
+          ]
+        },
+        {
+          "from": "100#out:5",
+          "to": [
+            "24#in:1",
+            "34#in:2",
+            "36#in:4"
+          ]
+        },
+        {
+          "from": "100#out:6",
+          "to": [
+            "25#in:1",
+            "34#in:3"
+          ]
+        },
+        {
+          "from": "100#out:7",
+          "to": [
+            "26#in:1",
+            "34#in:4"
+          ]
+        },
+        {
+          "from": "100#out:8",
+          "to": [
+            "27#in:1",
+            "35#in:1",
+            "36#in:5"
+          ]
+        },
+        {
+          "from": "100#out:9",
+          "to": [
+            "28#in:1"
+          ]
+        },
+        {
+          "from": "100#out:10",
+          "to": [
+            "29#in:1",
+            "35#in:2",
+            "36#in:6"
+          ]
+        },
+        {
+          "from": "100#out:11",
+          "to": [
+            "30#in:1"
+          ]
+        },
+        {
+          "from": "100#out:12",
+          "to": [
+            "31#in:1",
+            "35#in:3",
+            "36#in:7"
+          ]
+        },
+        {
+          "from": "100#out:13",
+          "to": [
+            "32#in:1",
+            "36#in:8"
+          ]
+        },
+        {
+          "from": "100#out:14",
+          "to": [
+            "33#in:1"
+          ]
+        },
+        {
+          "from": "36#out:1",
+          "to": [
+            "37#in:1"
+          ]
+        }
+      ]
+    }
+  },
+  "solver": {
+    "StopTime": "30",
+    "AbsTol": "auto",
+    "FixedStep": "auto",
+    "RelTol": "1e-3",
+    "Solver": "VariableStepAuto",
+    "SolverName": "VariableStepAuto"
+  }
+}

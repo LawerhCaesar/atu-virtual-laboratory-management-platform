@@ -62,10 +62,14 @@ and failure recovery without third-party calls.
 
 The authenticated **Virtual laboratory** entrance at `/virtual-lab/` starts
 with a choice of ICE, BEV, FCEV, Hybrid (HEV) and Vehicle Dynamics (VD).
-Each system has a separately branded model catalogue. Only ICE currently has
-a configured simulation: **Engine Live Data Demonstration**, containing four
+Each system has a separately branded model catalogue. ICE has two configured
+simulations: **Engine Live Data Demonstration**, containing four
 learning sections (fuel/injection, idle/ignition, cooling and start/run).
 These are sections of one model, not four separate catalogue entries.
+The second model, **Fuel Delivery Optimisation**, has its own inputs, animated
+fuel-path schematic, deterministic fuel-trim/consumption calculations, plots,
+baseline comparison and exports. See [fuel-delivery integration and source
+verification](docs/fuel-delivery-integration.md).
 The other environments have no simulations added, with no speculative model
 entries or launch links.
 See [integration and acceptance coverage](docs/engine-live-data-integration.md)

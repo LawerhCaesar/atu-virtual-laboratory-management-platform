@@ -7,7 +7,7 @@
   <nav class="mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> <span aria-hidden="true">/</span> <span aria-current="page">{{ system.code }}</span></nav>
   <header class="lab-system-hero"><p class="lab-step">{{ system.code }} laboratory · Step 2 of 3</p><h1>{{ system.name }}</h1><p class="lab-tagline">{{ system.tagline }}</p><p>{{ system.description }}</p></header>
   <section class="mt-4" aria-labelledby="model-catalogue-title">
-    <div class="page-heading"><div><p class="eyebrow">{{ system.code }} model catalogue</p><h2 id="model-catalogue-title">{% if models %}Available simulation{% else %}No simulations added yet{% endif %}</h2></div></div>
+    <div class="page-heading"><div><p class="eyebrow">{{ system.code }} model catalogue</p><h2 id="model-catalogue-title">{% if models %}Available simulations{% else %}No simulations added yet{% endif %}</h2></div></div>
     {% if models %}
     <p class="text-secondary">Open a configured simulation below. It starts paused; nothing runs until you press Run.</p>
     <div class="lab-model-grid">{% for model in models %}<article class="content-panel mt-0"><p class="eyebrow">Available · {{ system.code }}</p><h3 class="h4">{{ model.title }}</h3><p>{{ model.description }}</p><a class="btn lab-launch" href="{% url model.route_name %}" aria-label="Open {{ model.title }}">Open simulation</a></article>{% endfor %}</div>

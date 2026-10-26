@@ -17,8 +17,10 @@ dependency, frontend framework, API or deployment.
   enter its branded catalogue at `/virtual-lab/systems/<slug>/`. Only ICE has
   implemented models; other catalogues contain just an empty-state message,
   with no speculative/future model listings or launch links.
-  ICE lists exactly one model, **Engine Live Data Demonstration**. Its four
-  learning sections remain inside the simulation, alongside Overview.
+  **Engine Live Data Demonstration** remains one model. Its four learning
+  sections remain inside the simulation, alongside Overview. ICE also lists
+  the separate [Fuel Delivery Optimisation model](fuel-delivery-integration.md);
+  that addition does not alter this model's equations, controls or 3D assets.
   Legacy deep links still accept allowlisted `?view=` values (`fuel`, `idle`,
   `cooling`, `startRun`); these do not create separate model entries.
   Selection affects presentation only; the solver and 3D scene remain shared,

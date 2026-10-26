@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Fuel Delivery Optimisation · ATU Virtual Laboratory{% endblock %}
+{% block body_class %}fuel-delivery-page{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/fuel-delivery.css' %}">
+<section id="fuel-delivery" aria-labelledby="fuel-title">
+  <nav class="small mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'ice' %}">ICE environment</a> / <span aria-current="page">Fuel Delivery Optimisation</span></nav>
+  <div class="page-heading"><div><p class="eyebrow">ICE laboratory · Fuel, feedback and efficiency</p><h1 id="fuel-title">Fuel Delivery Optimisation</h1><p class="text-secondary mb-0">Follow each injection command from air flow to fuel consumption. Change an input and discover why the result changes.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:laboratory_system' 'ice' %}">Back to ICE models</a></div>
+  <p class="small text-secondary">Aziz Allotey · Supervisor: Professor Moro Adams. Educational spark-ignition model, not an OEM calibration or physical-engine controller. No hardware is connected.</p>
+  <noscript><p class="alert alert-warning">Enable JavaScript to use this simulation. The model runs locally in your browser without MATLAB or a calculation API.</p></noscript>
+  <div class="fuel-toolbar content-panel mt-0" aria-label="Simulation controls">
+    <div class="fuel-scenario"><label for="fuel-preset" class="small fw-semibold">Scenario</label><select id="fuel-preset" class="form-select"></select><button id="fuel-load" type="button" class="btn btn-outline-secondary">Load scenario</button></div>
+    <div class="d-flex flex-wrap gap-2"><button id="fuel-run" type="button" class="btn btn-primary">Run new simulation</button><button id="fuel-pause" type="button" class="btn btn-outline-secondary" disabled>Pause</button><button id="fuel-resume" type="button" class="btn btn-outline-primary" disabled>Resume</button><button id="fuel-reset" type="button" class="btn btn-outline-secondary">Reset</button><a class="btn btn-outline-secondary" href="#fuel-input-title">Adjust inputs</a></div>
+    <div class="fuel-clock"><span id="fuel-mode" role="status">Ready · paused</span><span><output id="fuel-time">0.00</output> / <output id="fuel-duration">30</output> s virtual time</span></div>
+  </div>
+  <div id="fuel-validation" class="alert alert-danger mt-3" role="alert" hidden></div>
+  <div class="fuel-workbench mt-4">
+    <aside class="content-panel fuel-input-panel mt-0" aria-labelledby="fuel-input-title">
+      <p class="eyebrow">01 · Inputs</p><h2 id="fuel-input-title" class="h4">Operating conditions</h2>
+      <p class="small text-secondary">Drag, type or tap −/+. Editing pauses the run and updates the preview without advancing time. Run new starts from zero; Resume keeps recorded history.</p>
+      <button id="fuel-toggle-inputs" class="btn btn-outline-secondary d-lg-none mb-3" type="button" aria-expanded="true" aria-controls="fuel-input-fields">Hide inputs</button>
+      <div id="fuel-input-fields"></div>
+    </aside>
+    <div class="fuel-output-area">
+      <section class="content-panel fuel-visual mt-0" aria-labelledby="fuel-visual-title">
+        <div class="d-flex justify-content-between flex-wrap gap-2"><div><p class="eyebrow">02 · Visualise the process</p><h2 id="fuel-visual-title" class="h4">Inside the fuel path</h2></div><span class="fuel-mixture" id="fuel-mixture">Near target</span></div>
+        <svg id="fuel-schematic" viewBox="0 0 800 320" role="img" aria-labelledby="fuel-svg-title fuel-svg-description">
+          <title id="fuel-svg-title">Interactive fuel-delivery process schematic</title><desc id="fuel-svg-description">Fuel source, rail, injector and cylinder. Fuel-path width reflects calculated flow; injector opening and spray width reflect pulse width. Motion is illustrative, not real-time injection timing or validated spray physics.</desc>
+          <defs><linearGradient id="fuel-metal" x2="1" y2="0"><stop stop-color="#6e819b"/><stop offset=".35" stop-color="#d8e2ec"/><stop offset=".6" stop-color="#8b9db2"/><stop offset="1" stop-color="#344b67"/></linearGradient><linearGradient id="fuel-fluid" x2="0" y2="1"><stop stop-color="#e8c568"/><stop offset="1" stop-color="#c77824"/></linearGradient><linearGradient id="fuel-glass" x2="0" y2="1"><stop stop-color="#233e60"/><stop offset="1" stop-color="#10213d"/></linearGradient></defs>
+          <path d="M122 181 H230 V92 H470 V130" fill="none" stroke="#52677f" stroke-width="18" stroke-linejoin="round"/>
+          <path id="fuel-flow-path" d="M122 181 H230 V92 H470 V130" fill="none" stroke="#e8c568" stroke-width="5" stroke-linejoin="round"/>
+          <path id="fuel-flow-markers" d="M122 181 H230 V92 H470 V130" fill="none" stroke="#fff1bb" stroke-width="3" stroke-dasharray="6 24"/>
+          <rect x="40" y="133" width="122" height="124" rx="20" fill="url(#fuel-glass)" stroke="#9cafc4" stroke-width="3"/><path d="M50 183 Q100 172 152 183 V234 Q152 247 140 247 H62 Q50 247 50 235Z" fill="url(#fuel-fluid)"/>
+          <rect x="81" y="118" width="40" height="17" rx="4" fill="url(#fuel-metal)"/>
+          <rect x="257" y="75" width="236" height="33" rx="13" fill="url(#fuel-metal)"/><rect x="275" y="87" width="191" height="7" rx="3" fill="#e8c568"/>
+          <path d="M470 127 V154 L486 190 H454 L470 154" fill="url(#fuel-metal)" stroke="#d8e2ec" stroke-width="3"/>
+          <rect x="448" y="115" width="44" height="42" rx="8" fill="#385573" stroke="#a8bbce" stroke-width="2"/>
+          <path id="fuel-needle" d="M470 124 V179" stroke="#e8c568" stroke-width="6" stroke-linecap="round"/>
+          <path d="M415 187 H525 V287 H415Z" fill="url(#fuel-glass)" stroke="#9cafc4" stroke-width="3"/>
+          <path id="fuel-spray" d="M470 187 L435 245 Q470 260 505 245Z" fill="#e8c568" opacity=".5"/>
+          <path id="fuel-cylinder-fill" d="M422 223 H518 V260 H422Z" fill="#51ba9b" opacity=".22"/>
+          <rect x="420" y="259" width="100" height="20" rx="4" fill="url(#fuel-metal)"/>
+          <path d="M525 238 H589" stroke="#a8bbce" stroke-width="3" stroke-dasharray="5 5"/>
+          <rect x="594" y="161" width="170" height="112" rx="14" fill="#193452" stroke="#607c9b"/>
+          <text x="612" y="190" class="fuel-svg-label">CALCULATED OUTPUT</text><text id="fuel-visual-flow" x="612" y="222" class="fuel-svg-value">1.701 g/s</text><text id="fuel-visual-pulse" x="612" y="250" class="fuel-svg-label">8.471 ms / injection</text>
+          <text x="45" y="105" class="fuel-svg-label">01 · FUEL SOURCE</text><text x="275" y="56" class="fuel-svg-label">02 · PRESSURISED RAIL</text><text x="515" y="133" class="fuel-svg-label">03 · INJECTOR</text><text x="414" y="312" class="fuel-svg-label">04 · CYLINDER</text>
+        </svg>
+        <div class="fuel-component-buttons" aria-label="Explore fuel-path components"><button class="btn btn-sm btn-outline-secondary" type="button" data-component="source" aria-pressed="true">Fuel source</button><button class="btn btn-sm btn-outline-secondary" type="button" data-component="rail" aria-pressed="false">Rail</button><button class="btn btn-sm btn-outline-secondary" type="button" data-component="injector" aria-pressed="false">Injector</button><button class="btn btn-sm btn-outline-secondary" type="button" data-component="cylinder" aria-pressed="false">Cylinder</button></div>
+        <p id="fuel-component-explanation" class="small mt-3">Fuel density is fixed at 0.745 g/cc. The source is illustrative; fuel supply pressure dynamics are not simulated.</p>
+        <label class="small d-block"><input id="fuel-motion" type="checkbox" checked> Animate illustrative flow</label>
+        <p class="small text-secondary mt-2 mb-0">Not an AI-generated mesh. This local cutaway schematic follows calculated outputs. Pulse motion is compressed to at most 1.5 cycles/s; spray shape, source level and geometry are illustrative, not physical predictions. No vehicle motion is inferred from RPM.</p>
+        <div class="fuel-gauges mt-3"><div><label for="fuel-duty">Injector duty · <output id="fuel-duty-text">0</output>%</label><progress id="fuel-duty" max="100" value="0"></progress></div><div><label for="fuel-used">Fuel consumed · <output id="fuel-used-text">0</output> g / <span id="fuel-used-max">100</span> g display scale</label><progress id="fuel-used" max="100" value="0"></progress></div></div>
+      </section>
+      <section class="content-panel mt-3" aria-labelledby="fuel-results-title"><p class="eyebrow">03 · Calculated response</p><h2 id="fuel-results-title" class="h4">Live results</h2><p id="fuel-status" role="status"></p><ul id="fuel-warnings" class="small"></ul><dl id="fuel-kpis" class="fuel-kpis"></dl><details><summary>Calculation details</summary><dl id="fuel-details" class="fuel-kpis mt-3"></dl></details></section>
+    </div>
+  </div>
+  <section class="content-panel" aria-labelledby="fuel-analysis-title"><p class="eyebrow">04 · Analyse and compare</p><h2 id="fuel-analysis-title">Evidence over virtual time</h2>
+    <div class="d-flex flex-wrap gap-2 mb-3"><button id="fuel-recommend" class="btn btn-outline-primary" type="button">Apply recommended scale</button><button id="fuel-compare" class="btn btn-primary" type="button">Compare baseline and adjusted</button><button id="fuel-json" class="btn btn-outline-secondary" type="button">Export JSON</button><button id="fuel-csv" class="btn btn-outline-secondary" type="button">Export CSV</button></div>
+    <p id="fuel-record-status" class="small text-secondary">No time samples recorded yet.</p><p class="small text-secondary">Recommended scale is bounded to 0.85–1.05 and applied only on request. Lower fuel use alone does not establish an optimum. “Fuel saving” uses the untrimmed corrected-fuel baseline; comparison below uses a fresh scale-1.00 run with fuel trims.</p>
+    <div id="fuel-comparison" hidden></div><div id="fuel-charts" class="fuel-charts"></div>
+  </section>
+  <details class="content-panel"><summary class="fw-semibold">Learning guide and model boundaries</summary><div class="mt-3"><p>Lambda = actual air–fuel ratio / stoichiometric air–fuel ratio. Lambda 1 means stoichiometric; lower is rich and higher is lean. The reference reaction is 2 C₈H₁₈ + 25 O₂ → 16 CO₂ + 18 H₂O: hydrogen in the fuel combines with oxygen to form water.</p><p>STFT is the immediate correction: measured lambda 1.05 against target 1.00 produces +6%, adding fuel. At 0.95 it produces −6%, removing fuel. LTFT learns slowly while closed loop is enabled. Disabling closed-loop control sets STFT to zero and stops new LTFT learning; it does not erase learned LTFT. Reset or Run new clears it.</p><p>Calculated fuel delivery is theoretical even at injector saturation. Measured lambda, air flow, RPM and torque are independent inputs, not simulated feedback from a physical engine. Colour shows rich/lean relative to the selected target (±0.03); warnings separately check the 0.85–1.10 educational band.</p><p>Equations and wiring inspected in the supplied Simulink file. The web model uses the supplied deterministic time-step method; no MATLAB numerical run was performed. The Simulink LTFT integrator precedes its output saturation, so its internal accumulation is retained. This is not a validated fuel-economy prediction or safe ECU calibration.</p><p class="mb-0">JSON provides named outputs and the legacy eight-value vector. CSV retains inputs for each time sample. Exports are local learning evidence; no assessment is submitted, no private integration token is generated, and the model remains separate from Engine Live Data Demonstration.</p></div></details>
+</section>
+<script type="module" src="{% static 'js/fuel-delivery/ui.mjs' %}"></script>
+{% endblock %}

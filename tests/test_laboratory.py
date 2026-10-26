@@ -34,13 +34,13 @@ def test_system_catalogues_are_scoped_to_system(client, role):
         assert environment.status_code == 200
         assert system["name"].encode() in environment.content
         if system["slug"] == "ice":
-            assert len(ICE_MODELS) == 1
+            assert len(ICE_MODELS) == 2
             for model in ICE_MODELS:
                 assert model["title"].encode() in environment.content
                 assert reverse(model["route_name"]).encode() in environment.content
             assert b"?view=" not in environment.content
             assert b"4 learning models" not in response.content
-            assert b"1 simulation model available" in response.content
+            assert b"2 simulation models available" in response.content
         else:
             assert b"No simulations added yet" in environment.content
             assert b"Scope for future models" not in environment.content
@@ -49,6 +49,7 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             for placeholder in [b"Battery behaviour", b"Fuel-cell stack", b"Hydrogen supply", b"Power split", b"Regenerative braking", b"Longitudinal motion", b"Ride and suspension"]:
                 assert placeholder not in environment.content
             assert reverse("core:engine_live_data").encode() not in environment.content
+            assert reverse("core:fuel_delivery").encode() not in environment.content
     assert client.get(reverse("core:laboratory_system", args=["unknown"])).status_code == 404
     for key in ["fuel", "idle", "cooling", "startRun", "invalid"]:
         simulation = client.get(reverse("core:engine_live_data"), {"view": key})

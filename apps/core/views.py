@@ -40,7 +40,12 @@ def learning_fact(request):
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def laboratory(request):
-    return render(request, "core/laboratory.html", {"systems": SYSTEMS})
+    return render(request, "core/laboratory.html", {"systems": SYSTEMS, "ice_model_count": len(ICE_MODELS)})
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def fuel_delivery(request):
+    return render(request, "core/fuel_delivery.html")
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
