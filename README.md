@@ -78,6 +78,11 @@ See [wheel-slip integration and source limitations](docs/wheel-slip-integration.
 The FCEV and HEV environments still have no configured simulations or
 speculative launch links.
 
+Registered simulation pages include an optional, non-blocking **Module guide**.
+The guide opens on the first visit per account and browser, gives practical
+input, interpretation and verification steps, and can be reopened at any time.
+See [walkthrough maintenance](docs/module-walkthroughs.md) when adding a model.
+
 **Engine Live Data Demonstration is temporarily withdrawn.** It is absent
 from the catalogue and its former `/virtual-lab/engine-live-data/` route,
 including `?view=` bookmarks, returns 404. Its source, equations, templates,

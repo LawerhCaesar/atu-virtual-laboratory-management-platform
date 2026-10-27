@@ -9,6 +9,7 @@
   <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'css/platform.css' %}" rel="stylesheet">
   <link href="{% static 'css/motion.css' %}" rel="stylesheet">
+  {% if walkthrough_module %}<link href="{% static 'css/walkthrough.css' %}" rel="stylesheet">{% endif %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
   <a class="visually-hidden-focusable skip-link" href="#main-content">Skip to main content</a>
@@ -44,8 +45,10 @@
         {% endfor %}
       </div>
     {% endif %}
+    {% if walkthrough_module %}{% include "includes/simulation_walkthrough.html" %}{% endif %}
     {% block content %}{% endblock %}
   </main>
+  {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}
 
   <footer class="border-top py-4 mt-auto">
     <div class="container small text-secondary">ACCRA TECHNICAL UNIVERSITY · FACULTY OF ENGINEERING<span class="d-block mt-1">Automotive practical assessment and approved demonstration resources.</span></div>

@@ -1,0 +1,23 @@
+.tour-launch { position:fixed; right:max(1rem,env(safe-area-inset-right)); bottom:max(1rem,env(safe-area-inset-bottom)); z-index:1050; background:#123569; color:#fff; border:2px solid #fff; border-radius:2rem; box-shadow:0 4px 16px #10213d44; padding:.7rem 1rem; font-weight:700; min-height:44px; }
+.tour-launch:hover,.tour-launch:focus-visible { background:#24538b; }
+.tour-launch[data-panel-visible="true"] { visibility:hidden; }
+.tour-panel { margin:0 0 1.5rem; padding:clamp(1rem,2vw,1.6rem); border:1px solid #cad9ec; border-top:5px solid #31599a; border-radius:1rem; background:#fff; box-shadow:0 10px 28px #10213d14; color:#172b47; }
+.tour-panel[hidden],#simulation-walkthrough[hidden] { display:none !important; }
+.tour-heading { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
+.tour-heading h2 { font-size:clamp(1.25rem,2vw,1.6rem); margin:.15rem 0 .35rem; }
+.tour-eyebrow,.tour-stage { font-size:.75rem; color:#31599a; text-transform:uppercase; font-weight:700; letter-spacing:.1em; margin:0; }
+.tour-intro,.tour-note { color:#42566f; font-size:.9rem; margin:.25rem 0 .75rem; }
+.tour-close { border:1px solid #8da0b5; border-radius:.5rem; background:#fff; color:#172b47; font-size:1.5rem; line-height:1; width:44px; height:44px; flex:none; }
+.tour-progress { display:flex; align-items:center; gap:.75rem; margin:1rem 0; font-size:.85rem; font-weight:700; }
+.tour-progress progress { width:min(14rem,50%); height:.65rem; accent-color:#31599a; }
+#tour-step h3 { font-size:1.15rem; margin:.35rem 0 .5rem; }
+#tour-step p { max-width:76ch; margin-bottom:.6rem; }
+.tour-callout,.tour-check { border-left:3px solid #7091c2; padding-left:.75rem; }
+.tour-check { border-color:#21805d; }
+.tour-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.8rem; }
+.tour-actions .btn { min-height:44px; }
+.tour-target-status { font-size:.85rem; margin:0; }
+.tour-target-highlight { outline:3px solid #d77a1a !important; outline-offset:4px; scroll-margin:1.5rem; }
+.tour-note { margin:.8rem 0 0; }
+@media (max-width:575px) { .tour-launch { font-size:.9rem; padding:.55rem .8rem; } .tour-panel { padding:1rem; } }
+@media (prefers-reduced-motion: reduce) { .tour-target-highlight { scroll-behavior:auto; } }

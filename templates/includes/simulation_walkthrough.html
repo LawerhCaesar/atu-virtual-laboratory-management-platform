@@ -1,0 +1,11 @@
+<div id="simulation-walkthrough" data-module="{{ walkthrough_module.route }}" data-user="{{ walkthrough_module.user_id }}" data-name="{{ walkthrough_module.name }}" hidden>
+  <button type="button" id="tour-launch" class="tour-launch" aria-label="Open module guide" aria-controls="tour-panel" aria-expanded="false">? <span>Module guide</span></button>
+  <section id="tour-panel" class="tour-panel" aria-labelledby="tour-title" tabindex="-1" hidden>
+    <div class="tour-heading"><div><p class="tour-eyebrow">Your learning companion</p><h2 id="tour-title">Explore {{ walkthrough_module.name }}</h2><p class="tour-intro">A short, optional guide to navigating the module and checking what its results mean. It won’t change your inputs.</p></div><button type="button" id="tour-close" class="tour-close" aria-label="Close module guide">×</button></div>
+    <div class="tour-progress"><span id="tour-count"></span><progress id="tour-progress-bar" max="1" value="0" aria-label="Walkthrough progress"></progress></div>
+    <div id="tour-step" aria-live="polite" aria-atomic="true"><p id="tour-stage" class="tour-stage"></p><h3 id="tour-step-title"></h3><p id="tour-description"></p><p id="tour-tip" class="tour-callout"></p><p id="tour-check" class="tour-check"></p></div>
+    <p id="tour-target-status" class="tour-target-status" role="status"></p>
+    <div class="tour-actions"><button type="button" id="tour-back" class="btn btn-outline-secondary">Back</button><button type="button" id="tour-show" class="btn btn-outline-primary">Show me</button><button type="button" id="tour-next" class="btn btn-primary">Next</button><button type="button" id="tour-skip" class="btn btn-outline-secondary">Finish later</button></div>
+    <p class="tour-note">Your progress is remembered in this browser for this account. You can reopen this guide whenever you need it.</p>
+  </section>
+</div>
