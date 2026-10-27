@@ -31,6 +31,11 @@ def output(page, key):
 def test_3d_explorer_matches_results_and_fallback(page, demo_records, live_server):
     open_fuel(page, demo_records, live_server)
     expect(page.locator("#fuel-3d-canvas canvas")).to_be_visible(timeout=20000)
+    expect(page.locator("#fuel-3d-title")).to_have_text("GV70 BASELINE · VEHICLE CONTEXT")
+    baseline = json.loads(page.locator("#fuel-vehicle-baseline").text_content())
+    assert baseline["length_m"] == 4.715 and baseline["wheelbase_m"] == 2.875
+    assert baseline["wheel_radius_m"] == 0.371 and baseline["front_track_m"] == 1.649
+    assert baseline["front_overhang_m"] == 0.845 and baseline["rear_overhang_m"] == 0.995
     expect(page.locator("#fuel-3d-flow")).to_have_text("1.701 g/s")
     expect(page.locator("#fuel-3d-pulse")).to_have_text("8.471 ms")
     page.get_by_label("Air flow (g/s)", exact=True).fill("50")
@@ -38,8 +43,14 @@ def test_3d_explorer_matches_results_and_fallback(page, demo_records, live_serve
     expect(page.locator("#fuel-3d-pulse")).to_have_text(output(page, "injectorPulseWidthMs").inner_text() + " ms")
     page.get_by_role("button", name="Injector", exact=True).click()
     expect(page.locator("#fuel-component-explanation")).to_contain_text("dead time")
+    expect(page.locator("#fuel-3d-title")).to_have_text("FUEL DELIVERY · INJECTOR CUTAWAY")
+    page.get_by_role("button", name="Vehicle context", exact=True).click()
+    expect(page.locator("#fuel-3d-title")).to_have_text("GV70 BASELINE · VEHICLE CONTEXT")
+    page.get_by_role("button", name="Zoom in", exact=True).click()
+    page.get_by_role("button", name="Zoom out", exact=True).click()
     page.get_by_role("button", name="2D schematic", exact=True).click()
     expect(page.locator("#fuel-schematic")).to_be_visible()
+    expect(page.locator("#fuel-3d-modes")).not_to_be_visible()
     page.get_by_role("button", name="3D view", exact=True).click()
     expect(page.locator("#fuel-3d-canvas canvas")).to_be_visible()
     page.get_by_role("button", name="Reset camera", exact=True).click()

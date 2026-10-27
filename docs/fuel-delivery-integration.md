@@ -25,6 +25,10 @@ No global simulation state, telemetry or third-party generation request is used.
 
 The locally bundled Three.js scene is a generic teaching assembly, not a measured CAD model. The displayed fuel flow, injector pulse width and duty use the same current calculation as the KPI cards. A deliberately slowed representative pulse uses duty and the calculated dead-time fraction; the fuel path, droplets, cylinder, piston position and spray shape are illustrative. The source model does not calculate tank depletion, pump dynamics, crank angle or spray physics. Component buttons point the camera at each part and explain it; orbit, zoom and reset are available. A labelled 2D schematic is retained as a user-selectable view and automatic WebGL fallback. Reduced-motion settings turn off illustrative playback by default. `node scripts/sync_assets.mjs` rebuilds the locally served 3D bundle from `frontend/fuel-delivery-3d.mjs` and the pinned Three.js package.
 
+The vehicle-context perspective uses the shared GV70 project baseline for overall length, width and height, wheelbase, front and rear track and tyre radius, directly from the server-provided baseline. The stylised body outline, component positions and routing are illustrative and do not represent verified GV70 geometry. The separate injector cutaway is enlarged and not to scale. This visual reference does not change the fuel calculation, its inputs or its original source assumptions.
+
+For axle placement the view also uses the 2025 Australian GV70 specification's 0.845 m front and 0.995 m rear overhangs ([Genesis specification](https://www.genesis.com/content/dam/genesis/au/en/documents/2006650_GV70%2BMY25%2BModel%2BLaunch_v0.3.pdf)). These additional visual dimensions are not simulation inputs; configurations can differ by market and model year.
+
 ## Sources and source audit
 
 Supplied on 26 October 2026:

@@ -7,6 +7,9 @@ VEHICLE_BASELINE = {
     "tyre_size": "235/55R19",
     "wheel_radius_m": 0.371,
     "wheelbase_m": 2.875,
+    # 2025 GV70 Australian specification: visual placement only.
+    "front_overhang_m": 0.845,
+    "rear_overhang_m": 0.995,
     "front_track_m": 1.649,
     "rear_track_m": 1.665,
     "average_track_m": 1.657,

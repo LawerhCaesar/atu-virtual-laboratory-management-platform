@@ -12,7 +12,7 @@ function initialise() {
   };
   const sim = new FuelSimulation(), controls = {}, cells = {};
   let draft = {...DEFAULTS}, valid = true, interval = null, stopped = false, errorKind = "Input error";
-  let scene3d = null, sceneFailed = false, view3d = true, sceneOnscreen = false;
+  let scene3d = null, sceneFailed = false, view3d = true, sceneOnscreen = false, sceneMode = 'vehicle';
   const stage3d = byId("fuel-3d-stage"), host3d = byId("fuel-3d-canvas"), schematic = byId("fuel-schematic");
   const sceneObserver = new IntersectionObserver(entries => { sceneOnscreen = entries[0].isIntersecting; scene3d?.setVisible(view3d && sceneOnscreen); });
   sceneObserver.observe(stage3d);
@@ -22,12 +22,24 @@ function initialise() {
     byId("fuel-view-3d").setAttribute("aria-pressed", String(view3d));
     byId("fuel-view-schematic").setAttribute("aria-pressed", String(!view3d));
     byId("fuel-view-reset").hidden = !view3d;
+    byId("fuel-3d-modes").hidden = !view3d;
     scene3d?.setVisible(view3d && sceneOnscreen);
+  };
+  const setSceneMode = mode => {
+    sceneMode = mode;
+    byId('fuel-mode-vehicle').setAttribute('aria-pressed', String(mode === 'vehicle'));
+    byId('fuel-mode-detail').setAttribute('aria-pressed', String(mode === 'detail'));
+    byId('fuel-3d-title').textContent = mode === 'vehicle' ? 'GV70 BASELINE · VEHICLE CONTEXT' : 'FUEL DELIVERY · INJECTOR CUTAWAY';
+    scene3d?.setMode(mode);
   };
   const fail3d = () => { sceneFailed = true; scene3d?.dispose(); scene3d = null; byId("fuel-view-3d").disabled = true; byId("fuel-3d-error").hidden = false; byId("fuel-3d-error").textContent = "3D is unavailable on this device or browser. The interactive 2D schematic remains available."; showView(false); };
   byId("fuel-view-3d").addEventListener("click", () => showView(true));
   byId("fuel-view-schematic").addEventListener("click", () => showView(false));
   byId("fuel-view-reset").addEventListener("click", () => scene3d?.reset());
+  byId('fuel-mode-vehicle').addEventListener('click', () => setSceneMode('vehicle'));
+  byId('fuel-mode-detail').addEventListener('click', () => setSceneMode('detail'));
+  byId('fuel-zoom-in').addEventListener('click', () => scene3d?.zoom(.8));
+  byId('fuel-zoom-out').addEventListener('click', () => scene3d?.zoom(1.25));
   host3d.addEventListener("fuel3dunavailable", fail3d);
   const media = matchMedia("(prefers-reduced-motion: reduce)");
   const motion = byId("fuel-motion"); motion.checked = !media.matches;
@@ -260,7 +272,7 @@ function initialise() {
   root.querySelectorAll("[data-component]").forEach(button => button.addEventListener("click", () => {
     root.querySelectorAll("[data-component]").forEach(other => other.setAttribute("aria-pressed", String(other === button)));
     byId("fuel-component-explanation").textContent = descriptions[button.dataset.component];
-    scene3d?.focus(button.dataset.component);
+    setSceneMode('detail'); scene3d?.focus(button.dataset.component);
   }));
   function render() {
     const o = sim.result.outputs;
@@ -333,7 +345,7 @@ function initialise() {
   render(); frame = requestAnimationFrame(animate);
   import("./fuel-3d.bundle.mjs").then(({createFuelScene}) => {
     if (stopped || sceneFailed) return;
-    try { scene3d = createFuelScene(host3d); scene3d.setVisible(view3d && sceneOnscreen); render(); }
+    try { const baseline=JSON.parse(byId('fuel-vehicle-baseline').textContent); scene3d = createFuelScene(host3d, baseline); scene3d.setMode(sceneMode); scene3d.setVisible(view3d && sceneOnscreen); render(); }
     catch { fail3d(); }
   }).catch(fail3d);
 }
