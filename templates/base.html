@@ -47,6 +47,7 @@
     {% endif %}
     {% if walkthrough_module %}{% include "includes/simulation_walkthrough.html" %}{% endif %}
     {% block content %}{% endblock %}
+    {% if vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
   </main>
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}
 

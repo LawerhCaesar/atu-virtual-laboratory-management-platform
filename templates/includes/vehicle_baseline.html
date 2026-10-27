@@ -1,0 +1,17 @@
+<details class="content-panel mt-4 vehicle-baseline">
+  <summary class="fw-semibold">Common vehicle reference and model-specific assumptions</summary>
+  <div class="mt-3 small">
+    <p>The platform uses the {{ vehicle_baseline.identity }} as its common vehicle reference. Generic educational illustrations should not be treated as verified GV70 scans or manufacturer models.</p>
+    <p>Reference values: {{ vehicle_baseline.mass_kg }} kg modelling mass; {{ vehicle_baseline.wheel_count }} wheels; {{ vehicle_baseline.tyre_size }} tyres; {{ vehicle_baseline.wheel_radius_m|floatformat:3 }} m wheel radius; {{ vehicle_baseline.wheelbase_m|floatformat:3 }} m wheelbase; {{ vehicle_baseline.length_m|floatformat:3 }} m length, {{ vehicle_baseline.width_m|floatformat:3 }} m width and {{ vehicle_baseline.height_m|floatformat:3 }} m height. The baseline centre-of-gravity height of {{ vehicle_baseline.cg_height_m|floatformat:3 }} m is an assumption.</p>
+    {% if walkthrough_module.route == "core:brakelab" %}
+      <p>BrakeLab retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Mass is adjustable; wheel radius is a fixed calibration in this model. Its numerical outputs therefore do not use the common baseline by default.</p>
+    {% elif walkthrough_module.route == "core:wheel_slip" %}
+      <p>Wheel-Slip retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Both are adjustable in the inputs. Its numerical outputs therefore do not use the common baseline by default.</p>
+    {% elif walkthrough_module.route == "core:fuel_delivery" %}
+      <p>The fuel simulation does not model vehicle geometry or mass. Its 3D fuel assembly is generic, not verified GV70 component geometry.</p>
+    {% elif walkthrough_module.route == "core:micro_hybrid" %}
+      <p>The stop-start calculation does not use a vehicle body, mass or wheel dimensions. Its car and traffic-light sequence is illustrative.</p>
+    {% endif %}
+    <p class="mb-0">Model-specific operating values and adjustable scenarios are described in each module. The baseline does not validate an individual model's equations or physical predictions.</p>
+  </div>
+</details>

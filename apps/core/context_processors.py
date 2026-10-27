@@ -15,9 +15,11 @@ def simulation_walkthrough(request):
     if not route:
         return {}
     from .laboratory import SYSTEM_MODELS
+    from .vehicle_baseline import VEHICLE_BASELINE
 
     for models in SYSTEM_MODELS.values():
         for model in models:
             if model["route_name"] == route:
-                return {"walkthrough_module": {"route": route, "name": model["title"], "user_id": str(request.user.pk)}}
+                return {"walkthrough_module": {"route": route, "name": model["title"], "user_id": str(request.user.pk)},
+                        "vehicle_baseline": VEHICLE_BASELINE}
     return {}

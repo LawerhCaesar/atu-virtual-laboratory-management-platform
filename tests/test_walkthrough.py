@@ -18,7 +18,7 @@ def test_guide_content_contract():
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("route", ["core:fuel_delivery", "core:brakelab", "core:wheel_slip"])
+@pytest.mark.parametrize("route", ["core:fuel_delivery", "core:brakelab", "core:wheel_slip", "core:micro_hybrid"])
 def test_active_module_renders_reusable_guide(client, route):
     user = User.objects.create_user(email=f"{route.replace(':', '-')}@example.test", full_name="Tutorial QA",
         password="SyntheticPass!742", role=User.Role.STUDENT, approval_status=User.ApprovalStatus.ACTIVE)
@@ -29,6 +29,10 @@ def test_active_module_renders_reusable_guide(client, route):
     assert f'data-module="{route}"'.encode() in response.content
     assert b'js/walkthrough/ui.mjs' in response.content
     assert b'data-user="' + str(user.pk).encode() + b'"' in response.content
+    assert b'Genesis GV70' in response.content
+    assert b'0.371 m wheel radius' in response.content
+    if route in ("core:brakelab", "core:wheel_slip"):
+        assert b'1,500 kg vehicle mass and 0.31 m wheel radius' in response.content
 
 
 def test_catalogue_registration_automatically_enables_future_module(monkeypatch):
