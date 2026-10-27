@@ -56,6 +56,10 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert b"Regenerative and Friction Brake-Force Allocation" in environment.content
             assert reverse("core:brakelab").encode() in environment.content
             assert reverse("core:fuel_delivery").encode() not in environment.content
+        elif system["slug"] == "vehicle-dynamics":
+            assert b"Wheel-Slip Control Using ABS and TCS" in environment.content
+            assert reverse("core:wheel_slip").encode() in environment.content
+            assert reverse("core:fuel_delivery").encode() not in environment.content
         else:
             assert b"No simulations added yet" in environment.content
             assert b"Scope for future models" not in environment.content

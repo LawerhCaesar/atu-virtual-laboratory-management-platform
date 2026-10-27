@@ -71,7 +71,11 @@ BEV now includes **Regenerative and Friction Brake-Force Allocation (BrakeLab)**
 at `/virtual-lab/brakelab/`, with eleven editable inputs, a pure operating-point
 calculation, force/energy charts and an original illustrative braking vehicle.
 See [BrakeLab integration and source limitations](docs/brakelab-integration.md).
-The FCEV, HEV and VD environments still have no configured simulations or
+Vehicle Dynamics includes **Wheel-Slip Control Using ABS and TCS** at
+`/virtual-lab/vehicle-dynamics/wheel-slip-abs-tcs/`, with fixed-step simulation,
+controller states, full-resolution exports and an illustrative vehicle.
+See [wheel-slip integration and source limitations](docs/wheel-slip-integration.md).
+The FCEV and HEV environments still have no configured simulations or
 speculative launch links.
 
 **Engine Live Data Demonstration is temporarily withdrawn.** It is absent

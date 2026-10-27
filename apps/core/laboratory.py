@@ -31,4 +31,8 @@ BEV_MODELS = (
     {"title": "Regenerative and Friction Brake-Force Allocation", "route_name": "core:brakelab",
      "description": "BrakeLab: adjust vehicle, battery and motor inputs to explore braking allocation, limiting conditions and an illustrative energy-flow vehicle."},
 )
-SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS}
+VEHICLE_DYNAMICS_MODELS = (
+    {"title": "Wheel-Slip Control Using ABS and TCS", "route_name": "core:wheel_slip",
+     "description": "Investigate wheel slip, road grip and controller response in braking and acceleration."},
+)
+SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS, "vehicle-dynamics": VEHICLE_DYNAMICS_MODELS}

@@ -54,6 +54,11 @@ def brakelab(request):
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def wheel_slip(request):
+    return render(request, "core/wheel_slip.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def laboratory_system(request, system_slug):
     system = next((item for item in SYSTEMS if item["slug"] == system_slug), None)
     if system is None:
