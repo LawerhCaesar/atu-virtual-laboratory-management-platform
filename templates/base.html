@@ -50,10 +50,10 @@
   </main>
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}
 
-  <footer class="border-top py-4 mt-auto{% if walkthrough_module %} walkthrough-footer{% endif %}">
-    <div class="container small text-secondary d-flex flex-column flex-md-row justify-content-between gap-3">
-      <div>ACCRA TECHNICAL UNIVERSITY · FACULTY OF ENGINEERING<span class="d-block mt-1">Automotive practical assessment and approved demonstration resources.</span></div>
-      <div class="text-md-end">Powered by Atrax-R Technologies<span class="d-block mt-1">&copy; 2026 Atrax-R Technologies</span></div>
+  <footer class="platform-footer border-top py-4 mt-auto{% if walkthrough_module %} walkthrough-footer{% endif %}">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-3">
+      <div><div class="footer-heading">Accra Technical University <span aria-hidden="true">·</span> Faculty of Engineering</div><div class="footer-detail">Automotive practical assessment and approved demonstration resources.</div></div>
+      <div class="text-md-end"><div class="footer-heading">Powered by Atrax-R Technologies</div><div class="footer-detail">&copy; 2026 Atrax-R Technologies</div></div>
     </div>
   </footer>
 </body>

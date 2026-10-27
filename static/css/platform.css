@@ -11,7 +11,12 @@
 }
 
 html, body { min-height: 100%; }
+@font-face { font-family: "Poppins Footer"; src: url("../fonts/poppins/Poppins-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: "Poppins Footer"; src: url("../fonts/poppins/Poppins-Medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
 body { display: flex; flex-direction: column; color: var(--atu-ink); background: var(--atu-mist); font-family: Aptos, "Trebuchet MS", "Segoe UI", Arial, sans-serif; }
+.platform-footer { font-family: "Poppins Footer", "Avenir Next", "Segoe UI", sans-serif; }
+.footer-heading { color: #283b55; font-size: .78rem; font-weight: 500; letter-spacing: .015em; line-height: 1.6; }
+.footer-detail { margin-top: .35rem; color: #566578; font-size: .72rem; font-weight: 400; line-height: 1.7; }
 h1, h2, .navbar-brand { font-family: Cambria, Georgia, "Times New Roman", serif; }
 h1, h2 { color: #08162b; letter-spacing: -.035em; }
 .brand-lockup { display: flex; align-items: center; gap: .75rem; }
