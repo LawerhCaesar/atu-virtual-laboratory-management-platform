@@ -21,7 +21,7 @@ from apps.practicals.models import ApprovedResource, Assessment, PracticalSubmis
 from .forms import AdministratorNoticeForm, PlatformSettingsForm, SupportRequestForm, SupportResponseForm
 from .models import AdministratorNotice, Notification, PlatformSettings, SupportRequest, is_internal_link
 from .services import cancel_notice, notice_recipients, notify, send_notice
-from .laboratory import ENGINE_MODEL_NAME, ENGINE_VIEW_KEYS, ICE_MODELS, SYSTEMS
+from .laboratory import ENGINE_MODEL_NAME, ENGINE_VIEW_KEYS, SYSTEM_MODELS, SYSTEMS
 from .learning_facts import backup_fact, random_fact
 
 
@@ -40,7 +40,7 @@ def learning_fact(request):
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def laboratory(request):
-    return render(request, "core/laboratory.html", {"systems": SYSTEMS, "ice_model_count": len(ICE_MODELS)})
+    return render(request, "core/laboratory.html", {"systems": [{**s, "model_count": len(SYSTEM_MODELS.get(s["slug"], ()))} for s in SYSTEMS]})
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
@@ -49,12 +49,17 @@ def fuel_delivery(request):
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def brakelab(request):
+    return render(request, "core/brakelab.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def laboratory_system(request, system_slug):
     system = next((item for item in SYSTEMS if item["slug"] == system_slug), None)
     if system is None:
         raise Http404("Unknown laboratory system")
     return render(request, "core/laboratory_system.html", {
-        "system": system, "models": ICE_MODELS if system_slug == "ice" else (),
+        "system": system, "models": SYSTEM_MODELS.get(system_slug, ()),
     })
 
 

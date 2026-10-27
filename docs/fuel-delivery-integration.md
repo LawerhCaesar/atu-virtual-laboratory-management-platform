@@ -29,9 +29,21 @@ Supplied on 26 October 2026:
 - `Fuel_Delivery_Virtual_Platform_Programmer_Guide.docx`.
 - `Fuel_Delivery_Optimisation_All_In_One.slx`.
 
-The separate Data and Use Guide was not supplied. No MATLAB numerical run has
-been performed, so this is verification against the supplied equations, wiring
-and rounded acceptance table, not a claim of solver-to-solver validation.
+The separate Data and Use Guide was unavailable at the initial implementation.
+It was subsequently supplied in `Downloads/Fuel Delivery Module` and audited on
+26 October 2026, together with both programmer documents, all rendered guide
+pages/figures, the actual SLX, and the Programmer Guide's embedded shared-chat
+link. Its SHA-256 is
+`d0ee8755259d08337cfda7e009235d1ce78f84af9d4019bd98563899f9069859`.
+The later source confirms the current defaults/ranges, parameter purposes,
+gain-zero behaviour and educational boundaries. Historical ignition scope was
+superseded by fuel-delivery scope; it has not been restored. Inaccessible linked
+papers are not claimed as fully reviewed or as physical validation.
+
+No MATLAB numerical run has been performed, so this is verification against the
+supplied equations, wiring and rounded acceptance table, not solver-to-solver
+validation. Constant-input analytic checks show convergence as the web time step
+is reduced; these are not MATLAB runs or real-engine measurements.
 
 The SLX SHA-256 is
 `655656079f3411e887056eac1bdf68978f3d4da28ac2861b2b31cd16224fa492`.
@@ -67,23 +79,44 @@ All 15 model inputs and the duration/step settings have units, numeric editors,
 keyboard sliders and touch-sized minus/plus buttons. Seven editable presets
 start from defaults. Out-of-classroom-range inputs show warnings without silently
 altering the equations. Non-finite or unsafe denominator inputs are errors.
+Every input has purpose help; numeric explanations use keyboard/touch-accessible
+disclosures. Soft-range sliders expand to represent typed values, and nudges
+retain their step outside classroom guidance instead of snapping to a boundary.
 The optimisation scale is explicitly bounded to 0.85–1.05, duration to 5–120 s
 and step to 0.02–1 s, bounding each run to 6,000 full-size steps.
 
 Run new clears state/history. Pause and Resume retain them. Edits pause the
 run and recalculate without advancing time. History retains each sample's
 own inputs, including edits during a paused run. Reset restores all defaults.
+An edit that makes duration shorter than recorded elapsed time is rejected,
+with a field-specific message to Reset before selecting a shorter run. The
+recorded time/settings/history remain unchanged, and exports are blocked until
+the invalid draft is corrected or Reset. This prevents a 30-second result from
+being relabelled as a five-second run.
 Backgrounding/navigation pauses time. Reduced motion disables illustrative
 animation by default and honours preference changes.
+
+Calculation errors during stepping or comparison stop playback, invalidate the
+controller status, preserve last-valid readings/history and display a clear error.
+Resume/comparison/exports are blocked until correction or Reset. Controller
+`payload()` and `csv()` also reject stale evidence after a calculation failure.
+Non-finite outputs and non-positive computed fuel/flow (including numerical
+underflow) are explicit errors, not silently corrected source equations.
 
 The responsive SVG fuel path shows source, rail, injector and cylinder. Buttons
 explain each component. Flow thickness follows calculated g/s; injector/spray
 width follows calculated pulse width; opening cadence follows RPM with an
 explicit illustrative compression of at most 1.5 cycles/s. A smooth, non-strobing
-pulse changes opening/spray opacity. Pausing stops it. Mixture colour reflects
+pulse changes opening/spray opacity; the cylinder also has a restrained
+injection-event highlight. Pausing stops it.
+Disabling motion, Pause and reduced-motion preference changes return the event
+cue to its static state. Mixture colour reflects
 predicted lambda relative to target (0.03 tolerance), with text labels as well.
 Duty and cumulative-fuel progress meters show numeric values and explicit
-scales. These are not validated geometry, spray, combustion or tank-level models.
+scales. The duty gauge has normal (≤85%), high (>85%) and saturated (100%) states,
+distinct visual accents, a text caption and accessible value text; warnings do
+not depend on colour alone. These are not validated geometry, spray, combustion
+or tank-level models.
 No vehicle speed or vehicle movement is invented from RPM.
 
 Six labelled SVG charts show target/measured/predicted lambda, trims, flow,
@@ -92,6 +125,9 @@ Charts decimate display points only; JSON/CSV keep every full-resolution sample.
 The table and bars compare fresh full-duration baseline and adjusted runs with
 identical current inputs except the optimisation scale. This is not a replay
 of an edited run. Editing/reset/new run invalidates a previous comparison.
+Compare, Apply recommended scale and JSON/CSV exports are in the top toolbar,
+with an analysis jump link. Learning help explains the nominal gasoline 14.7:1
+mass ratio and that zero learning gain freezes LTFT without disabling STFT.
 
 Saturation, >85% duty, out-of-band lambda, savings off target and meaningless
 near-zero-power BSFC remain explicit. The compatibility vector keeps finite
@@ -119,6 +155,15 @@ cannot export stale results. JSON/CSV are local learning evidence, following
 the existing engine export pattern. No assessment is auto-submitted and no
 unsigned browser payload is accepted as a signed external-resource callback.
 The existing short-lived signed-return assessment workflow remains unchanged.
+
+The hardening revision is `moduleVersion: 1.0.1`; names, units, equations and
+legacy vector order are unchanged. JSDoc explicitly describes all 17 inputs,
+state, 27 outputs, eight-element vector, status and platform payload. The pure
+`evaluate()` result contains sibling `state`, `outputs`, `integrationVector` and
+`status` fields. Controller `payload()` puts the vector at top level beside
+named outputs as in the preferred platform JSON, not nested inside outputs as
+in the illustrative Markdown TypeScript example. Source correction coefficients
+and educational warning thresholds are named separately.
 
 ## Hyper3D assessment
 

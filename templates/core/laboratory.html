@@ -9,7 +9,7 @@
   <article class="lab-system-card lab-theme-{{ system.slug }}">
     <span class="lab-code" aria-hidden="true">{{ system.code }}</span>
     <h2 class="h3">{{ system.name }}</h2><p>{{ system.description }}</p>
-    <p class="lab-availability">{% if system.slug == 'ice' %}{{ ice_model_count }} simulation model{{ ice_model_count|pluralize }} available{% else %}No simulations added yet{% endif %}</p>
+    <p class="lab-availability">{% if system.model_count %}{{ system.model_count }} simulation model{{ system.model_count|pluralize }} available{% else %}No simulations added yet{% endif %}</p>
     <a class="btn lab-enter" href="{% url 'core:laboratory_system' system.slug %}">Enter {{ system.code }} environment <span aria-hidden="true">→</span></a>
   </article>
 {% endfor %}

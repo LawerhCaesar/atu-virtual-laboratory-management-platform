@@ -67,8 +67,12 @@ active simulation: **Fuel Delivery Optimisation**, with its own inputs, animated
 fuel-path schematic, deterministic fuel-trim/consumption calculations, plots,
 baseline comparison and exports. See [fuel-delivery integration and source
 verification](docs/fuel-delivery-integration.md).
-The other environments have no simulations added, with no speculative model
-entries or launch links.
+BEV now includes **Regenerative and Friction Brake-Force Allocation (BrakeLab)**
+at `/virtual-lab/brakelab/`, with eleven editable inputs, a pure operating-point
+calculation, force/energy charts and an original illustrative braking vehicle.
+See [BrakeLab integration and source limitations](docs/brakelab-integration.md).
+The FCEV, HEV and VD environments still have no configured simulations or
+speculative launch links.
 
 **Engine Live Data Demonstration is temporarily withdrawn.** It is absent
 from the catalogue and its former `/virtual-lab/engine-live-data/` route,

@@ -40,13 +40,17 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
         colours.add(page.locator(".lab-system-hero").evaluate("e => getComputedStyle(e).backgroundColor"))
         expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
         expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_have_count(0)
-        if system["slug"] != "ice":
+        if system["slug"] not in ("ice", "bev"):
             expect(page.get_by_role("heading", name="No simulations added yet", exact=True)).to_be_visible()
             expect(page.locator(".lab-model-grid article, .lab-launch")).to_have_count(0)
             expect(page.get_by_text("Scope for future models", exact=False)).to_have_count(0)
-        else:
+        elif system["slug"] == "ice":
             expect(page.locator(".lab-model-grid article")).to_have_count(1)
             expect(page.get_by_role("heading", name="Fuel Delivery Optimisation", exact=True)).to_be_visible()
+        else:
+            expect(page.locator(".lab-model-grid article")).to_have_count(1)
+            expect(page.get_by_role("heading", name="Regenerative and Friction Brake-Force Allocation", exact=True)).to_be_visible()
+            expect(page.get_by_role("link", name="Open Fuel Delivery Optimisation", exact=True)).to_have_count(0)
         check_page(system["slug"])
         page.get_by_role("link", name="All systems", exact=True).click()
     assert len(colours) == 5

@@ -1,8 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {DEFAULTS, PRESETS, evaluate, initialState, stepFuelDeliveryModel, validate} from "../../static/js/fuel-delivery/model.mjs";
+import {DEFAULTS, FIELDS, PRESETS, evaluate, initialState, stepFuelDeliveryModel, validate} from "../../static/js/fuel-delivery/model.mjs";
 import {FuelSimulation} from "../../static/js/fuel-delivery/controller.mjs";
+import {nudgeValue, sliderBounds} from "../../static/js/fuel-delivery/controls.mjs";
 
 const near = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual-expected) <= tolerance, `${actual} != ${expected}`);
 const complete = (inputs = DEFAULTS) => { const s = new FuelSimulation(inputs); s.start(); while(s.running) s.tick(); return s; };
@@ -83,6 +84,103 @@ test("scale-only fresh baseline comparison preserves trims and does not claim op
   near(baseline.outputs.ltftPct,adjusted.outputs.ltftPct);
   assert.equal(baseline.inputs.fuelOptimisationScale,1);
   near(sim.state.simulationTimeS,0);
+});
+
+const extremeInputs = {...DEFAULTS,targetLambda:5e-305,injectorRatedFlowCcMin:500,
+  fuelRailPressureKPa:400,ltftLearningGainPerS:.01,simulationDurationS:120};
+
+test("runtime calculation failures pause, preserve history and block stale evidence until recovery", () => {
+  const sim = new FuelSimulation(extremeInputs); sim.start();
+  assert.doesNotThrow(() => { while (sim.running) sim.tick(); });
+  assert.match(sim.error, /non-finite/);
+  near(sim.state.simulationTimeS,4.1);
+  assert.equal(sim.result.status.valid,false);
+  assert.equal(sim.result.status.severity,"error");
+  assert.equal(sim.result.status.optimisationAcceptable,false);
+  assert.equal(sim.history.length,41);
+  assert.equal(sim.history.at(-1).simulationTimeS,sim.state.simulationTimeS);
+  const snapshot=JSON.stringify(sim.history);
+  assert.throws(() => sim.payload(),/Calculation error/);
+  assert.throws(() => sim.csv(),/Calculation error/);
+  assert.throws(() => sim.compare(),/Calculation error/);
+  sim.resume(); assert.equal(sim.running,false); assert.equal(sim.tick(),false);
+  assert.equal(JSON.stringify(sim.history),snapshot);
+  sim.edit({...DEFAULTS,simulationDurationS:120});
+  assert.equal(sim.error,null); assert.equal(sim.result.status.valid,true);
+  sim.resume(); assert.equal(sim.tick(),true);
+  assert.ok(sim.state.simulationTimeS>4.1); assert.equal(sim.history.length,42);
+  sim.reset(); assert.equal(sim.error,null); assert.equal(sim.history.length,0);
+  assert.equal(sim.payload().simulationTimeS,0);
+});
+
+test("comparison failure is explicit, stops playback and cannot publish a partial comparison", () => {
+  const sim = new FuelSimulation(extremeInputs); sim.start(); sim.tick();
+  const state={...sim.state}, rows=JSON.stringify(sim.history);
+  assert.throws(() => sim.compare(),/non-finite/);
+  assert.match(sim.error,/Comparison failed/); assert.equal(sim.running,false);
+  assert.equal(sim.comparison,null); assert.deepEqual(sim.state,state);
+  assert.equal(JSON.stringify(sim.history),rows);
+  assert.throws(() => sim.payload(),/Calculation error/);
+  sim.edit(DEFAULTS); assert.equal(sim.error,null);
+  assert.ok(sim.compare().baseline.status.valid);
+});
+
+test("shorter-than-recorded duration is rejected without relabelling preserved evidence", () => {
+  const sim=complete(); const before=sim.payload(), history=JSON.stringify(sim.history);
+  assert.throws(() => sim.edit({...sim.inputs,simulationDurationS:5}),error =>
+    error.field === "simulationDurationS" && /Reset/.test(error.message));
+  assert.equal(sim.running,false); assert.deepEqual(sim.payload(),before);
+  assert.equal(JSON.stringify(sim.history),history);
+  sim.reset(); sim.edit({...DEFAULTS,simulationDurationS:5}); sim.start();
+  while(sim.running) sim.tick();
+  near(sim.payload().simulationTimeS,5); assert.equal(sim.payload().simulationSettings.durationS,5);
+});
+
+test("numeric underflow cannot produce valid zero fuel or flow", () => {
+  assert.throws(() => evaluate({...DEFAULTS,airFlowGps:1e-312,injectorFlowBiasPct:-99.9999999999}),/non-positive/);
+  assert.throws(() => evaluate({...DEFAULTS,injectorRatedFlowCcMin:1e-320,fuelRailPressureKPa:1e-320}),/non-finite|non-positive/);
+});
+
+test("all field purposes are available and soft-bound nudges never snap to classroom limits", () => {
+  for(const f of FIELDS) assert.ok(f.purpose.length>40, f.key);
+  const rpm=FIELDS.find(f=>f.key==="engineSpeedRpm");
+  assert.equal(nudgeValue(rpm,6500,-1),6450);
+  assert.equal(nudgeValue(rpm,6500,1),6550);
+  assert.deepEqual(sliderBounds(rpm,6500),{min:600,max:6500});
+  const lambda=FIELDS.find(f=>f.key==="targetLambda");
+  assert.equal(nudgeValue(lambda,1.025,1),1.035);
+  assert.deepEqual(sliderBounds(lambda,.75),{min:.75,max:1.1});
+  for (const key of ["fuelOptimisationScale","simulationDurationS","timeStepS"]) {
+    const f=FIELDS.find(f=>f.key===key);
+    assert.equal(nudgeValue(f,f.max,1),f.max);
+    assert.equal(nudgeValue(f,f.min,-1),f.min);
+    assert.deepEqual(sliderBounds(f,f.max+10),{min:f.min,max:f.max});
+  }
+});
+
+test("2000 seeded classroom scenarios retain deterministic finite and positive results", () => {
+  let seed=20261026;
+  const random=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)/4294967296;};
+  for(let n=0;n<2000;n++) {
+    const input={...DEFAULTS};
+    for(const f of FIELDS) {
+      if(["simulationDurationS","timeStepS"].includes(f.key)) continue;
+      input[f.key]=typeof f.value==="boolean" ? random()>.5 : f.min+random()*(f.max-f.min);
+    }
+    let state=initialState();
+    for(let k=0;k<4;k++) {
+      const before=JSON.stringify({input,state}), result=stepFuelDeliveryModel(input,state,.1), o=result.outputs;
+      assert.equal(JSON.stringify({input,state}),before);
+      assert.deepEqual(result,stepFuelDeliveryModel(input,state,.1));
+      assert.ok(Object.values(o).every(Number.isFinite));
+      assert.ok(o.finalFuelMgPerEvent>0 && o.correctedInjectorFlowMgPerMs>0 && o.fuelFlowGps>0);
+      assert.ok(Math.abs(o.stftPct)<=25 && Math.abs(o.ltftPct)<=20);
+      assert.ok(o.injectorDutyCyclePct>=0 && o.injectorDutyCyclePct<=100);
+      near(result.state.cumulativeFuelG-state.cumulativeFuelG,o.fuelFlowGps*.1,1e-8);
+      near(o.fuelFlowLph,o.fuelFlowGps*3.6/.745,1e-8);
+      assert.equal(result.integrationVector.length,8); state=result.state;
+    }
+  }
 });
 
 // Independent reference evaluates the inspected SLX block graph, not copies of

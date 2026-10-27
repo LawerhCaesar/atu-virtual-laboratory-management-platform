@@ -26,3 +26,9 @@ ICE_MODELS = (
     {"title": "Fuel Delivery Optimisation", "route_name": "core:fuel_delivery",
      "description": "Explore injector delivery, fuel trims and consumption with an interactive fuel path, time-series plots and baseline comparison."},
 )
+
+BEV_MODELS = (
+    {"title": "Regenerative and Friction Brake-Force Allocation", "route_name": "core:brakelab",
+     "description": "BrakeLab: adjust vehicle, battery and motor inputs to explore braking allocation, limiting conditions and an illustrative energy-flow vehicle."},
+)
+SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS}

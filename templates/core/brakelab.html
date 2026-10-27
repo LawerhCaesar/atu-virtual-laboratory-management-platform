@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}BrakeLab · ATU Virtual Laboratory{% endblock %}
+{% block body_class %}fuel-delivery-page brake-lab-page{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/fuel-delivery.css' %}">
+<link rel="stylesheet" href="{% static 'css/brakelab.css' %}">
+<section id="brakelab" aria-labelledby="brake-title">
+  <nav class="small mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'bev' %}">BEV environment</a> / <span aria-current="page">BrakeLab</span></nav>
+  <div class="page-heading"><div><p class="eyebrow">BEV laboratory · Braking and energy recovery</p><h1 id="brake-title">Regenerative and Friction Brake-Force Allocation</h1><p class="text-secondary mb-0">Discover how driver demand, motor limits and battery acceptance share the braking work.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:laboratory_system' 'bev' %}">Back to BEV models</a></div>
+  <p class="small text-secondary">BrakeLab · Educational operating-point model, not a certified production brake controller. No hardware is connected. Implemented from the supplied programmer guide and prompt; no Simulink-file or MATLAB runtime verification is claimed.</p>
+  <noscript><p class="alert alert-warning">Enable JavaScript to calculate and visualise BrakeLab. Calculations run locally without MATLAB or a calculation API.</p></noscript>
+  <div class="fuel-toolbar content-panel mt-0">
+    <div class="d-flex flex-wrap gap-2"><button id="brake-run" type="button" class="btn btn-primary">Run Model</button><button id="brake-pause" type="button" class="btn btn-outline-secondary" disabled>Pause</button><button id="brake-resume" type="button" class="btn btn-outline-secondary" disabled>Resume</button><button id="brake-reset" type="button" class="btn btn-outline-secondary">Reset to Baseline</button><button id="brake-export" type="button" class="btn btn-outline-secondary">Export JSON</button><a class="btn btn-outline-secondary" href="#brake-input-title">Adjust inputs</a><a class="btn btn-outline-secondary" href="#brake-analysis">View analysis</a></div>
+    <label class="small"><input id="brake-live" type="checkbox" checked> Live Update previews</label>
+    <label class="small"><input id="brake-motion" type="checkbox" checked> Animate illustrative braking</label>
+    <p id="brake-mode" class="mb-0 fw-semibold" role="status">Preview</p>
+  </div>
+  <div id="brake-validation" class="alert alert-danger mt-3" role="alert" hidden></div>
+  <div class="fuel-workbench mt-4">
+    <aside class="content-panel fuel-input-panel mt-0" aria-labelledby="brake-input-title"><p class="eyebrow">01 · Inputs</p><h2 id="brake-input-title" class="h4">Operating conditions</h2><p class="small text-secondary">Drag, type or tap −/+. Editing stops playback. Live Update changes the operating-point preview; Run Model starts its illustration.</p><div id="brake-input-fields"></div><details><summary>Advanced calibration · read only</summary><p class="small text-secondary">Approved educational settings, not measured manufacturer data. Kept fixed in this interface.</p><dl id="brake-calibration" class="brake-calibration"></dl></details></aside>
+    <div class="fuel-output-area">
+      <section class="content-panel brake-visual mt-0" aria-labelledby="brake-visual-title"><p class="eyebrow">02 · Visualise the process</p><h2 id="brake-visual-title" class="h4">Follow the braking energy</h2>
+        <div class="brake-playback-readings"><p>Illustrated speed <output id="brake-speed">60.0</output> km/h</p><p>Scaled playback <output id="brake-playback-time">0.00</output> / <output id="brake-playback-duration">8.00</output> s</p></div>
+        <svg id="brake-scene" viewBox="0 0 800 360" role="img" aria-labelledby="brake-scene-title brake-scene-desc">
+          <title id="brake-scene-title">Illustrative battery electric vehicle braking</title><desc id="brake-scene-desc">An original side-view vehicle with rotating wheels, wheel-to-motor and motor-to-battery regenerative flow, and friction-disc glow. These are labelled constant-deceleration visual estimates, not a dynamic vehicle solver or temperature prediction.</desc>
+          <defs><linearGradient id="brake-body" x2="0" y2="1"><stop stop-color="#7be1c1"/><stop offset="1" stop-color="#207e69"/></linearGradient><marker id="brake-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#86e9cf"/></marker></defs>
+          <path d="M25 293 H775" stroke="#97aec5" stroke-width="3"/><path d="M25 315 H775" stroke="#536f89" stroke-width="2" stroke-dasharray="20 15"/>
+          <g id="brake-car">
+            <path d="M85 228 L115 169 Q122 155 145 153 L205 103 Q219 91 247 91 H363 Q386 91 400 108 L449 159 L509 175 Q528 183 533 203 L541 236 Q538 251 519 251 H104 Q88 251 85 228Z" fill="url(#brake-body)" stroke="#bcf5e3" stroke-width="2"/>
+            <path d="M163 151 L218 109 H278 V151Z M291 109 H359 Q375 109 384 122 L412 151 H291Z" fill="#193d57" stroke="#a3daca" stroke-width="2"/>
+            <path d="M286 166 V218 M97 214 H527" stroke="#19584e" stroke-width="2"/><rect x="108" y="188" width="29" height="9" rx="3" fill="#fff1bf"/><rect x="499" y="188" width="20" height="9" rx="3" fill="#ffa27b"/>
+            <g id="brake-wheel-left"><circle cx="170" cy="245" r="37" fill="#101c30" stroke="#a9bed1" stroke-width="3"/><circle cx="170" cy="245" r="22" fill="#526d85"/><path d="M149 245 H191 M170 224 V266" stroke="#d4e5f3" stroke-width="4"/></g>
+            <g id="brake-wheel-right"><circle cx="455" cy="245" r="37" fill="#101c30" stroke="#a9bed1" stroke-width="3"/><circle cx="455" cy="245" r="22" fill="#526d85"/><path d="M434 245 H476 M455 224 V266" stroke="#d4e5f3" stroke-width="4"/></g>
+            <g id="brake-friction-glow" opacity="0"><circle cx="170" cy="245" r="28" fill="none" stroke="#ff9970" stroke-width="7"/><circle cx="455" cy="245" r="28" fill="none" stroke="#ff9970" stroke-width="7"/></g>
+            <rect x="223" y="180" width="119" height="34" rx="7" fill="#143d42" stroke="#a7ecd8"/><text x="282" y="202" text-anchor="middle" class="brake-svg-label">BATTERY</text>
+            <rect x="365" y="190" width="51" height="28" rx="8" fill="#173953" stroke="#a7ecd8"/><text x="390" y="208" text-anchor="middle" class="brake-svg-label">M/G</text>
+            <path id="brake-wheel-flow" d="M451 208 V184 H390 V190" fill="none" stroke="#86e9cf" stroke-width="5" stroke-dasharray="8 8" marker-end="url(#brake-arrow)"/>
+            <path id="brake-charge-flow" d="M365 198 H344" fill="none" stroke="#e8cb7a" stroke-width="5" stroke-dasharray="5 5" marker-end="url(#brake-arrow)"/>
+          </g>
+          <text x="42" y="44" class="brake-svg-heading">BRAKELAB · ENERGY PATHS</text><text x="42" y="68" class="brake-svg-label">Wheel → motor-generator → battery · friction → heat</text>
+        </svg>
+        <p class="small text-secondary mt-3">Original schematic. Car travel and wheel rotation are visually compressed; speed follows a constant-deceleration estimate scaled to 1–8 seconds of screen playback. Arrow fade at low illustrated speed is a visual cue, not recalculated allocation. Friction glow shows a share, not temperature.</p>
+        <p id="brake-stop-estimate" class="small mb-0"></p>
+      </section>
+      <section class="content-panel mt-3" aria-labelledby="brake-result-title"><p class="eyebrow">03 · Calculated response</p><h2 id="brake-result-title" class="h4">Operating-point results</h2><p id="brake-result-note" class="small text-secondary"></p><p id="brake-limit" class="brake-limit fw-semibold"></p><p id="brake-balance" role="status"></p><ul id="brake-warnings" class="small"></ul><dl id="brake-kpis" class="fuel-kpis"></dl><details><summary>Calculation details</summary><dl id="brake-details" class="fuel-kpis mt-3"></dl></details><details class="mt-3"><summary>Why did regeneration reduce?</summary><p id="brake-explanation" class="small mt-2"></p></details></section>
+    </div>
+  </div>
+  <section class="content-panel" id="brake-analysis" aria-labelledby="brake-analysis-title"><p class="eyebrow">04 · Analyse the allocation</p><h2 id="brake-analysis-title">Demand, constraints and recovery</h2><p class="small text-secondary">A single operating point, not a time-series solver. All charts use the same calculated result as the numerical cards.</p>
+    <div class="brake-chart-grid"><section aria-labelledby="brake-allocation-title"><h3 id="brake-allocation-title" class="h5">Brake allocation</h3><div id="brake-allocation" class="brake-allocation" role="img" aria-label="Calculated brake allocation"><div id="brake-regen-share"></div><div id="brake-friction-share"></div></div><p id="brake-share-label" class="small"></p><p id="brake-share-note" class="small text-secondary"></p></section><section aria-labelledby="brake-force-title"><h3 id="brake-force-title" class="h5">Force-limit comparison (N)</h3><p class="small text-secondary">Smallest candidate highlighted before enable/availability gates; the active-limit banner identifies the final restriction.</p><div id="brake-force-chart"></div></section><section aria-labelledby="brake-factor-title"><h3 id="brake-factor-title" class="h5">Derating factors (0–1)</h3><div id="brake-factor-chart"></div></section><section aria-labelledby="brake-power-title"><h3 id="brake-power-title" class="h5">Power summary (kW)</h3><div id="brake-power-chart"></div></section></div>
+  </section>
+  <details class="content-panel"><summary>Learning guide and model boundaries</summary><p class="mt-3">Requested force = vehicle mass × requested deceleration. Regeneration receives the smallest available demand, motor-torque, motor-power or battery-force allowance. Friction supplies the remainder. Battery acceptance combines current/power limits with separate SOC and temperature factors.</p><p>Results remain fixed at the selected operating point during playback. SOC and temperature do not evolve, and recovered energy is not integrated. There is no road-load, ABS/ESC, tyre-grip, hydraulic, battery-electrochemical or thermal model. Stopping time/distance assume the requested constant deceleration; they are not validated stopping-performance predictions.</p><p>Brake demand and SOC are normalised to their documented ranges and negative speed to zero, with warnings retaining the raw inputs. The protected 1 N denominator means shares need not total 100% below 1 N; the original NO_BRAKING diagnostic also includes that region.</p><p class="mb-0">Core logic uses the supplied guide and canonical prompt, not an inspected BrakeModel.slx. No MATLAB or physical-vehicle validation has been performed. Local JSON exports are learning evidence, not an assessment submission or a hardware-control command.</p></details>
+</section>
+<script type="module" src="{% static 'js/brakelab/ui.mjs' %}"></script>
+{% endblock %}

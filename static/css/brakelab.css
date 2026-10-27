@@ -1,0 +1,24 @@
+.brake-lab-page .eyebrow { color: #126445; }
+.brake-lab-page .fuel-toolbar, .brake-visual { border-top: 4px solid #126445; }
+.brake-playback-readings { display: flex; flex-wrap: wrap; gap: .5rem 2rem; font-size: .85rem; font-variant-numeric: tabular-nums; }
+#brake-scene { display: block; width: 100%; border-radius: .9rem; background: radial-gradient(ellipse at 65% 30%, #254e63, #10213d); }
+.brake-svg-label { fill: #e3f4f1; font: 13px system-ui,sans-serif; }
+.brake-svg-heading { fill: #a7ecd8; font: 600 17px system-ui,sans-serif; }
+.brake-limit { padding: .7rem; border-left: 4px solid #126445; background: #edf7f2; }
+#brake-balance[data-valid="true"] { color: #126445; font-weight: 600; }
+#brake-balance[data-valid="false"] { color: #a1271c; font-weight: 600; }
+.brake-chart-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; }
+.brake-chart-grid section { min-width: 0; border: 1px solid #d5deea; border-radius: .7rem; padding: 1rem; }
+.brake-allocation { display: flex; width: 100%; height: 2rem; background: #e4eaf0; border-radius: .4rem; overflow: hidden; }
+#brake-regen-share { background: #126445; }
+#brake-friction-share { background: repeating-linear-gradient(45deg,#a44722,#a44722 5px,#bd5c31 5px,#bd5c31 10px); }
+.brake-chart-row { margin: .75rem 0; }
+.brake-chart-row p { margin: 0 0 .25rem; font-size: .85rem; }
+.brake-chart-row progress { width: 100%; height: 1rem; accent-color: #385e9a; display: block; }
+.brake-chart-row[data-minimum="true"] { border-left: 3px solid #126445; padding-left: .5rem; }
+.brake-chart-row[data-minimum="true"] progress { accent-color: #126445; }
+.brake-calibration { font-size: .8rem; overflow-wrap: anywhere; }
+.brake-calibration dt { margin-top: .5rem; }
+.brake-calibration dd { margin: 0; }
+#brake-input-title, #brake-analysis { scroll-margin-top: 1rem; }
+@media(max-width:575px) { .brake-chart-grid { grid-template-columns: minmax(0,1fr); } }

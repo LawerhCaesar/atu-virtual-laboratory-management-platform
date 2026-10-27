@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -111,7 +112,7 @@ def test_fuel_feedback_motion_pause_validation_and_fresh_navigation(page, demo_r
     expect(output(page,"cumulativeFuelG")).to_have_text("0.000")
 
 
-@pytest.mark.parametrize("width", [1280, 390])
+@pytest.mark.parametrize("width", [1280, 768, 390])
 def test_fuel_accessible_responsive_reduced_motion(page, demo_records, live_server, width):
     page.set_viewport_size({"width":width,"height":900})
     page.emulate_media(reduced_motion="reduce")
@@ -155,3 +156,162 @@ def test_fuel_every_preset_and_subsecond_settings(page,demo_records,live_server)
     expect(page.locator("#fuel-mode")).to_have_text("Complete")
     expect(page.locator("#fuel-time")).to_have_text("5.00")
     expect(page.locator("#fuel-record-status")).to_contain_text("17 recorded")
+
+
+@pytest.mark.parametrize("width", [1280, 390])
+def test_fuel_audit_input_help_nudges_and_duty_states(page, demo_records, live_server, width):
+    page.set_viewport_size({"width": width, "height": 900})
+    open_fuel(page, demo_records, live_server)
+    expect(page.locator(".fuel-toolbar #fuel-compare")).to_be_visible()
+    expect(page.locator(".fuel-toolbar #fuel-recommend")).to_be_visible()
+    expect(page.locator(".fuel-toolbar #fuel-json")).to_be_visible()
+    for field in page.locator("#fuel-input-fields input[type=number]").all():
+        key = field.get_attribute("id").replace("fuel-input-", "")
+        purpose = page.locator(f"#fuel-purpose-{key}")
+        assert len(purpose.text_content()) > 40
+        assert purpose.get_attribute("id") in field.get_attribute("aria-describedby")
+    page.get_by_text("About ltft learning gain", exact=True).click()
+    expect(page.locator("#fuel-purpose-ltftLearningGainPerS")).to_be_visible()
+    expect(page.locator("#fuel-purpose-ltftLearningGainPerS")).to_contain_text("Zero freezes")
+    rpm = page.get_by_label("Engine speed (rpm)", exact=True)
+    slider = page.get_by_label("Engine speed slider", exact=True)
+    rpm.fill("6500")
+    expect(slider).to_have_value("6500")
+    page.get_by_role("button", name="Decrease Engine speed", exact=True).click()
+    expect(rpm).to_have_value("6450")
+    expect(slider).to_have_value("6450")
+    page.get_by_role("button", name="Increase Engine speed", exact=True).click()
+    expect(rpm).to_have_value("6500")
+    page.get_by_label("Target lambda (ratio)", exact=True).fill("1.025")
+    expect(page.get_by_label("Target lambda slider", exact=True)).to_have_value("1.025")
+    page.get_by_role("button", name="Reset", exact=True).click()
+    duty = page.locator("#fuel-duty")
+    expect(duty).to_have_attribute("data-state", "normal")
+    normal_accent = duty.evaluate("e=>getComputedStyle(e).accentColor")
+    page.get_by_label("Air flow (g/s)", exact=True).fill("140")
+    expect(duty).to_have_attribute("data-state", "high")
+    expect(duty).to_have_attribute("aria-valuetext", re.compile("above 85%"))
+    high_accent = duty.evaluate("e=>getComputedStyle(e).accentColor")
+    page.get_by_label("Air flow (g/s)", exact=True).fill("200")
+    expect(duty).to_have_attribute("data-state", "saturated")
+    expect(page.locator("#fuel-duty-status")).to_contain_text("delivery is theoretical")
+    expect(duty).to_have_attribute("aria-valuetext", re.compile("Saturated"))
+    assert len({normal_accent, high_accent, duty.evaluate("e=>getComputedStyle(e).accentColor")}) == 3
+    page.add_script_tag(path="node_modules/axe-core/axe.min.js")
+    results = page.evaluate("async () => await axe.run(document.querySelector('main'), {runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}})")
+    assert not results["violations"], json.dumps(results["violations"], indent=2)
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    destination = Path("test-results/fuel-delivery")
+    destination.mkdir(parents=True, exist_ok=True)
+    page.locator(".fuel-visual").scroll_into_view_if_needed()
+    page.screenshot(path=str(destination / f"audit-duty-{width}.png"))
+
+
+def test_fuel_duration_edit_preserves_export_settings_and_requires_reset(page, demo_records, live_server):
+    open_fuel(page, demo_records, live_server)
+    page.clock.install()
+    page.get_by_role("button", name="Run new simulation", exact=True).click()
+    page.clock.run_for(30000)
+    duration = page.get_by_label("Simulation duration (s)", exact=True)
+    duration.fill("5")
+    expect(page.locator("#fuel-validation")).to_contain_text("already recorded")
+    expect(duration).to_have_attribute("aria-invalid", "true")
+    expect(page.locator("#fuel-mode")).to_have_text("Input error · paused")
+    expect(page.locator("#fuel-duration")).to_have_text("30")
+    expect(page.locator("#fuel-time")).to_have_text("30.00")
+    expect(page.locator("#fuel-record-status")).to_contain_text("300 recorded")
+    expect(page.get_by_role("button", name="Export JSON", exact=True)).to_be_disabled()
+    expect(page.get_by_role("button", name="Export CSV", exact=True)).to_be_disabled()
+    duration.fill("30")
+    with page.expect_download() as download:
+        page.get_by_role("button", name="Export JSON", exact=True).click()
+    payload = json.loads(Path(download.value.path()).read_text())
+    assert payload["simulationTimeS"] == payload["simulationSettings"]["durationS"] == 30
+    assert len(payload["history"]) == 300
+    page.get_by_role("button", name="Reset", exact=True).click()
+    duration.fill("5")
+    page.get_by_role("button", name="Run new simulation", exact=True).click()
+    page.clock.run_for(5000)
+    expect(page.locator("#fuel-mode")).to_have_text("Complete")
+    expect(page.locator("#fuel-time")).to_have_text("5.00")
+    expect(page.locator("#fuel-duration")).to_have_text("5")
+
+
+def test_fuel_calculation_errors_stop_time_block_exports_and_recover(page, demo_records, live_server):
+    open_fuel(page, demo_records, live_server)
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.clock.install()
+
+    def set_extreme():
+        for label, value in [("Injector rated flow (cc/min)", "500"),
+                             ("Fuel-rail pressure (kPa)", "400"),
+                             ("LTFT learning gain (1/s)", "0.01"),
+                             ("Simulation duration (s)", "120"),
+                             ("Target lambda (ratio)", "5e-305")]:
+            page.get_by_label(label, exact=True).fill(value)
+
+    set_extreme()
+    page.get_by_role("button", name="Run new simulation", exact=True).click()
+    page.clock.run_for(6000)
+    expect(page.locator("#fuel-mode")).to_have_text("Calculation error · paused")
+    expect(page.locator("#fuel-validation")).to_contain_text("non-finite")
+    expect(page.locator("#fuel-time")).to_have_text("4.10")
+    expect(page.get_by_role("button", name="Resume", exact=True)).to_be_disabled()
+    for name in ["Export JSON", "Export CSV", "Compare baseline and adjusted"]:
+        expect(page.get_by_role("button", name=name, exact=True)).to_be_disabled()
+    page.clock.run_for(2000)
+    expect(page.locator("#fuel-time")).to_have_text("4.10")
+    page.get_by_label("Target lambda (ratio)", exact=True).fill("1")
+    expect(page.locator("#fuel-validation")).not_to_be_visible()
+    expect(page.get_by_role("button", name="Resume", exact=True)).to_be_enabled()
+    page.get_by_role("button", name="Resume", exact=True).click()
+    page.clock.run_for(1000)
+    page.get_by_role("button", name="Pause", exact=True).click()
+    assert float(page.locator("#fuel-time").inner_text()) > 4.1
+    page.get_by_role("button", name="Reset", exact=True).click()
+    set_extreme()
+    page.get_by_role("button", name="Compare baseline and adjusted", exact=True).click()
+    expect(page.locator("#fuel-mode")).to_have_text("Calculation error · paused")
+    expect(page.locator("#fuel-validation")).to_contain_text("Comparison failed")
+    expect(page.locator("#fuel-comparison")).not_to_be_visible()
+    expect(page.get_by_role("button", name="Export JSON", exact=True)).to_be_disabled()
+    page.get_by_role("button", name="Reset", exact=True).click()
+    page.get_by_label("Air flow (g/s)", exact=True).fill("1e-312")
+    page.get_by_label("Injector flow bias (%)", exact=True).fill("-99.9999999999")
+    expect(page.locator("#fuel-validation")).to_contain_text("non-positive")
+    expect(page.get_by_role("button", name="Run new simulation", exact=True)).to_be_disabled()
+    page.get_by_role("button", name="Reset", exact=True).click()
+    expect(page.locator("#fuel-validation")).not_to_be_visible()
+    page.get_by_role("button", name="Compare baseline and adjusted", exact=True).click()
+    expect(page.locator("#fuel-comparison")).to_be_visible()
+    assert errors == []
+
+
+def test_fuel_cylinder_highlight_tracks_events_and_honours_motion_preferences(page, demo_records, live_server):
+    page.emulate_media(reduced_motion="no-preference")
+    open_fuel(page, demo_records, live_server)
+    page.clock.install()
+    cylinder = page.locator("#fuel-cylinder-fill")
+    page.get_by_role("button", name="Run new simulation", exact=True).click()
+    page.clock.run_for(400)
+    first = cylinder.get_attribute("opacity")
+    page.clock.run_for(400)
+    assert cylinder.get_attribute("opacity") != first
+    page.get_by_role("button", name="Pause", exact=True).click()
+    expect(cylinder).to_have_attribute("opacity", ".22")
+    page.clock.run_for(400)
+    expect(cylinder).to_have_attribute("opacity", ".22")
+    page.get_by_role("button", name="Resume", exact=True).click()
+    page.clock.run_for(400)
+    assert float(cylinder.get_attribute("opacity")) > .22
+    page.get_by_label("Animate illustrative flow", exact=True).uncheck()
+    page.clock.run_for(400)
+    expect(cylinder).to_have_attribute("opacity", ".22")
+    page.get_by_label("Animate illustrative flow", exact=True).check()
+    page.clock.run_for(400)
+    assert float(cylinder.get_attribute("opacity")) > .22
+    page.emulate_media(reduced_motion="reduce")
+    expect(page.get_by_label("Animate illustrative flow", exact=True)).not_to_be_checked()
+    page.clock.run_for(400)
+    expect(cylinder).to_have_attribute("opacity", ".22")

@@ -12,6 +12,8 @@
 .fuel-input { margin: .75rem 0 1.25rem; }
 .fuel-input label { font-size: .85rem; font-weight: 600; }
 .fuel-input small { font-size: .75rem; color: #536273; display: block; }
+.fuel-field-guide { margin-top: .25rem; }
+.fuel-field-guide summary { min-height: 44px; padding: .6rem 0; font-size: .8rem; color: #2857b5; cursor: pointer; }
 .fuel-number { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: .35rem; margin-top: .3rem; }
 .fuel-number .btn { padding: .3rem; }
 .fuel-number input { min-width: 0; text-align: center; font-size: 1rem; font-variant-numeric: tabular-nums; }
@@ -29,6 +31,11 @@
 .fuel-component-buttons [aria-pressed="true"] { color: white; background: #172e52; }
 .fuel-gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: .8rem; }
 .fuel-gauges progress { display: block; width: 100%; height: 1rem; accent-color: #91411c; }
+.fuel-gauges progress[data-state="normal"] { accent-color: #126445; }
+.fuel-gauges progress[data-state="high"] { accent-color: #854000; }
+.fuel-gauges progress[data-state="saturated"] { accent-color: #a1271c; }
+#fuel-duty-status[data-state="high"] { color: #854000; font-weight: 700; }
+#fuel-duty-status[data-state="saturated"] { color: #a1271c; font-weight: 700; }
 .fuel-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
 .fuel-kpis > div { padding: .8rem; background: #f4f7fb; border: 1px solid #dde5ee; border-radius: .6rem; }
 .fuel-kpis dt { font-size: .75rem; font-weight: 500; color: #536273; }
