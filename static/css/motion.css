@@ -1,6 +1,8 @@
 /* Presentation only: no navigation interception, delayed forms or hidden content. */
 @keyframes atu-rise { from { transform: translateY(7px); } to { transform: translateY(0); } }
 @keyframes atu-page-enter { from { transform: translateY(5px); } to { transform: translateY(0); } }
+@keyframes atu-surface-arrive { from { opacity: .7; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes atu-brand-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(232,197,104,.08); } 50% { box-shadow: 0 0 0 7px rgba(232,197,104,.12); } }
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; }
   ::view-transition-old(root) { animation-duration: 140ms; }
@@ -9,12 +11,24 @@
   main > h1, main > .row, .welcome-story > *, .welcome-access > * { animation: atu-rise 360ms ease-out both; }
   .welcome-story > :nth-child(2), .welcome-access > :nth-child(2) { animation-delay: 40ms; }
   .welcome-story > :nth-child(3), .welcome-access > :nth-child(3) { animation-delay: 80ms; }
+  .welcome-brand img { animation: atu-brand-glow 6s ease-in-out infinite; }
+  .lab-system-card, .lab-model-card, .dashboard-card, .fuel-visual, .brake-visual {
+    animation: atu-surface-arrive 500ms cubic-bezier(.2,.7,.2,1) backwards;
+  }
+  .lab-system-card:nth-child(2), .lab-model-card:nth-child(2) { animation-delay: 60ms; }
+  .lab-system-card:nth-child(3), .lab-model-card:nth-child(3) { animation-delay: 120ms; }
+  .lab-system-card:nth-child(4), .lab-model-card:nth-child(4) { animation-delay: 180ms; }
+  .lab-system-card:nth-child(5), .lab-model-card:nth-child(5) { animation-delay: 240ms; }
   .role-card, .dashboard-card, .btn, .form-control, .form-select {
     transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
   }
   .role-card:hover, .role-card:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 18px #172e5210; }
   .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 4px 12px #172e5212; }
   .btn:not(:disabled):active { transform: translateY(0) scale(.98); }
+  .dashboard-card { transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease, border-color 220ms ease; }
+  .dashboard-card:hover, .dashboard-card:focus-visible { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(23,46,82,.12); }
+  .brand-lockup img { transition: transform 240ms ease; }
+  .brand-lockup:hover img, .brand-lockup:focus-visible img { transform: rotate(-4deg) scale(1.04); }
   .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px #2857b51a; }
   .platform-nav .nav-link { position: relative; }
   .platform-nav .nav-link::after { content: ""; position: absolute; bottom: -.3rem; left: 0; right: 0; height: 2px; background: var(--atu-gold); transform: scaleX(0); transform-origin: left; transition: transform 180ms ease; }
@@ -25,6 +39,7 @@
   @view-transition { navigation: none; }
   ::view-transition-group(*) { animation: none !important; }
   .btn, .dashboard-card, .role-card, .form-control, .form-select,
-  .welcome-story > *, .welcome-access > *, #cutaway-workspace { animation: none !important; transition: none !important; }
+  .welcome-story > *, .welcome-access > *, .welcome-brand img, .lab-system-card, .lab-model-card,
+  .fuel-visual, .brake-visual, .brand-lockup img, #cutaway-workspace { animation: none !important; transition: none !important; }
   .btn:hover, .btn:active, .dashboard-card:hover, .role-card:hover { transform: none !important; }
 }
