@@ -34,6 +34,8 @@ BEV_MODELS = (
 VEHICLE_DYNAMICS_MODELS = (
     {"title": "Wheel-Slip Control Using ABS and TCS", "route_name": "core:wheel_slip",
      "description": "Investigate wheel slip, road grip and controller response in braking and acceleration."},
+    {"title": "Vehicle Steering Response", "route_name": "core:steering_response",
+     "description": "Explore lateral-yaw response, tyre forces and a calculated X-Y vehicle trajectory."},
 )
 HYBRID_MODELS = (
     {"title": "12 V Micro-Hybrid Stop-Start", "route_name": "core:micro_hybrid",

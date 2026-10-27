@@ -1,0 +1,55 @@
+import {VEHICLE_FIELDS,SCENARIO_FIELDS,DEFAULT_VEHICLE,DEFAULT_SCENARIO,OUTPUTS,validateInputs,resultCsv,sampleAtTime} from './model.mjs';
+import {createCharts} from './charts.mjs';
+import {createTrajectory} from './trajectory.mjs';
+const root=document.getElementById('steering-response');
+if(root) initialise();
+function initialise() {
+ const $=id=>document.getElementById(id),make=(tag,text,css)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(css)e.className=css;return e;};
+ const baseline=JSON.parse($('steering-baseline').textContent),charts=createCharts($('steering-charts')),trajectory=createTrajectory(root,baseline),controls={},cards={};
+ const media=matchMedia('(prefers-reduced-motion: reduce)');
+ let vehicle={...DEFAULT_VEHICLE},scenario={...DEFAULT_SCENARIO},result=null,worker=null,playing=false,playbackS=0,lastFrame=0,frame;
+ for(const fields of [SCENARIO_FIELDS,VEHICLE_FIELDS]) {
+  let current='',fieldset;
+  for(const [key,label,unit,value,min,max,step,group,purpose] of fields) {
+   if(current!==group){current=group;fieldset=make('fieldset');fieldset.append(make('legend',group));$('steering-fields').append(fieldset);}
+   const wrapper=make('div',undefined,'fuel-input'),title=make('label',`${label} (${unit})`),row=make('div',undefined,'fuel-number'),input=make('input'),slider=make('input'),help=make('small',`${purpose} Default: ${value} ${unit}. Slider: ${min}–${max}; typed research values may exceed suggested ranges where valid.`),error=make('small','','fuel-field-error');
+   input.id=`steering-input-${key}`;input.type='number';input.step='any';input.value=value;input.className='form-control';title.htmlFor=input.id;help.id=`steering-help-${key}`;error.id=`steering-error-${key}`;input.setAttribute('aria-describedby',`${help.id} ${error.id}`);
+   slider.type='range';slider.min=min;slider.max=max;slider.step='any';slider.value=value;slider.className='form-range';slider.setAttribute('aria-label',`${label} slider`);slider.setAttribute('aria-describedby',help.id);
+   const source=key in DEFAULT_VEHICLE?'vehicle':'scenario';
+   const set=value=>{if(source==='vehicle')vehicle[key]=value;else scenario[key]=value;input.value=Number.isFinite(value)?value:'';syncSlider(key);changed();};
+   for(const [symbol,verb,dir] of [['−','Decrease',-1],['+','Increase',1]]) {const button=make('button',symbol,'btn btn-outline-secondary');button.type='button';button.setAttribute('aria-label',`${verb} ${label}`);button.addEventListener('click',()=>set(Number(((source==='vehicle'?vehicle[key]:scenario[key])+dir*step).toPrecision(12))));row.append(button);}
+   row.insertBefore(input,row.lastChild);input.addEventListener('input',()=>{const value=input.value.trim()===''?NaN:Number(input.value);if(source==='vehicle')vehicle[key]=value;else scenario[key]=value;syncSlider(key);changed();});slider.addEventListener('input',()=>set(Number(Number(slider.value).toPrecision(10))));
+   wrapper.append(title,row,slider,help,error);fieldset.append(wrapper);controls[key]={input,slider,error,source};
+  }
+ }
+ for(const [key,label,unit] of OUTPUTS){const box=make('div'),value=make('dd','—');value.dataset.steeringOutput=key;box.append(make('dt',`${label} (${unit})`),value);$('steering-kpis').append(box);cards[key]=value;}
+ function syncSlider(key){const c=controls[key],value=c.source==='vehicle'?vehicle[key]:scenario[key];c.slider.disabled=!Number.isFinite(value)||value<Number(c.slider.min)||value>Number(c.slider.max);if(!c.slider.disabled)c.slider.value=value;c.slider.setAttribute('aria-valuetext',`${value}`);}
+ function sync(){for(const [key,c] of Object.entries(controls)){c.input.value=c.source==='vehicle'?vehicle[key]:scenario[key];syncSlider(key);}$('steering-profile').value=scenario.profile;}
+ function stopPlayback(){playing=false;lastFrame=0;}
+ function cancelWorker(){if(worker){worker.terminate();worker=null;}}
+ function buttons(){const invalid=Object.keys(validateInputs(vehicle,scenario)).length>0;$('steering-run').disabled=invalid||!!worker;$('steering-cancel').disabled=!worker;for(const id of ['steering-json','steering-csv','steering-scrub','steering-restart'])$(id).disabled=!result;$('steering-play').disabled=!result||playing||media.matches;$('steering-pause').disabled=!playing;}
+ function validate(){const errors=validateInputs(vehicle,scenario);for(const [key,c] of Object.entries(controls)){c.error.textContent=errors[key]||'';c.input.setAttribute('aria-invalid',String(Boolean(errors[key])));}$('steering-error').hidden=!Object.keys(errors).length;$('steering-error').textContent=Object.values(errors).join(' ');return !Object.keys(errors).length;}
+ function clear(){stopPlayback();cancelWorker();result=null;playbackS=0;charts.setResult(null);trajectory.setResult(null);for(const cell of Object.values(cards))cell.textContent='—';$('steering-warnings').replaceChildren();$('steering-time').textContent='0.000';$('steering-scrub').value=0;$('steering-sample-note').textContent='No results yet.';$('steering-live-readings').textContent='Run a scenario to inspect speed and handling at a recorded time.';buttons();}
+ function changed(){clear();validate();$('steering-status').textContent='Inputs changed · run a new simulation.';}
+ function sample(){return sampleAtTime(result,playbackS);}
+ function render(){if(!result)return;const row=sample();trajectory.render(row);charts.setCursor(row);for(const [key,cell] of Object.entries(cards))cell.textContent=row[key].toFixed(key==='sideslipDeg'?5:3);$('steering-time').textContent=row.timeS.toFixed(3);$('steering-scrub').value=row.timeS;$('steering-scrub').setAttribute('aria-valuetext',`${row.timeS.toFixed(3)} seconds`);$('steering-sample-note').textContent=`${row.timeS===result.scenario.durationS?'Final':'Playback'} sample at ${row.timeS.toFixed(3)} s · ${result.samples.length.toLocaleString()} recorded samples.`;$('steering-live-readings').textContent=`Speed ${(result.effective.speedMps*3.6).toFixed(2)} km/h · yaw ${row.yawRateDegPerS.toFixed(3)} deg/s · sideslip ${row.sideslipDeg.toFixed(5)} deg · lateral acceleration ${row.lateralAccelerationMps2.toFixed(3)} m/s².`;}
+ function showResult(data){result=data;playbackS=data.scenario.durationS;charts.setResult(data);trajectory.setResult(data);$('steering-scrub').max=data.scenario.durationS;$('steering-scrub').step='any';$('steering-warnings').replaceChildren(...data.warnings.map(text=>make('li',text)));$('steering-status').textContent=`Calculation complete · ${data.samples.length.toLocaleString()} samples · RK4${data.solver.internalSubsteps>1?` with ${data.solver.internalSubsteps} internal subdivisions`:''}. ${media.matches?'Reduced motion enabled: inspect the static trajectory with the position slider.':'Use Play animation or the position slider to inspect the run.'}`;render();buttons();}
+ $('steering-profile').addEventListener('change',()=>{scenario.profile=$('steering-profile').value;changed();});
+ $('steering-run').addEventListener('click',()=>{if(!validate())return;clear();$('steering-status').textContent='Calculating the steering response in the background…';try{worker=new Worker(new URL('./worker.mjs',import.meta.url),{type:'module'});const current=worker;current.onmessage=event=>{if(worker!==current)return;cancelWorker();if(event.data.ok)showResult(event.data.result);else{$('steering-error').hidden=false;$('steering-error').textContent=event.data.error;$('steering-status').textContent='Calculation stopped · review the inputs.';buttons();}};current.onerror=()=>{cancelWorker();$('steering-error').hidden=false;$('steering-error').textContent='The calculation worker could not complete. Reload the page and try again.';buttons();};current.postMessage({vehicle:{...vehicle},scenario:{...scenario}});buttons();}catch(error){cancelWorker();$('steering-error').hidden=false;$('steering-error').textContent=error.message;buttons();}});
+ $('steering-cancel').addEventListener('click',()=>{cancelWorker();$('steering-status').textContent='Calculation cancelled.';buttons();});
+ $('steering-clear').addEventListener('click',()=>{clear();$('steering-status').textContent='Results cleared · inputs retained.';});
+ $('steering-reset').addEventListener('click',()=>{vehicle={...DEFAULT_VEHICLE};scenario={...DEFAULT_SCENARIO};sync();changed();$('steering-preset').value='reference';$('steering-status').textContent='Reference defaults restored · press Run simulation.';});
+ $('steering-load').addEventListener('click',()=>{vehicle={...DEFAULT_VEHICLE};scenario={...DEFAULT_SCENARIO};const preset=$('steering-preset').value;if(preset==='zero')scenario.steeringAmplitudeDeg=0;if(preset==='sine'||preset==='doublet')scenario.profile=preset;if(preset==='baseline'){vehicle.baseMassKg=baseline.mass_kg;const factor=baseline.wheelbase_m/(vehicle.cgToFrontM+vehicle.cgToRearM);vehicle.cgToFrontM*=factor;vehicle.cgToRearM*=factor;}sync();changed();$('steering-status').textContent=preset==='baseline'?'Shared mass and wheelbase loaded. CG split is estimated by retaining the reference a:b ratio; inertia and stiffness remain reference assumptions. Press Run simulation.':'Scenario loaded · press Run simulation.';});
+ $('steering-play').addEventListener('click',()=>{if(!result||media.matches)return;if(playbackS>=result.scenario.durationS)playbackS=0;playing=true;lastFrame=0;render();buttons();});
+ $('steering-pause').addEventListener('click',()=>{stopPlayback();buttons();});
+ $('steering-restart').addEventListener('click',()=>{stopPlayback();playbackS=0;render();buttons();});
+ $('steering-scrub').addEventListener('input',()=>{stopPlayback();playbackS=Number($('steering-scrub').value);render();buttons();});
+ function download(text,type,name){const url=URL.createObjectURL(new Blob([text],{type})),a=make('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+ $('steering-json').addEventListener('click',()=>{if(result)download(JSON.stringify(result,null,2),'application/json','vehicle-steering-response.json');});
+ $('steering-csv').addEventListener('click',()=>{if(result)download(resultCsv(result),'text/csv;charset=utf-8','vehicle-steering-response.csv');});
+ media.addEventListener('change',()=>{stopPlayback();buttons();});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopPlayback();buttons();}});
+ let stopped=false;
+ function animate(now){if(stopped)return;const dt=lastFrame?Math.min((now-lastFrame)/1000,.1):0;lastFrame=now;if(playing&&result&&!document.hidden){playbackS=Math.min(result.scenario.durationS,playbackS+dt*Number($('steering-speed').value));render();if(playbackS>=result.scenario.durationS){stopPlayback();buttons();}}frame=requestAnimationFrame(animate);}
+ window.addEventListener('pagehide',()=>{stopped=true;stopPlayback();cancelWorker();cancelAnimationFrame(frame);});window.addEventListener('pageshow',event=>{if(event.persisted&&stopped){stopped=false;buttons();frame=requestAnimationFrame(animate);}});
+ sync();validate();buttons();frame=requestAnimationFrame(animate);
+}

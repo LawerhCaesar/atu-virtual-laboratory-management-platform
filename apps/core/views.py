@@ -59,6 +59,11 @@ def wheel_slip(request):
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def steering_response(request):
+    return render(request, "core/steering_response.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def micro_hybrid(request):
     return render(request, "core/micro_hybrid.html")
 

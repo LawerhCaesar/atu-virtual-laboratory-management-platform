@@ -11,6 +11,8 @@
       <p>The fuel simulation does not model vehicle geometry or mass. Its 3D fuel assembly is generic, not verified GV70 component geometry.</p>
     {% elif walkthrough_module.route == "core:micro_hybrid" %}
       <p>The stop-start calculation does not use a vehicle body, mass or wheel dimensions. Its car and traffic-light sequence is illustrative.</p>
+    {% elif walkthrough_module.route == "core:steering_response" %}
+      <p>Steering Response retains its supplied reference defaults: 1,500 kg base mass, 1.2 m CG-to-front distance and 1.6 m CG-to-rear distance (2.8 m wheelbase). The shared-baseline scenario explicitly applies 2,000 kg and 2.875 m, preserving the reference a:b split as an assumption. Inertia and cornering stiffness are independent model inputs, not verified GV70 measurements. The top-down car is an enlarged illustrative marker.</p>
     {% endif %}
     <p class="mb-0">Model-specific operating values and adjustable scenarios are described in each module. The baseline does not validate an individual model's equations or physical predictions.</p>
   </div>

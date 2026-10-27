@@ -75,8 +75,13 @@ Vehicle Dynamics includes **Wheel-Slip Control Using ABS and TCS** at
 `/virtual-lab/vehicle-dynamics/wheel-slip-abs-tcs/`, with fixed-step simulation,
 controller states, full-resolution exports and an illustrative vehicle.
 See [wheel-slip integration and source limitations](docs/wheel-slip-integration.md).
-The FCEV and HEV environments still have no configured simulations or
-speculative launch links.
+Vehicle Dynamics also includes **Vehicle Steering Response** at
+`/virtual-lab/vehicle-dynamics/steering-response/`, with a five-state RK4 bicycle
+model, four plot groups, a recorded top-down trajectory, replay controls and an
+eleven-signal export contract. See [steering-response implementation and verification](docs/steering-response.md).
+HEV includes **12 V Micro-Hybrid Stop-Start**; see
+[microhybrid integration](docs/micro-hybrid-stop-start.md).
+The FCEV environment has no configured simulations or speculative launch links.
 
 Registered simulation pages include an optional, non-blocking **Module guide**.
 The guide opens on the first visit per account and browser, gives practical
