@@ -78,7 +78,7 @@ function initialise(){
     $("ws-road").textContent=`Road μ ${Number(draft.roadMu).toFixed(2)} · ${surface(draft.roadMu)}`;
     if(!result){$("ws-controller").textContent="Awaiting simulation";$("ws-speed").textContent="Vehicle — km/h · Wheel — km/h";$("ws-visual-cue").textContent="Run a simulation to view the response";$("ws-time").textContent="0.00";$("ws-scrub").value=0;$("ws-car").setAttribute("transform","translate(0 0)");$("ws-wheel-a").removeAttribute("transform");$("ws-wheel-b").removeAttribute("transform");$("ws-slip-marks").setAttribute("opacity","0");return;}
     const row=result.samples[Math.min(result.samples.length-1,Math.round(playbackS/.001))], total=Math.max(result.metrics.finalDistanceM,.001),progress=Math.min(1,row.distanceM/total);
-    $("ws-controller").textContent=`${modes[row.controllerMode]} · ABS ${row.absActive?"ON":"off"} · TCS ${row.tcsActive?"ON":"off"}`;
+    $("ws-controller").textContent=`${modes[row.controllerMode]} · ABS ${row.absActive?"active":"inactive"} · TCS ${row.tcsActive?"active":"inactive"}`;
     $("ws-speed").textContent=`Vehicle ${row.vehicleSpeedKph.toFixed(1)} km/h · Wheel ${row.wheelPeripheralSpeedKph.toFixed(1)} km/h`;
     const cue=row.brakeSlip>.2?"Wheel-lock tendency":row.driveSlip>.18?"Wheel-spin tendency":"Wheel grip illustration";$("ws-visual-cue").textContent=`${cue} · ${modes[row.controllerMode]}`;$("ws-slip-marks").setAttribute("opacity",row.brakeSlip>.2||row.driveSlip>.18?"1":"0");
     $("ws-car").setAttribute("transform",`translate(${Math.min(245,progress*245)} 0)`);const degrees=(row.wheelAngleRad*180/Math.PI)%360;

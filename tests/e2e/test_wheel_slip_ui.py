@@ -62,6 +62,14 @@ def test_controls_worker_playback_comparison_and_exports(page, demo_records, liv
     assert errors == []
 
 
+def test_maximum_duration_retains_full_resolution(page, demo_records, live_server):
+    open_module(page, demo_records, live_server)
+    page.get_by_label("Simulation duration (s)", exact=True).fill("60")
+    run(page)
+    expect(page.locator("#ws-result-note")).to_contain_text("60,001 full-resolution samples")
+    expect(page.get_by_role("button", name="Export CSV", exact=True)).to_be_enabled()
+
+
 @pytest.mark.parametrize("width", [1280, 390])
 def test_visuals_and_responsive_layout(page, demo_records, live_server, width):
     page.set_viewport_size({"width": width, "height": 900})
@@ -71,6 +79,8 @@ def test_visuals_and_responsive_layout(page, demo_records, live_server, width):
     page.add_script_tag(path="node_modules/axe-core/axe.min.js")
     result = page.evaluate("async () => await axe.run(document.querySelector('main'), {runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})")
     assert not result["violations"], json.dumps(result["violations"], indent=2)
+    page.locator("#ws-scrub").fill("2")
+    expect(page.locator("#ws-controller")).to_contain_text("ABS active")
     dest = Path("test-results/wheel-slip")
     dest.mkdir(parents=True, exist_ok=True)
     page.locator("#ws-scene").screenshot(path=str(dest / f"scene-{width}.png"))

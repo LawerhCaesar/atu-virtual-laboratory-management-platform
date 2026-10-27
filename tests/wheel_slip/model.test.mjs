@@ -21,12 +21,14 @@ test("ABS and TCS presets are deterministic and controller switches matter",()=>
   assert.ok(braking.metrics.absActiveTimeS>0);assert.ok(launch.metrics.tcsActiveTimeS>0);
   assert.notEqual(braking.metrics.stoppingDistanceM,noAbs.metrics.stoppingDistanceM);
   assert.ok(noTcs.metrics.peakDriveSlip>launch.metrics.peakDriveSlip);
+  assert.notEqual(simulate({...DEFAULTS, roadMu:.8}).metrics.stoppingDistanceM,braking.metrics.stoppingDistanceM);
 });
 
 test("brake priority, validation and finite boundary results",()=>{
   const priority=simulate({...DEFAULTS,durationS:2,brakeStepTimeS:0,throttleStepTimeS:0,throttleAfter:1});
   assert.ok(priority.samples.every(s=>s.driveTorqueNm===0));
   assert.ok(priority.warnings.some(w=>w.includes("priority")));
+  assert.equal(simulate({...DEFAULTS,durationS:2,brakeAfter:0}).metrics.stoppingTimeS,null);
   assert.ok(validateConfig({...DEFAULTS,roadMu:0}).roadMu);
   assert.ok(validateConfig({...DEFAULTS,durationS:2,brakeStepTimeS:3}).brakeStepTimeS);
   assert.ok(validateConfig({...DEFAULTS,timeStepS:.01}).timeStepS);
