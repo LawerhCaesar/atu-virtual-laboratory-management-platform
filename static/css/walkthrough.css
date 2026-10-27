@@ -19,5 +19,6 @@
 .tour-target-status { font-size:.85rem; margin:0; }
 .tour-target-highlight { outline:3px solid #d77a1a !important; outline-offset:4px; scroll-margin:1.5rem; }
 .tour-note { margin:.8rem 0 0; }
+.walkthrough-footer { padding-bottom: 5rem !important; }
 @media (max-width:575px) { .tour-launch { font-size:.9rem; padding:.55rem .8rem; } .tour-panel { padding:1rem; } }
 @media (prefers-reduced-motion: reduce) { .tour-target-highlight { scroll-behavior:auto; } }

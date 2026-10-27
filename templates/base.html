@@ -50,7 +50,7 @@
   </main>
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}
 
-  <footer class="border-top py-4 mt-auto">
+  <footer class="border-top py-4 mt-auto{% if walkthrough_module %} walkthrough-footer{% endif %}">
     <div class="container small text-secondary d-flex flex-column flex-md-row justify-content-between gap-3">
       <div>ACCRA TECHNICAL UNIVERSITY · FACULTY OF ENGINEERING<span class="d-block mt-1">Automotive practical assessment and approved demonstration resources.</span></div>
       <div class="text-md-end">Powered by Atrax-R Technologies<span class="d-block mt-1">&copy; 2026 Atrax-R Technologies</span></div>
