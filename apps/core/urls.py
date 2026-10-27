@@ -8,6 +8,7 @@ app_name = "core"
 urlpatterns = [
     path("virtual-lab/fuel-delivery-optimisation/", views.fuel_delivery, name="fuel_delivery"),
     path("virtual-lab/brakelab/", views.brakelab, name="brakelab"),
+    path("virtual-lab/hev/12v-micro-hybrid-stop-start/", views.micro_hybrid, name="micro_hybrid"),
     path("virtual-lab/vehicle-dynamics/wheel-slip-abs-tcs/", views.wheel_slip, name="wheel_slip"),
     path("learning/fact/", views.learning_fact, name="learning_fact"),
     path("virtual-lab/", views.laboratory, name="laboratory"),

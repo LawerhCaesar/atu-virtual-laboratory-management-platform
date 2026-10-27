@@ -28,6 +28,38 @@ def output(page, key):
     return page.locator(f'#fuel-kpis [data-fuel-output="{key}"]')
 
 
+def test_3d_explorer_matches_results_and_fallback(page, demo_records, live_server):
+    open_fuel(page, demo_records, live_server)
+    expect(page.locator("#fuel-3d-canvas canvas")).to_be_visible(timeout=20000)
+    expect(page.locator("#fuel-3d-flow")).to_have_text("1.701 g/s")
+    expect(page.locator("#fuel-3d-pulse")).to_have_text("8.471 ms")
+    page.get_by_label("Air flow (g/s)", exact=True).fill("50")
+    expect(page.locator("#fuel-3d-flow")).to_have_text("3.401 g/s")
+    expect(page.locator("#fuel-3d-pulse")).to_have_text(output(page, "injectorPulseWidthMs").inner_text() + " ms")
+    page.get_by_role("button", name="Injector", exact=True).click()
+    expect(page.locator("#fuel-component-explanation")).to_contain_text("dead time")
+    page.get_by_role("button", name="2D schematic", exact=True).click()
+    expect(page.locator("#fuel-schematic")).to_be_visible()
+    page.get_by_role("button", name="3D view", exact=True).click()
+    expect(page.locator("#fuel-3d-canvas canvas")).to_be_visible()
+    page.get_by_role("button", name="Reset camera", exact=True).click()
+    destination = Path("test-results/fuel-delivery")
+    destination.mkdir(parents=True, exist_ok=True)
+    page.locator("#fuel-3d-stage").scroll_into_view_if_needed()
+    page.screenshot(path=str(destination / "fuel-3d.png"))
+
+
+def test_3d_unavailable_preserves_schematic(page, demo_records, live_server):
+    page.add_init_script("""(() => { const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function(type, ...args) {
+        return type === 'webgl' || type === 'webgl2' ? null : original.call(this, type, ...args);
+      }; })();""")
+    open_fuel(page, demo_records, live_server)
+    expect(page.locator("#fuel-3d-error")).to_contain_text("3D is unavailable")
+    expect(page.locator("#fuel-schematic")).to_be_visible()
+    expect(page.get_by_role("button", name="3D view", exact=True)).to_be_disabled()
+
+
 def test_fuel_defaults_deterministic_time_export_and_comparison(page, demo_records, live_server):
     open_fuel(page, demo_records, live_server)
     page.clock.install()

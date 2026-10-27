@@ -59,6 +59,11 @@ def wheel_slip(request):
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def micro_hybrid(request):
+    return render(request, "core/micro_hybrid.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def laboratory_system(request, system_slug):
     system = next((item for item in SYSTEMS if item["slug"] == system_slug), None)
     if system is None:

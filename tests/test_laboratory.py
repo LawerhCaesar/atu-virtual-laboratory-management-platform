@@ -60,6 +60,10 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert b"Wheel-Slip Control Using ABS and TCS" in environment.content
             assert reverse("core:wheel_slip").encode() in environment.content
             assert reverse("core:fuel_delivery").encode() not in environment.content
+        elif system["slug"] == "hybrid":
+            assert b"12 V Micro-Hybrid Stop-Start" in environment.content
+            assert reverse("core:micro_hybrid").encode() in environment.content
+            assert reverse("core:fuel_delivery").encode() not in environment.content
         else:
             assert b"No simulations added yet" in environment.content
             assert b"Scope for future models" not in environment.content

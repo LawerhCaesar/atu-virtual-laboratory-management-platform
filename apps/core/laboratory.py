@@ -35,4 +35,8 @@ VEHICLE_DYNAMICS_MODELS = (
     {"title": "Wheel-Slip Control Using ABS and TCS", "route_name": "core:wheel_slip",
      "description": "Investigate wheel slip, road grip and controller response in braking and acceleration."},
 )
-SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS, "vehicle-dynamics": VEHICLE_DYNAMICS_MODELS}
+HYBRID_MODELS = (
+    {"title": "12 V Micro-Hybrid Stop-Start", "route_name": "core:micro_hybrid",
+     "description": "Compare conventional idling with stop-start fuel use and explore battery and restart constraints."},
+)
+SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS, "hybrid": HYBRID_MODELS, "vehicle-dynamics": VEHICLE_DYNAMICS_MODELS}

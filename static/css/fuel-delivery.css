@@ -21,6 +21,17 @@
 .fuel-input .form-range { min-height: 44px; margin-top: .25rem; }
 .fuel-field-error { color: #a1271c !important; min-height: 1rem; }
 .fuel-visual { border-top: 4px solid #91411c; }
+.fuel-view-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.fuel-view-controls [aria-pressed="true"] { background: #172e52; border-color: #172e52; color: #fff; }
+.fuel-3d-stage { position: relative; height: clamp(300px, 44vw, 450px); margin-top: 1rem; overflow: hidden; border-radius: .9rem; background: radial-gradient(ellipse at 50% 25%, #28496c, #09182b 80%); }
+.fuel-3d-canvas, .fuel-3d-canvas canvas { width: 100%; height: 100%; display: block; }
+.fuel-3d-canvas canvas { touch-action: none; }
+.fuel-3d-caption, .fuel-3d-readings { position: absolute; pointer-events: none; color: #e5eef8; font-size: .67rem; letter-spacing: .06em; }
+.fuel-3d-caption { top: 1rem; left: 1rem; display: grid; gap: .25rem; }
+.fuel-3d-caption span { color: #b9c8d9; letter-spacing: 0; }
+.fuel-3d-readings { left: 1rem; right: 1rem; bottom: .8rem; display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; }
+.fuel-3d-readings span { display: grid; gap: .2rem; color: #b9c8d9; }
+.fuel-3d-readings strong { color: #f5d98b; font-size: .9rem; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 #fuel-schematic { width: 100%; display: block; background: radial-gradient(ellipse at 70% 30%, #28496c, #10213d); border-radius: .9rem; margin-top: 1rem; }
 .fuel-svg-label { fill: #e3eaf4; font: 13px system-ui, sans-serif; letter-spacing: .02em; }
 .fuel-svg-value { fill: #f4d482; font: bold 23px system-ui, sans-serif; }

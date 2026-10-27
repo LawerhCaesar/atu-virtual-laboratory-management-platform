@@ -17,3 +17,9 @@ await build({
 await mkdir(`${root}static/vendor/three`, { recursive: true });
 await copyFile(`${root}node_modules/three/LICENSE`, `${root}static/vendor/three/LICENSE`);
 console.log('Local 3D engine bundle and Three.js licence generated.');
+await build({
+  entryPoints: [`${root}frontend/fuel-delivery-3d.mjs`],
+  outfile: `${root}static/js/fuel-delivery/fuel-3d.bundle.mjs`,
+  bundle: true, minify: true, format: 'esm', target: 'es2022', legalComments: 'eof',
+});
+console.log('Local fuel-delivery 3D bundle generated.');

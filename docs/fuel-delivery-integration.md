@@ -21,6 +21,10 @@ the existing platform. Model runtime needs neither MATLAB nor internet access
 after the page's local files have loaded. It is not a newly hosted offline app.
 No global simulation state, telemetry or third-party generation request is used.
 
+## Interactive 3D visualisation
+
+The locally bundled Three.js scene is a generic teaching assembly, not a measured CAD model. The displayed fuel flow, injector pulse width and duty use the same current calculation as the KPI cards. A deliberately slowed representative pulse uses duty and the calculated dead-time fraction; the fuel path, droplets, cylinder, piston position and spray shape are illustrative. The source model does not calculate tank depletion, pump dynamics, crank angle or spray physics. Component buttons point the camera at each part and explain it; orbit, zoom and reset are available. A labelled 2D schematic is retained as a user-selectable view and automatic WebGL fallback. Reduced-motion settings turn off illustrative playback by default. `node scripts/sync_assets.mjs` rebuilds the locally served 3D bundle from `frontend/fuel-delivery-3d.mjs` and the pinned Three.js package.
+
 ## Sources and source audit
 
 Supplied on 26 October 2026:

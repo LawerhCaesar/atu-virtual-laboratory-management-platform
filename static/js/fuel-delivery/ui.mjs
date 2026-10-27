@@ -12,6 +12,23 @@ function initialise() {
   };
   const sim = new FuelSimulation(), controls = {}, cells = {};
   let draft = {...DEFAULTS}, valid = true, interval = null, stopped = false, errorKind = "Input error";
+  let scene3d = null, sceneFailed = false, view3d = true, sceneOnscreen = false;
+  const stage3d = byId("fuel-3d-stage"), host3d = byId("fuel-3d-canvas"), schematic = byId("fuel-schematic");
+  const sceneObserver = new IntersectionObserver(entries => { sceneOnscreen = entries[0].isIntersecting; scene3d?.setVisible(view3d && sceneOnscreen); });
+  sceneObserver.observe(stage3d);
+  const showView = want3d => {
+    view3d = want3d && !sceneFailed;
+    stage3d.hidden = !view3d; schematic.toggleAttribute("hidden", view3d);
+    byId("fuel-view-3d").setAttribute("aria-pressed", String(view3d));
+    byId("fuel-view-schematic").setAttribute("aria-pressed", String(!view3d));
+    byId("fuel-view-reset").hidden = !view3d;
+    scene3d?.setVisible(view3d && sceneOnscreen);
+  };
+  const fail3d = () => { sceneFailed = true; scene3d?.dispose(); scene3d = null; byId("fuel-view-3d").disabled = true; byId("fuel-3d-error").hidden = false; byId("fuel-3d-error").textContent = "3D is unavailable on this device or browser. The interactive 2D schematic remains available."; showView(false); };
+  byId("fuel-view-3d").addEventListener("click", () => showView(true));
+  byId("fuel-view-schematic").addEventListener("click", () => showView(false));
+  byId("fuel-view-reset").addEventListener("click", () => scene3d?.reset());
+  host3d.addEventListener("fuel3dunavailable", fail3d);
   const media = matchMedia("(prefers-reduced-motion: reduce)");
   const motion = byId("fuel-motion"); motion.checked = !media.matches;
   const updateMotionPreference = () => { if (media.matches) { motion.checked = false; restVisual(); } };
@@ -243,6 +260,7 @@ function initialise() {
   root.querySelectorAll("[data-component]").forEach(button => button.addEventListener("click", () => {
     root.querySelectorAll("[data-component]").forEach(other => other.setAttribute("aria-pressed", String(other === button)));
     byId("fuel-component-explanation").textContent = descriptions[button.dataset.component];
+    scene3d?.focus(button.dataset.component);
   }));
   function render() {
     const o = sim.result.outputs;
@@ -269,6 +287,9 @@ function initialise() {
     byId("fuel-spray").setAttribute("d", `M470 187 L${470-width} 245 Q470 260 ${470+width} 245Z`);
     byId("fuel-visual-flow").textContent = `${o.fuelFlowGps.toFixed(3)} g/s`;
     byId("fuel-visual-pulse").textContent = `${o.injectorPulseWidthMs.toFixed(3)} ms / injection`;
+    byId("fuel-3d-flow").textContent = `${o.fuelFlowGps.toFixed(3)} g/s`;
+    byId("fuel-3d-pulse").textContent = `${o.injectorPulseWidthMs.toFixed(3)} ms`;
+    byId("fuel-3d-duty").textContent = `${o.injectorDutyCyclePct.toFixed(1)}%`;
     byId("fuel-duty").value = o.injectorDutyCyclePct; byId("fuel-duty-text").textContent = o.injectorDutyCyclePct.toFixed(1);
     const dutyState = o.injectorDutyCyclePct >= OPERATING_LIMITS.saturatedDutyPct ? "saturated" : o.injectorDutyCyclePct > OPERATING_LIMITS.highDutyPct ? "high" : "normal";
     const dutyCaption = {normal: "Within duty limit (≤85%)", high: "High duty · above 85%", saturated: "Saturated · 100% display limit; delivery is theoretical"}[dutyState];
@@ -280,6 +301,7 @@ function initialise() {
     byId("fuel-used-text").textContent = o.cumulativeFuelG.toFixed(3); byId("fuel-used-max").textContent = fuelMax;
     drawCharts();
     if (!sim.running || !valid || !motion.checked) restVisual();
+    scene3d?.update({outputs:o, running:sim.running && valid, motion:motion.checked, phase});
   }
   let phase = 0, lastFrame = 0, frame;
   function restVisual() {
@@ -287,7 +309,7 @@ function initialise() {
     byId("fuel-needle").removeAttribute("transform");
     byId("fuel-spray").setAttribute("opacity", ".5");
   }
-  motion.addEventListener("change", () => { if (!motion.checked) restVisual(); });
+  motion.addEventListener("change", () => { if (!motion.checked) restVisual(); render(); });
   function animate(now) {
     const dt = lastFrame ? Math.min((now-lastFrame)/1000, .05) : 0; lastFrame = now;
     if (sim.running && valid && motion.checked && !document.hidden) {
@@ -299,6 +321,7 @@ function initialise() {
       byId("fuel-flow-markers").setAttribute("stroke-dashoffset", String(-phase * 30));
     }
     byId("fuel-schematic").dataset.phase = phase.toFixed(4);
+    if (scene3d && view3d && sceneOnscreen && !document.hidden && sim.running && valid && motion.checked) scene3d.update({outputs:sim.result.outputs, running:true, motion:true, phase});
     frame = requestAnimationFrame(animate);
   }
   byId("fuel-reset").addEventListener("click", () => {
@@ -308,4 +331,9 @@ function initialise() {
   window.addEventListener("pagehide", () => { stopped = true; pause(); cancelAnimationFrame(frame); });
   window.addEventListener("pageshow", event => { if (event.persisted && stopped) { stopped = false; render(); lastFrame = 0; frame = requestAnimationFrame(animate); } });
   render(); frame = requestAnimationFrame(animate);
+  import("./fuel-3d.bundle.mjs").then(({createFuelScene}) => {
+    if (stopped || sceneFailed) return;
+    try { scene3d = createFuelScene(host3d); scene3d.setVisible(view3d && sceneOnscreen); render(); }
+    catch { fail3d(); }
+  }).catch(fail3d);
 }
