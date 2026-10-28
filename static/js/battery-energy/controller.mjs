@@ -1,0 +1,26 @@
+import {createBatteryModel,DEFAULT_PARAMETERS,MODEL_INFO,outputToRow,rowsToCsv,STATUS_LABELS,REASON_LABELS} from './battery-platform-kit.mjs';
+export const defaults=()=>({schemaVersion:1,modelVersion:MODEL_INFO.version,modelHash:MODEL_INFO.modelSha256,durationS:3600,stepTimeS:1800,parameters:structuredClone(DEFAULT_PARAMETERS),controls:{mode:'profile',magnitudeA:50.4,beforeA:-50.4,afterA:100.8,ambientC:25}});
+export function validateControls(c){if(!c||!['charge','supply','rest','profile'].includes(c.mode))throw Error('Choose a valid operating mode.');for(const key of ['magnitudeA','beforeA','afterA','ambientC'])if(typeof c[key]!=='number'||!Number.isFinite(c[key]))throw Error(`${key}: enter a finite number; blank is not zero.`);if(c.magnitudeA<0)throw Error('Current magnitude must be nonnegative.');return structuredClone(c);}
+export function validateConfig(c){if(!c||c.schemaVersion!==1||c.modelVersion!==MODEL_INFO.version||c.modelHash!==MODEL_INFO.modelSha256)throw Error('Unsupported battery scenario version.');if(!Number.isInteger(c.durationS)||c.durationS<0||c.durationS>14400)throw Error('Duration must be 0–14400 whole seconds (browser resource limit).');if(!Number.isSafeInteger(c.stepTimeS)||c.stepTimeS<0)throw Error('Profile change time must be a nonnegative whole second.');const model=createBatteryModel(c.parameters);return {...structuredClone(c),parameters:model.parameters,controls:validateControls(c.controls)};}
+export function inputAt(c,time,stepTime){return {requestedCurrentA:c.mode==='charge'?-c.magnitudeA:c.mode==='supply'?c.magnitudeA:c.mode==='rest'?0:time<stepTime?c.beforeA:c.afterA,ambientC:c.ambientC};}
+export class BatterySession {
+ constructor(config=defaults(),runId=globalThis.crypto.randomUUID()){this.config=validateConfig(config);this.model=createBatteryModel(this.config.parameters);this.state=this.model.initialState();this.controls=structuredClone(this.config.controls);this.runId=runId;this.running=false;this.debt=0;this.pending=null;this.samples=[];this.events=[];this.inputEvents=[];this.record();}
+ get output(){return this.samples.at(-1);}
+ get complete(){return this.state.t_s>=this.config.durationS;}
+ record(){const input=inputAt(this.controls,this.state.t_s,this.config.stepTimeS),o=this.model.observe(this.state,input),previous=this.output;
+  if(!previous||previous.Requested_A!==o.Requested_A||previous.Ambient_C!==o.Ambient_C)this.inputEvents.push({appliedTimeS:o.Time_s,...input});
+  if(!previous||previous.Status!==o.Status||previous.Reason!==o.Reason)this.events.push({timeS:o.Time_s,status:o.Status,reason:o.Reason,text:`${STATUS_LABELS[o.Status]} · ${REASON_LABELS[o.Reason]}`});
+  this.samples.push(o);
+ }
+ queue(controls){this.pending=validateControls(controls);}
+ advance(count=1){if(!Number.isSafeInteger(count)||count<0)throw Error('Step count must be a nonnegative whole number.');let advanced=0;while(advanced<count&&!this.complete){this.state=this.model.step(this.state,{requestedCurrentA:this.output.Requested_A,ambientC:this.output.Ambient_C}).nextState;if(this.pending){this.controls=this.pending;this.pending=null;}this.record();advanced++;}if(this.complete){this.running=false;this.debt=0;}return advanced;}
+ start(){if(!this.complete)this.running=true;}
+ pause(){this.running=false;}
+ tick(seconds,speed){if(!this.running)return 0;if(!Number.isFinite(seconds)||seconds<0||![1,10,60].includes(speed))throw Error('Invalid pacing input.');this.debt+=seconds*speed;const n=this.advance(Math.min(120,Math.floor(this.debt+1e-9)));if(!this.complete)this.debt=Math.max(0,this.debt-n);return n;}
+ csv(){return rowsToCsv(this.samples.map(outputToRow));}
+ metadata(){return {schemaVersion:1,runId:this.runId,model:MODEL_INFO,initialConfiguration:structuredClone(this.config),fixedStepSeconds:1,requestedDurationS:this.config.durationS,completedThroughS:this.state.t_s,stateAdvances:this.state.t_s,complete:this.complete,appliedInputEvents:structuredClone(this.inputEvents),pendingControls:structuredClone(this.pending),statusEvents:structuredClone(this.events)};}
+}
+export const PRESETS=[
+ ['default','Normal charge → supply',{}],['rest','Rest',{mode:'rest'}],['rated','High-current limit',{mode:'charge',magnitudeA:400}],['taper','Near-full SOC taper',{mode:'charge',magnitudeA:200,parameters:{initial_soc_pct:90}}],['empty','Near-empty supply taper',{mode:'supply',magnitudeA:200,parameters:{initial_soc_pct:10}}],['full','Full battery · charge blocked',{mode:'charge',magnitudeA:100,parameters:{initial_soc_pct:95}}],['minimum','Minimum SOC · supply blocked',{mode:'supply',magnitudeA:100,parameters:{initial_soc_pct:5}}],['cold','Cold pack · charge blocked',{mode:'charge',magnitudeA:100,ambientC:0,parameters:{initial_temp_C:0}}],['hot','Hot pack · supply blocked',{mode:'supply',magnitudeA:100,ambientC:55,parameters:{initial_temp_C:55}}],['derating','Thermal derating',{mode:'charge',magnitudeA:200,ambientC:40,parameters:{initial_temp_C:40}}],['voltage','Voltage limiting',{mode:'charge',magnitudeA:200,parameters:{cell_resistance_ohm:.16}}]
+];
+export function preset(id){const entry=PRESETS.find(x=>x[0]===id);if(!entry)throw Error('Unknown preset.');const c=defaults(),{parameters={},...controls}=entry[2];Object.assign(c.parameters,parameters);Object.assign(c.controls,controls);return c;}

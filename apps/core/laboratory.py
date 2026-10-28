@@ -29,6 +29,8 @@ ICE_MODELS = (
 )
 
 BEV_MODELS = (
+    {"title": "Battery Energy Management", "route_name": "core:battery_energy",
+     "description": "Explore charging, load supply, thermal limits and SOC with a fixed-step battery model and live energy-flow cutaway."},
     {"title": "Regenerative and Friction Brake-Force Allocation", "route_name": "core:brakelab",
      "description": "BrakeLab: adjust vehicle, battery and motor inputs to explore braking allocation, limiting conditions and an illustrative energy-flow vehicle."},
 )

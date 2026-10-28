@@ -1,0 +1,194 @@
+{
+  "pass": true,
+  "scenarioCount": 30,
+  "sampleCount": 63398,
+  "nativeInvalidParameterCases": 7,
+  "extraInvalidParameterCases": 8,
+  "invalidInputCases": 9,
+  "selectedNativeCheckpoints": 9,
+  "allStatuses": true,
+  "allReasons": true,
+  "maxPowerBalanceResidualW": 1.4097167877480388e-11,
+  "scenarios": [
+    {
+      "scenario": "default_cycle",
+      "samples": 3601,
+      "finalSOC": 25.000000000001087,
+      "pass": true
+    },
+    {
+      "scenario": "rest",
+      "samples": 3601,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "charge",
+      "samples": 601,
+      "finalSOC": 58.333333333334636,
+      "pass": true
+    },
+    {
+      "scenario": "discharge",
+      "samples": 601,
+      "finalSOC": 33.33333333333406,
+      "pass": true
+    },
+    {
+      "scenario": "rated_charge",
+      "samples": 301,
+      "finalSOC": 66.66666666666595,
+      "pass": true
+    },
+    {
+      "scenario": "rated_discharge",
+      "samples": 301,
+      "finalSOC": 33.33333333333406,
+      "pass": true
+    },
+    {
+      "scenario": "soc_charge_taper",
+      "samples": 601,
+      "finalSOC": 94.46039059514266,
+      "pass": true
+    },
+    {
+      "scenario": "soc_discharge_taper",
+      "samples": 601,
+      "finalSOC": 5.539609404857373,
+      "pass": true
+    },
+    {
+      "scenario": "soc_charge_stop",
+      "samples": 121,
+      "finalSOC": 95,
+      "pass": true
+    },
+    {
+      "scenario": "soc_discharge_stop",
+      "samples": 121,
+      "finalSOC": 5,
+      "pass": true
+    },
+    {
+      "scenario": "charge_cold_stop",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "charge_hot_stop",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_cold_stop",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_hot_stop",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "charge_cold_ramp",
+      "samples": 301,
+      "finalSOC": 59.366112310486976,
+      "pass": true
+    },
+    {
+      "scenario": "charge_hot_ramp",
+      "samples": 301,
+      "finalSOC": 57.55870305291303,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_cold_ramp",
+      "samples": 301,
+      "finalSOC": 41.1910293314589,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_hot_ramp",
+      "samples": 301,
+      "finalSOC": 42.441296947087025,
+      "pass": true
+    },
+    {
+      "scenario": "charge_voltage_limit",
+      "samples": 301,
+      "finalSOC": 56.33462073616414,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_voltage_limit",
+      "samples": 301,
+      "finalSOC": 44.29570449224536,
+      "pass": true
+    },
+    {
+      "scenario": "zero_charge_rating",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "zero_discharge_rating",
+      "samples": 121,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "nonunit_efficiency",
+      "samples": 1201,
+      "finalSOC": 37.89215686274767,
+      "pass": true
+    },
+    {
+      "scenario": "different_pack",
+      "samples": 1201,
+      "finalSOC": 41.66666666666703,
+      "pass": true
+    },
+    {
+      "scenario": "long_charge",
+      "samples": 21601,
+      "finalSOC": 94.99999999999851,
+      "pass": true
+    },
+    {
+      "scenario": "long_discharge",
+      "samples": 21601,
+      "finalSOC": 5.000000000000094,
+      "pass": true
+    },
+    {
+      "scenario": "charge_one_step_guard",
+      "samples": 5,
+      "finalSOC": 95,
+      "pass": true
+    },
+    {
+      "scenario": "discharge_one_step_guard",
+      "samples": 5,
+      "finalSOC": 5,
+      "pass": true
+    },
+    {
+      "scenario": "ambient_cooling",
+      "samples": 3601,
+      "finalSOC": 50,
+      "pass": true
+    },
+    {
+      "scenario": "no_ambient_transfer",
+      "samples": 1201,
+      "finalSOC": 49.99999999999999,
+      "pass": true
+    }
+  ]
+}

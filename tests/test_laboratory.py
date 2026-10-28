@@ -53,7 +53,8 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert b"4 learning models" not in response.content
             assert b"2 simulation models available" in response.content
         elif system["slug"] == "bev":
-            assert len(BEV_MODELS) == 1
+            assert len(BEV_MODELS) == 2
+            assert reverse("core:battery_energy").encode() in environment.content
             assert b"Regenerative and Friction Brake-Force Allocation" in environment.content
             assert reverse("core:brakelab").encode() in environment.content
             assert reverse("core:fuel_delivery").encode() not in environment.content

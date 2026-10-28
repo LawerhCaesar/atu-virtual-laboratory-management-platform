@@ -284,3 +284,8 @@ def support_review(request, ticket_id):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def bless(request):
     return render(request, "core/bless.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def battery_energy(request):
+    return render(request, "core/battery_energy.html")
