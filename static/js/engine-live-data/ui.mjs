@@ -1,6 +1,8 @@
-import { EngineSimulation, STEP } from "./controller.mjs";
+import { EngineSimulation, STEP, PRESETS } from "./controller.mjs";
 import { SPEC } from "./spec.mjs";
 import { ENGINE_STATE_LABELS, describeCurrentRelationship } from "./model.mjs";
+import { createSchematic } from "./schematic.mjs";
+import { ectTemperature } from "./reference.mjs";
 
 const root = document.querySelector("#engine-demo");
 if (root) initialise();
@@ -27,7 +29,7 @@ function initialise() {
     IgnitionTiming: "Ignition timing", FanDuty: "PWM fan duty",
     WaterPumpDuty: "Virtual electric-water-pump duty", FuelPumpState: "Fuel-pump command",
     StarterState: "Starter command", InjectionEnable: "Injection enabled",
-    IgnitionEnable: "Ignition enabled", StartPermitted: "Start permitted",
+    IgnitionEnable: "Ignition enabled", StartPermitted: "Sequence active", SafeStartCondition: "Safe start condition", ActualRPM: "Imposed actual RPM",
     ClosedLoopActive: "Closed-loop active", IdleActive: "Idle active",
     CoolingLoopActive: "Cooling-loop active", SensorDisagreement: "ECT sensor disagreement",
     EngineState: "Engine state", StateElapsedTime: "Elapsed time in state",
@@ -42,9 +44,9 @@ function initialise() {
     ECT2Voltage: "Virtual ECT2 input; used for cooling demand and sensor plausibility.",
     AccessoryLoad: "Represents the added idle-control demand of electrical accessories.",
     IgnitionSwitch: "Simulated ignition status; turning it off requests shutdown.",
-    StartAuthorisation: "Simulates fingerprint permission; no biometric recognition is performed.",
+    StartAuthorisation: "Simulated permission; no biometric recognition is performed.",
     ACRequest: "Requests at least 35% fan duty when state code is CRANK or higher.",
-    StartRequest: "A 0.5-second virtual voice/manual request; it cannot bypass safe-start checks.",
+    StartRequest: "A ten-sample virtual request; it cannot bypass safe-start checks.",
     StopRequest: "A 0.5-second virtual request for normal shutdown.",
     EmergencyStop: "Latched emergency request overrides engine and cooling commands.",
     ECT1Temp: "Educational temperature calculated from virtual ECT1 voltage.",
@@ -61,7 +63,7 @@ function initialise() {
     RPMError: "Target minus actual RPM while idle control is active.",
     InjectorPW: "Corrected injection duration; zero when injection is disabled.",
     IdleControlDuty: "Idle actuator duty based on speed error and accessory load.",
-    IgnitionTiming: "Commanded ignition advance in degrees before top dead centre.",
+    IgnitionTiming: "Commanded degrees BTDC; a negative value represents ATDC.",
     FanDuty: "Virtual pulse-width-modulated fan command.",
     WaterPumpDuty: "Virtual electric pump command; no electric pump exists in the physical 1NZ setup.",
     FuelPumpState: "Fuel-pump relay is on during PRIME, CRANK and RUN.",
@@ -75,9 +77,18 @@ function initialise() {
     SensorDisagreement: "Set when virtual ECT temperatures differ by more than 15 °C.",
     EngineState: "OFF, PRIME, CRANK, RUN or SHUTDOWN.",
     StateElapsedTime: "Virtual seconds since the current engine state was entered.",
+    SafeStartCondition: "Includes the momentary start request; it normally returns false after the pulse, even during RUN.",
+    ActualRPM: "Imposed engine speed input; commands do not automatically change it.",
   };
   const metadata = Object.fromEntries([...SPEC.inputs, ...SPEC.outputs].map(signal => [signal.name, signal]));
-  const categories = { measured: "Measured/status input", calculated: "ECU-calculated value",
+  metadata.ActualRPM={name:'ActualRPM',unit:'rpm',min:0,max:6500};
+  metadata.SafeStartCondition={name:'SafeStartCondition',unit:'state',min:0,max:1};
+  const schematic=createSchematic(byId('engine-schematic'),key=>{
+    const {inputs:i,outputs:o}=simulation.result;
+    const notes={battery:`Battery ${i.BatteryVoltage.toFixed(2)} V; a start requires at least 9.5 V.`,ecu:`Simulated authorisation ${i.StartAuthorisation?'active':'inactive'}; no biometric capture.`,starter:`Starter ${o.StarterState?'ON':'OFF'} only in CRANK; RPM is imposed independently.`,engine:`Imposed ${i.EngineSpeed.toFixed(0)} rpm; illustrative rotation requires CRANK or RUN and positive RPM.`,fuel:`Fuel pump ${o.FuelPumpState?'ON':'OFF'} in PRIME, CRANK and RUN.`,injector:`Injection ${o.InjectionEnable?'enabled':'disabled'}; pulse ${o.InjectorPW.toFixed(3)} ms.`,fan:`Fan command ${o.FanDuty.toFixed(1)}%; temperature and A/C determine duty, with emergency override.`,pump:`Virtual electric pump command ${o.WaterPumpDuty.toFixed(1)}%; the separate physical 1NZ rig has no electric pump.`};
+    byId('engine-component-detail').textContent=notes[key];
+  });
+  const categories = { measured: "Imposed virtual input", calculated: "ECU-calculated value",
     commanded: "Commanded output", status: "Operating status" };
   const systems = {
     fuel: { title: "Fuel and injection", flow: SPEC.ui.dependencyFlows[0],
@@ -86,7 +97,7 @@ function initialise() {
       commanded: ["InjectorPW", "InjectionEnable"], status: ["ClosedLoopActive"] },
     idle: { title: "Idle and ignition", flow: SPEC.ui.dependencyFlows[1],
       measured: ["EngineSpeed", "ThrottlePosition", "ManifoldPressure", "AccessoryLoad"],
-      calculated: ["ECT1Temp", "TargetIdleRPM", "RPMError"],
+      calculated: ["ECT1Temp", "ActualRPM", "TargetIdleRPM", "RPMError"],
       commanded: ["IdleControlDuty", "IgnitionTiming"], status: ["IdleActive"] },
     cooling: { title: "Cooling", flow: SPEC.ui.dependencyFlows[2],
       measured: ["ECT1Voltage", "ECT2Voltage", "ACRequest", "BatteryVoltage"],
@@ -95,7 +106,7 @@ function initialise() {
     startRun: { title: "Start and run", flow: SPEC.ui.dependencyFlows[3],
       measured: ["IgnitionSwitch", "StartAuthorisation", "StartRequest", "StopRequest", "EmergencyStop", "BatteryVoltage", "EngineSpeed"],
       calculated: [], commanded: ["FuelPumpState", "StarterState", "InjectionEnable", "IgnitionEnable"],
-      status: ["EngineState", "StateElapsedTime", "StartPermitted"] },
+      status: ["EngineState", "StateElapsedTime", "StartPermitted", "SafeStartCondition"] },
   };
   const label = key => labels[key] || metadata[key]?.label || key;
   const unit = key => ({ degC: "°C", "deg BTDC": "° BTDC", code: "code" }[metadata[key]?.unit] || metadata[key]?.unit || "");
@@ -103,13 +114,14 @@ function initialise() {
     const value = key in result.inputs ? result.inputs[key] : result.outputs[key];
     if (key === "EngineState") return `${result.outputs.EngineStateLabel} (${value})`;
     if (metadata[key]?.unit === "state") return value ? "ON / ACTIVE" : "OFF / INACTIVE";
-    const places = ["EngineSpeed", "TargetIdleRPM", "RPMError"].includes(key) ? 0
-      : ["InjectorPW", "BaseInjectorPW", "LambdaEstimate"].includes(key) ? 4 : 2;
+    const places = ["EngineSpeed", "ActualRPM", "TargetIdleRPM", "RPMError"].includes(key) ? (Number.isInteger(Number(value)) ? 0 : 1)
+      : ["InjectorPW", "BaseInjectorPW", "BatteryCompensation", "LambdaEstimate"].includes(key) ? 3
+      : ["ECT1Temp", "ECT2Temp", "SensorDifference", "ControlTemperature", "FanDuty", "WaterPumpDuty", "STFT", "WarmupEnrichment", "EngineLoad", "IdleControlDuty"].includes(key) ? 1 : 2;
     return `${Number(value).toFixed(places)} ${unit(key)}`;
   }
   let activeView = Object.hasOwn(systems, root.dataset.initialView) ? root.dataset.initialView : "overview";
   let viewAnimation = null;
-  let interval = null;
+  let interval = null, wallAnchor = 0, accumulator = 0;
   const inputs = {};
 
   for (const group of SPEC.ui.inputGroups) {
@@ -127,7 +139,7 @@ function initialise() {
         const control = make("input");
         control.type = "checkbox"; control.className = "form-check-input"; control.id = `input-${name}`;
         control.setAttribute("aria-describedby", help.id);
-        const text = make("label", definition.label, "form-check-label");
+        const text = make("label", name === "StartAuthorisation" ? "Simulated authorisation" : definition.label, "form-check-label");
         text.htmlFor = control.id;
         control.addEventListener("change", () => { simulation.setInput(name, Number(control.checked)); render(); });
         wrapper.append(control, text, help);
@@ -149,13 +161,14 @@ function initialise() {
         const accepted = make("div", "", "engine-accepted");
         accepted.id = `accepted-${name}`; accepted.setAttribute("role", "status");
         const editNumber = () => {
-          simulation.setInput(name, number.value === "" ? NaN : Number(number.value));
-          render();
+          const value=number.value.trim()==='' ? NaN : Number(number.value);
+          if(!Number.isFinite(value)){inputs[name].error='Enter a finite number; the last accepted value is retained.';render();return;}
+          inputs[name].error=''; simulation.setInput(name,value); render();
         };
         number.addEventListener("input", editNumber);
         number.addEventListener("change", editNumber);
         range.addEventListener("input", () => {
-          simulation.setInput(name, Number(range.value)); number.value = range.value; render();
+          inputs[name].error='';simulation.setInput(name, Number(range.value)); number.value = range.value; render();
         });
         const adjustment = make("div", undefined, "engine-number-adjustment");
         const step = name === "EngineSpeed" ? 50 : Number(number.step);
@@ -165,10 +178,10 @@ function initialise() {
           button.setAttribute("aria-label", `${verb} ${label(name)}`);
           button.title = `${verb} by ${step} ${definition.unit}`;
           button.addEventListener("click", () => {
-            const value = simulation.result.inputs[name] + direction * step;
+            const value = simulation.rawInputs[name] + direction * step;
             const bounded = Math.min(definition.max, Math.max(definition.min, value));
             number.value = Number(bounded.toFixed(2));
-            simulation.setInput(name, Number(number.value)); render();
+            inputs[name].error='';simulation.setInput(name, Number(number.value)); render();
           });
           adjustment.append(button);
         }
@@ -178,7 +191,7 @@ function initialise() {
         restore.setAttribute("aria-label", `Restore ${label(name)} default`);
         restore.addEventListener("click", () => {
           number.value = definition.default;
-          simulation.setInput(name, definition.default); render();
+          inputs[name].error='';simulation.setInput(name, definition.default); render();
         });
         wrapper.append(text, adjustment, range, bounds, restore, help, accepted);
         inputs[name] = { number, range, accepted };
@@ -214,20 +227,20 @@ function initialise() {
     button.addEventListener("click", () => { activeView = key; renderStructure(); render(); });
     byId("engine-tabs").append(button);
   }
-  SPEC.presets.forEach((preset, index) => {
+  PRESETS.forEach((preset, index) => {
     const option = make("option", preset.name); option.value = index; byId("engine-preset").append(option);
   });
 
   function startReason() {
     const { inputs: i, outputs: o } = simulation.result;
-    if (i.EmergencyStop) return "Emergency stop is latched. All engine and cooling commands are off. Press Reset to release.";
+    if (i.EmergencyStop) return "Emergency stop is latched. All engine and cooling commands are off. Use Clear emergency or Reset all to release.";
     if (o.EngineState !== 0) return `Sequence active: ${o.EngineStateLabel}. Prime 2.0 s; maximum cranking 5.0 s.`;
     const reasons = [];
     if (!i.IgnitionSwitch) reasons.push("ignition is off");
-    if (!i.StartAuthorisation) reasons.push("fingerprint authorisation is not active");
+    if (!i.StartAuthorisation) reasons.push("simulated authorisation is not active");
     if (i.BatteryVoltage < 9.5) reasons.push("battery is below 9.5 V");
     if (reasons.length) return `Start blocked because ${reasons.join("; ")}.`;
-    return simulation.running ? "Ready for a voice/manual start request." : "Ready. Press Start and Run to advance virtual time.";
+    return simulation.running ? "Ready for a simulated start request." : "Ready. Run or resume the simulation before pressing Start engine.";
   }
   function explanations() {
     const text = describeCurrentRelationship(simulation.result);
@@ -262,7 +275,7 @@ function initialise() {
     if (activeView === "overview") {
       byId("engine-values").replaceChildren();
       const overview = byId("engine-overview"); overview.replaceChildren();
-      overview.append(make("p", "Data categories: Measured/status input → ECU-calculated value → Commanded output → Operating status.", "small text-secondary"));
+      overview.append(make("p", "Data categories: Imposed virtual input → ECU-calculated value → Commanded output → Operating status.", "small text-secondary"));
       const grid = make("div", undefined, "engine-overview-grid");
       for (const [key, system] of Object.entries(systems)) {
         const card = make("article", undefined, "content-panel");
@@ -291,64 +304,93 @@ function initialise() {
     }
   }
 
+  const chartGroups={
+    fuel:[['O2SensorVoltage'],['LambdaEstimate'],['STFT'],['InjectorPW']],
+    idle:[['EngineSpeed','TargetIdleRPM'],['RPMError'],['IdleControlDuty'],['IgnitionTiming']],
+    cooling:[['ECT1Temp','ECT2Temp','ControlTemperature'],['FanDuty','WaterPumpDuty'],['SensorDifference']],
+    startRun:[['EngineState'],['FuelPumpState','StarterState','InjectionEnable','IgnitionEnable'],['StartPermitted','SafeStartCondition']],
+  };
+  const selectable=[...new Set([...SPEC.inputs.map(s=>s.name),...SPEC.outputs.map(s=>s.name),'ActualRPM','SafeStartCondition'])];
+  for(const key of selectable){const option=make('option',`${label(key)} (${unit(key)})`);option.value=key;byId('engine-chart-extra').append(option);}
+  let inspectIndex=null;
+  byId('engine-chart-extra').addEventListener('change',drawChart);
+  byId('engine-chart-inspect').addEventListener('input',e=>{inspectIndex=Number(e.target.value);drawChart();});
   function drawChart() {
     if (activeView === "overview") return;
-    const svg = byId("engine-chart"), ns = "http://www.w3.org/2000/svg";
-    svg.replaceChildren();
-    function add(tag, attrs, text) {
-      const node = document.createElementNS(ns, tag);
-      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-      if (text !== undefined) node.textContent = text;
-      svg.append(node); return node;
-    }
-    add("title", { id: "engine-chart-title" }, `${systems[activeView].title} signal trends in virtual seconds`);
-    const series = SPEC.ui.charts[activeView];
-    const data = simulation.history;
-    const end = Math.max(60, simulation.internal.simulationTime), begin = end - 60;
-    const colors = ["#145ca8", "#8b3a12", "#336b35", "#6b3888", "#374151"];
-    const band = 390 / series.length;
-    series.forEach((key, index) => {
-      const definition = metadata[key];
-      const numericRange = definition.range?.match(/^(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)$/);
-      const minimum = definition.min ?? (numericRange ? Number(numericRange[1]) : key === "IgnitionTiming" ? -5 : 0);
-      const maximum = definition.max ?? (numericRange ? Number(numericRange[2]) : key === "IgnitionTiming" ? 45 : 1);
-      const top = 30 + band * index, bottom = top + band - 30;
-      add("text", { x: 12, y: top - 10 }, `${key === "WaterPumpDuty" ? "Virtual pump duty" : key} (${unit(key)}) · ${minimum}–${maximum}`);
-      add("line", { x1: 40, y1: bottom, x2: 620, y2: bottom, stroke: "#dce4ed" });
-      const points = data.map(row => {
-        const x = 40 + ((row.SimulationTime - begin) / 60) * 580;
-        const y = bottom - ((Number(row[key]) - minimum) / (maximum - minimum)) * (bottom - top);
-        return `${x.toFixed(2)},${y.toFixed(2)}`;
-      }).join(" ");
-      const line = add("polyline", { points, fill: "none", stroke: colors[index], "stroke-width": 2 });
-      const tooltip = document.createElementNS(ns, "title");
-      tooltip.textContent = `${label(key)}: ${valueText(key)}`;
-      line.append(tooltip);
+    const svg=byId('engine-chart'),ns='http://www.w3.org/2000/svg',data=simulation.history;
+    const panels=chartGroups[activeView].map(p=>[...p]),extra=byId('engine-chart-extra').value;
+    if(extra)panels.push([extra]);
+    const mobile=matchMedia('(max-width:600px)').matches,width=mobile?420:640,left=75,right=width-20;
+    const heights=panels.map(keys=>145+keys.length*15),total=heights.reduce((a,b)=>a+b,0);
+    svg.replaceChildren();svg.setAttribute('viewBox',`0 0 ${width} ${total+35}`);
+    const add=(tag,attrs,text)=>{const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;svg.append(e);return e;};
+    add('title',{id:'engine-chart-title'},`${systems[activeView].title}: model history, simulation time in seconds`);
+    const last=data.at(-1)?.SimulationTime??0,begin=Math.max(0,last-60),end=Math.max(begin+STEP,last),colors=['#145ca8','#a34b22','#087e74','#7b3696'];
+    const chosen=Math.max(0,Math.min(data.length-1,inspectIndex??data.length-1));
+    const row=data[chosen],slider=byId('engine-chart-inspect');slider.disabled=!data.length;slider.max=Math.max(0,data.length-1);slider.value=chosen;
+    const readings=[];
+    let top=15;panels.forEach((keys,index)=>{
+      const plotTop=top+35+keys.length*15,bottom=plotTop+65;
+      const vals=data.flatMap(r=>keys.map(k=>Number(r[k]))).filter(Number.isFinite);
+      let minimum=Math.min(0,...vals),maximum=Math.max(1,...vals);
+      if(keys.includes('SensorDifference'))maximum=Math.max(maximum,15);
+      const padding=(maximum-minimum)*.08;minimum-=padding;maximum+=padding;
+      const x=t=>left+(t-begin)/(end-begin)*(right-left),y=v=>bottom-(v-minimum)/(maximum-minimum)*(bottom-plotTop);
+      add('text',{x:5,y:top+13,'font-weight':'bold'},`${label(keys[0])}${keys.length>1?` + ${keys.length-1} signal${keys.length>2?'s':''}`:''} (${unit(keys[0])})`);
+      keys.forEach((key,i)=>{const legend=add('text',{x:8,y:top+30+i*15},`${i===0?'Solid':i===1?'Dashed':i===2?'Dotted':'Dash-dot'}: ${label(key)}`);legend.style.fill=colors[i%colors.length];});
+      for(let n=0;n<=2;n++){const v=minimum+(maximum-minimum)*n/2;add('line',{x1:left,x2:right,y1:y(v),y2:y(v),stroke:'#dce4ed'});add('text',{x:left-5,y:y(v)+4,'text-anchor':'end'},v.toFixed(Math.abs(v)<10?1:0));}
+      if(keys.includes('SensorDifference')){add('line',{x1:left,x2:right,y1:y(15),y2:y(15),stroke:'#a43838','stroke-dasharray':'4 4'});add('text',{x:right-10,y:y(15)-4,'text-anchor':'end'},'15 °C threshold');}
+      keys.forEach((key,i)=>{
+        const discrete=['EngineState','FuelPumpState','StarterState','InjectionEnable','IgnitionEnable','StartPermitted','SafeStartCondition','ClosedLoopActive','IdleActive','CoolingLoopActive','SensorDisagreement'].includes(key);
+        let d='';data.forEach((r,j)=>{const xx=x(r.SimulationTime),yy=y(Number(r[key]));d+=j===0?`M${xx} ${yy}`:discrete?` H${xx} V${yy}`:` L${xx} ${yy}`;});
+        const path=add('path',{d,fill:'none',stroke:colors[i%colors.length],'stroke-width':2,'stroke-dasharray':i===1?'7 4':i===2?'2 4':i===3?'7 3 2 3':'none'});
+        if(data.length===1)add('circle',{cx:x(data[0].SimulationTime),cy:y(Number(data[0][key])),r:3,fill:colors[i%colors.length]});
+        const title=document.createElementNS(ns,'title');title.textContent=row?`${row.SimulationTime.toFixed(2)} s · ${label(key)} ${Number(row[key]).toFixed(3)} ${unit(key)}`:`${label(key)} — no samples`;path.append(title);
+        if(row)readings.push(`${label(key)} ${Number(row[key]).toFixed(3)} ${unit(key)}`);
+      });
+      if(row)add('line',{x1:x(row.SimulationTime),x2:x(row.SimulationTime),y1:plotTop,y2:bottom,stroke:'#667789','stroke-dasharray':'3 3'});
+      add('text',{x:left,y:bottom+17},`${begin.toFixed(1)} s`);add('text',{x:right,y:bottom+17,'text-anchor':'end'},`${end.toFixed(1)} s`);top+=heights[index];
     });
-    for (let index = 0; index <= 4; index++) add("text", { x: 40 + index * 145, y: 425, "text-anchor": index === 4 ? "end" : "start" }, `${(begin + index * 15).toFixed(1)} s`);
-    byId("engine-chart-status").textContent = `${data.length} recorded samples at 0.05 s per calculation. ${data.length ? "History is virtual demonstration data." : "Press Run to record a trend."}`;
+    add('text',{x:width/2,y:total+25,'text-anchor':'middle'},'Simulation time (s)');
+    byId('engine-chart-readout').textContent=row?`${row.SimulationTime.toFixed(2)} s · ${readings.join(' · ')}`:'No samples recorded.';
+    byId('engine-chart-status').textContent=`${data.length} recorded samples at 0.05 s. ${data.length?'Use the sample slider for keyboard access; CSV includes the retained history.':'Run or Step to record a trend.'} State codes: 0 OFF, 1 PRIME, 2 CRANK, 3 RUN, 4 SHUTDOWN; binary signals: 0 OFF, 1 ON.`;
   }
+  window.addEventListener('resize',drawChart);
+  byId('engine-chart').addEventListener('pointermove',event=>{if(!simulation.history.length)return;const bounds=event.currentTarget.getBoundingClientRect(),viewWidth=matchMedia('(max-width:600px)').matches?420:640,fraction=Math.max(0,Math.min(1,((event.clientX-bounds.left)/bounds.width*viewWidth-75)/(viewWidth-95)));inspectIndex=Math.round(fraction*(simulation.history.length-1));drawChart();});
   function render() {
     byId("engine-time").textContent = simulation.internal.simulationTime.toFixed(2);
     byId("engine-state-time").textContent = simulation.internal.elapsedInState.toFixed(2);
     byId("engine-state").textContent = simulation.result.outputs.EngineStateLabel;
-    byId("engine-mode").textContent = simulation.running ? "Running" : "Paused";
+    byId("engine-mode").textContent = simulation.running ? "Running" : simulation.history.length ? "Paused" : "Ready — simulation paused";
+    byId("engine-run").textContent=simulation.history.length?"Resume":"Run simulation";
+    byId("engine-step").disabled=simulation.running;
+    byId("engine-start").disabled=!simulation.running || simulation.internal.engineState!==0;
+    byId("engine-stop").disabled=!simulation.running;
+    byId("engine-export").disabled=!simulation.history.length;
+    const pending=Object.keys(simulation.rawInputs).some(k=>simulation.rawInputs[k]!==simulation.result.inputs[k]);
+    byId("engine-pending").textContent=pending?"Inputs changed: pending until Step or the next running sample. Readouts show the last sampled values.":simulation.history.length?"Readings, graphics and history show the same recorded sample.":"No samples yet. CSV becomes available after the first step.";
+    byId("engine-clear-emergency").disabled=!simulation.rawInputs.EmergencyStop;
+    byId("engine-events").replaceChildren(...(simulation.events.length?simulation.events.slice(-20).map(e=>make("li",`${e.time.toFixed(2)} s · ${e.message}`)):[make("li","No state changes recorded yet.")]));
+    schematic.update(simulation.result,simulation.running);
     byId("engine-run").disabled = simulation.running;
     byId("engine-pause").disabled = !simulation.running;
-    byId("engine-emergency").setAttribute("aria-pressed", String(Boolean(simulation.result.inputs.EmergencyStop)));
-    byId("engine-emergency").disabled = Boolean(simulation.result.inputs.EmergencyStop);
-    byId("engine-emergency").textContent = simulation.result.inputs.EmergencyStop ? "Emergency stop · LATCHED" : "Emergency stop";
+    byId("engine-emergency").setAttribute("aria-pressed", String(Boolean(simulation.rawInputs.EmergencyStop)));
+    byId("engine-emergency").disabled = Boolean(simulation.rawInputs.EmergencyStop);
+    byId("engine-emergency").textContent = simulation.rawInputs.EmergencyStop ? "Emergency stop · LATCHED" : "Emergency stop";
     byId("engine-start-reason").textContent = startReason();
     for (const item of byId("engine-stepper").children) {
       if (Number(item.dataset.state) === simulation.internal.engineState) item.setAttribute("aria-current", "step");
       else item.removeAttribute("aria-current");
     }
     for (const [name, control] of Object.entries(inputs)) {
-      if (control.control) { control.control.checked = Boolean(simulation.result.inputs[name]); continue; }
-      control.range.value = simulation.result.inputs[name];
-      const capped = simulation.result.clampedFields[name];
-      control.accepted.textContent = capped ? `Input capped / invalid. Accepted: ${valueText(name)}` : `Accepted: ${valueText(name)}`;
-      control.number.setAttribute("aria-invalid", String(capped));
+      if (control.control) { control.control.checked = Boolean(simulation.rawInputs[name]); continue; }
+      control.range.value = simulation.rawInputs[name];
+      const capped = simulation.clampedFields[name];
+      const raw=simulation.rawInputs[name];
+      const ect=['ECT1Voltage','ECT2Voltage'].includes(name)?` · input preview ${ectTemperature(raw).toFixed(1)} °C`:'';
+      const accepted=`${Number(raw).toFixed(unit(name)==='V'?2:1)} ${unit(name)}${ect}`;
+      control.accepted.textContent=control.error || (capped?`Input capped. Accepted: ${accepted}`:`Accepted: ${accepted}`) + (simulation.rawInputs[name]!==simulation.result.inputs[name]?' · pending next sample':'');
+      control.number.setAttribute("aria-invalid", String(Boolean(control.error)));
     }
     root.querySelectorAll("[data-signal]").forEach(node => { node.textContent = valueText(node.dataset.signal); });
     const sentences = explanations();
@@ -357,16 +399,22 @@ function initialise() {
     drawChart();
     cutaway?.sync(simulation.result, simulation.running);
   }
-  function pause() { clearInterval(interval); interval = null; simulation.running = false; render(); }
+  function pause(reason) { clearInterval(interval); interval=null; simulation.running=false; wallAnchor=0;accumulator=0;render();if(reason)byId('engine-pending').textContent=reason; }
+  function advanceOne(){simulation.step();cutaway?.advance(simulation.result,STEP);}
   byId("engine-run").addEventListener("click", () => {
-    if (interval !== null) return;
-    simulation.running = true;
-    interval = setInterval(() => {
-      for (let i = 0; i < 4; i++) { simulation.step(); cutaway?.advance(simulation.result, STEP); }
-      render();
-    }, 200);
-    render();
+    if(interval!==null)return;
+    simulation.running=true; wallAnchor=performance.now(); accumulator=0;
+    interval=setInterval(()=>{
+      const now=performance.now(),delta=(now-wallAnchor)/1000;wallAnchor=now;
+      if(document.hidden){pause('Paused because this tab is hidden. Resume deliberately.');return;}
+      if(delta>.5){pause('Paused after a long browser delay. Resume deliberately to continue without skipping history.');return;}
+      accumulator+=delta;let steps=0;
+      while(accumulator>=STEP && steps<10){advanceOne();accumulator-=STEP;steps++;}
+      if(steps){inspectIndex=null;render();}
+    },50);render();
   });
+  byId('engine-step').addEventListener('click',()=>{if(!simulation.running){advanceOne();render();}});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&simulation.running)pause('Paused because this tab is hidden. Resume deliberately.');});
   byId("engine-toggle-inputs").addEventListener("click", () => {
     const panel = byId("engine-input-controls");
     panel.hidden = !panel.hidden;
@@ -377,17 +425,18 @@ function initialise() {
   byId("engine-reset").addEventListener("click", () => {
     pause(); simulation.reset();
     cutaway?.reset();
-    for (const [name, control] of Object.entries(inputs)) if (control.number) control.number.value = simulation.rawInputs[name];
+    for (const [name, control] of Object.entries(inputs)) if (control.number) {control.number.value = simulation.rawInputs[name];control.error='';}
     render();
   });
   byId("engine-load-preset").addEventListener("click", () => {
-    simulation.loadPreset(Number(byId("engine-preset").value));
-    for (const [name, control] of Object.entries(inputs)) if (control.number) control.number.value = simulation.rawInputs[name];
+    pause();simulation.loadPreset(Number(byId("engine-preset").value));cutaway?.reset();
+    for (const [name, control] of Object.entries(inputs)) if (control.number) {control.number.value = simulation.rawInputs[name];control.error='';}
     render();
   });
   byId("engine-start").addEventListener("click", () => { simulation.pulse("StartRequest"); render(); });
   byId("engine-stop").addEventListener("click", () => { simulation.pulse("StopRequest"); render(); });
   byId("engine-emergency").addEventListener("click", () => { simulation.emergencyStop(); render(); });
+  byId("engine-clear-emergency").addEventListener("click",()=>{simulation.clearEmergency();render();});
   byId("engine-export").addEventListener("click", () => {
     const url = URL.createObjectURL(new Blob([simulation.csv()], { type: "text/csv;charset=utf-8" }));
     const anchor = make("a"); anchor.href = url; anchor.download = "engine-live-data-virtual.csv";

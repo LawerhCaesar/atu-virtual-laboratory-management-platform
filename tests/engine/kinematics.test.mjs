@@ -45,7 +45,7 @@ test("adding a cutaway observer cannot alter calculations, history or CSV", () =
   const a = new EngineSimulation(), b = new EngineSimulation(), clock = new CutawayClock();
   for (const s of [a, b]) {
     s.setInput("IgnitionSwitch", 1); s.setInput("StartAuthorisation", 1);
-    s.pulse("StartRequest"); s.running = true;
+    s.running = true; s.pulse("StartRequest");
   }
   for (let tick = 0; tick < 100; tick++) { a.step(); b.step(); clock.advance(b.result, .05); }
   assert.deepEqual(a.result, b.result);

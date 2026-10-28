@@ -147,3 +147,5 @@ See the [implementation verification record](docs/implementation-verification-re
 The [Administrator management guide](docs/administrator-management-guide.md) explains the completed controls, resource-history rules, notice delivery and local database upgrade. Start from `/dashboard/` after signing in as an active Administrator.
 
 HEV also includes **P2 Full-Parallel Hybrid** at `/virtual-lab/hev/p2-full-parallel-hybrid/`: torque intensity, battery energy, an animated P2 powertrain, seven scope groups, comparison and exports. See [integration, equations and verification](docs/p2-hybrid.md).
+
+ICE includes **Engine Live Data Demonstration** at `/virtual-lab/engine-live-data/`; see the [revision-2 model and verification guide](docs/engine-lab-revision-2.md).

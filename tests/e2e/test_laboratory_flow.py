@@ -38,14 +38,16 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
         page.get_by_role("link", name=f'Enter {system["code"]} environment', exact=True).click()
         expect(page.get_by_role("heading", name=system["name"], exact=True)).to_be_visible()
         colours.add(page.locator(".lab-system-hero").evaluate("e => getComputedStyle(e).backgroundColor"))
-        expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
-        expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_have_count(0)
+        if system["slug"] != "ice":
+            expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
+        if system["slug"] != "ice":
+            expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_have_count(0)
         if system["slug"] not in ("ice", "bev", "hybrid", "vehicle-dynamics"):
             expect(page.get_by_role("heading", name="No simulations added yet", exact=True)).to_be_visible()
             expect(page.locator(".lab-model-grid article, .lab-launch")).to_have_count(0)
             expect(page.get_by_text("Scope for future models", exact=False)).to_have_count(0)
         elif system["slug"] == "ice":
-            expect(page.locator(".lab-model-grid article")).to_have_count(1)
+            expect(page.locator(".lab-model-grid article")).to_have_count(2)
             expect(page.get_by_role("heading", name="Fuel Delivery Optimisation", exact=True)).to_be_visible()
         elif system["slug"] == "bev":
             expect(page.locator(".lab-model-grid article")).to_have_count(1)
@@ -69,6 +71,6 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
     expect(page.locator("#fuel-time")).to_have_text("0.00")
     expect(page.locator("#fuel-kpis [data-fuel-output]")).to_have_count(14)
     page.get_by_role("link", name="Back to ICE models", exact=True).click()
-    expect(page.locator(".lab-model-grid article")).to_have_count(1)
+    expect(page.locator(".lab-model-grid article")).to_have_count(2)
     response = page.goto(live_server.url + "/virtual-lab/engine-live-data/?view=fuel")
-    assert response.status == 404
+    assert response.status == 200

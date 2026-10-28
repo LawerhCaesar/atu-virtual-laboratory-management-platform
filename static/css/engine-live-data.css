@@ -84,3 +84,9 @@
   .engine-toolbar { padding: 1rem; }
   .engine-results .content-panel { padding: 1rem; }
 }
+.engine-schematic{display:block;width:100%;background:#182e46;border-radius:.9rem;min-height:180px}.engine-schematic-node{cursor:pointer}.engine-schematic-node:focus{outline:none}.engine-schematic-node:focus rect{stroke:#ffd979;stroke-width:4}.engine-schematic-node:hover rect{fill:#385775}.engine-schematic text{font-family:system-ui,sans-serif}.engine-schematic[data-running=true] [aria-label^="fan"],.engine-schematic[data-running=true] [aria-label^="pump"]{transition:opacity .25s}.engine-page #engine-events{max-height:12rem;overflow:auto}.engine-page #engine-pending{color:#72521b}
+@media(max-width:600px){.engine-schematic text{font-size:17px}.engine-schematic-node text{font-size:15px}}
+
+.engine-schematic [data-rotor]{transform-box:fill-box;transform-origin:center}.engine-schematic[data-running=true] [data-rotor][data-active=true]{animation:engine-schematic-turn var(--rotor-time,2s) linear infinite}@keyframes engine-schematic-turn{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.engine-schematic [data-rotor]{animation:none!important}}
+
+@media(max-width:600px){#engine-chart text{font-size:15px}}

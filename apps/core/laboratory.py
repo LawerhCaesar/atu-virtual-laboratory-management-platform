@@ -22,7 +22,8 @@ ENGINE_MODEL_NAME = "Engine Live Data Demonstration"
 ENGINE_VIEW_KEYS = frozenset({"fuel", "idle", "cooling", "startRun"})
 
 ICE_MODELS = (
-    # Engine Live Data Demonstration is temporarily withdrawn; its source is retained.
+    {"title": ENGINE_MODEL_NAME, "route_name": "core:engine_live_data",
+     "description": "Explore virtual fuel, idle, cooling and start/run signals with a shared engine model and visualisation."},
     {"title": "Fuel Delivery Optimisation", "route_name": "core:fuel_delivery",
      "description": "Explore injector delivery, fuel trims and consumption with an interactive fuel path, time-series plots and baseline comparison."},
 )

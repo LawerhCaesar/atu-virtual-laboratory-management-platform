@@ -6,6 +6,7 @@ from . import views, p2_views
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/engine-live-data/", views.engine_live_data, name="engine_live_data"),
     path("virtual-lab/hev/p2-full-parallel-hybrid/", p2_views.page, name="p2_hybrid"),
     path("api/v1/hybrid/p2/model-info", p2_views.info, name="p2_info"),
     path("api/v1/hybrid/p2/simulate", p2_views.simulate, name="p2_simulate"),

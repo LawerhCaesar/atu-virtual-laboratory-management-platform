@@ -7,6 +7,8 @@
       <p>BrakeLab retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Mass is adjustable; wheel radius is a fixed calibration in this model. Its numerical outputs therefore do not use the common baseline by default.</p>
     {% elif walkthrough_module.route == "core:wheel_slip" %}
       <p>Wheel-Slip retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Both are adjustable in the inputs. Its numerical outputs therefore do not use the common baseline by default.</p>
+    {% elif walkthrough_module.route == "core:engine_live_data" %}
+      <p>Engine Live Data uses imposed sensor values and does not model the common vehicle body or wheel dimensions. Its 3D and 2D mechanisms are generic educational illustrations.</p>
     {% elif walkthrough_module.route == "core:fuel_delivery" %}
       <p>The fuel simulation does not model vehicle geometry or mass. Its 3D fuel assembly is generic, not verified GV70 component geometry.</p>
     {% elif walkthrough_module.route == "core:p2_hybrid" %}

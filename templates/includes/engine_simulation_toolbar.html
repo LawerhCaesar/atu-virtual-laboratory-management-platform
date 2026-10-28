@@ -1,14 +1,16 @@
 <div class="content-panel engine-toolbar mt-0">
   <div class="d-flex flex-wrap gap-2" role="group" aria-label="Simulation controls">
-    <button id="engine-run" class="btn btn-primary" type="button">Run</button>
+    <button id="engine-run" class="btn btn-primary" type="button">Run simulation</button>
     <button id="engine-pause" class="btn btn-outline-secondary" type="button" disabled>Pause</button>
-    <button id="engine-reset" class="btn btn-outline-secondary" type="button">Reset</button>
-    <button id="engine-export" class="btn btn-outline-primary" type="button">Export CSV</button>
+    <button id="engine-step" class="btn btn-outline-secondary" type="button">Step 0.05 s</button>
+    <button id="engine-reset" class="btn btn-outline-secondary" type="button">Reset all</button>
+    <button id="engine-export" class="btn btn-outline-primary" type="button" disabled>Export CSV</button>
     <a class="engine-controls-link" href="#engine-input-title">Sensor and start controls</a>
   </div>
   <div class="d-flex gap-3 flex-wrap">
     <span>Virtual time: <output id="engine-time">0.00</output> s</span>
     <span>State: <strong id="engine-state">OFF</strong></span>
-    <span id="engine-mode" role="status">Paused</span>
+    <span id="engine-mode" role="status">Ready — simulation paused</span>
   </div>
+  <p class="small mb-0 mt-2" id="engine-pending" role="status">No samples yet. CSV becomes available after the first step.</p>
 </div>

@@ -41,16 +41,17 @@ def test_system_catalogues_are_scoped_to_system(client, role):
         environment = client.get(url)
         assert environment.status_code == 200
         assert system["name"].encode() in environment.content
-        assert b"Engine Live Data Demonstration" not in environment.content
-        assert b"/virtual-lab/engine-live-data/" not in environment.content
+        if system["slug"] != "ice":
+            assert b"Engine Live Data Demonstration" not in environment.content
+            assert b"/virtual-lab/engine-live-data/" not in environment.content
         if system["slug"] == "ice":
-            assert len(ICE_MODELS) == 1
+            assert len(ICE_MODELS) == 2
             for model in ICE_MODELS:
                 assert model["title"].encode() in environment.content
                 assert reverse(model["route_name"]).encode() in environment.content
             assert b"?view=" not in environment.content
             assert b"4 learning models" not in response.content
-            assert b"1 simulation model available" in response.content
+            assert b"2 simulation models available" in response.content
         elif system["slug"] == "bev":
             assert len(BEV_MODELS) == 1
             assert b"Regenerative and Friction Brake-Force Allocation" in environment.content
