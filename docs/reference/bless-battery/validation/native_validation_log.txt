@@ -1,0 +1,59 @@
+CLEAN_RELOAD_OK
+Error using validate_bless>logline (line 94)
+line does not have a parameter named 'DataLogging'
+
+Error in validate_bless (line 11)
+logline(m,'Energy and cost comparison','comparison');
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in job_006 (line 1)
+validate_bless;
+^^^^^^^^^^^^^^^
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in bless_worker (line 12)
+    try,run(job);catch e,fprintf(2,'%s\n',getReport(e,'extended','hyperlinks','off'));end
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+JOB_DONE 6
+JOB_START 7
+CLEAN_RELOAD_OK
+RUN_START default_cycle stop=3600
+Error using assert
+Diesel energy accounting does not balance
+
+Error in validate_bless (line 62)
+    assert(max(abs(y(:,23)-y(:,20)*9.94769))<1e-5,'Diesel energy accounting does not balance');
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in job_007 (line 1)
+clear validate_bless;validate_bless;
+                     ^^^^^^^^^^^^^^
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in bless_worker (line 12)
+    try,run(job);catch e,fprintf(2,'%s\n',getReport(e,'extended','hyperlinks','off'));end
+        ^^^^^^^^
+JOB_DONE 7
+JOB_START 8
+CLEAN_RELOAD_OK
+RUN_START default_cycle stop=3600
+RUN_PASS default_cycle t=3600 distance=66.6667 SOC=61.984 H2used=0.25174 diesel=6.9086 feasible=1 wall=23.4
+RUN_START battery_only stop=3600
+RUN_PASS battery_only t=3600 distance=66.6667 SOC=55.4134 H2used=0 diesel=6.9086 feasible=1 wall=21.1
+RUN_START fuel_cell_start stop=1200
+RUN_PASS fuel_cell_start t=1200 distance=22.2222 SOC=55.263 H2used=0.655311 diesel=2.30287 feasible=1 wall=14.4
+RUN_START hydrogen_empty stop=1200
+RUN_PASS hydrogen_empty t=1200 distance=22.2222 SOC=37.7758 H2used=0 diesel=2.30287 feasible=1 wall=14.1
+RUN_START constant_speed stop=1200
+RUN_PASS constant_speed t=1200 distance=19.861 SOC=81.4913 H2used=0 diesel=1.76046 feasible=1 wall=13.9
+RUN_START uphill_shortfall stop=600
+RUN_PASS uphill_shortfall t=600 distance=11.1111 SOC=60.6064 H2used=0 diesel=5.33818 feasible=0 wall=17.6
+RUN_START regeneration_high_soc stop=600
+RUN_PASS regeneration_high_soc t=600 distance=11.1111 SOC=94.9727 H2used=0 diesel=0.0144501 feasible=1 wall=13.1
+RUN_START hydrogen_depletion stop=1200
+RUN_PASS hydrogen_depletion t=1200 distance=22.2222 SOC=38.3145 H2used=0.02 diesel=2.30287 feasible=1 wall=6.4
+RUN_START priced_cycle stop=1200
+RUN_PASS priced_cycle t=1200 distance=22.2222 SOC=78.8244 H2used=0 diesel=2.30287 feasible=1 wall=7.0
+RUN_START stationary stop=600
+RUN_PASS stationary t=600 distance=0 SOC=89.2266 H2used=0 diesel=0.234326 feasible=0 wall=7.3
+ALL_SCENARIOS_PASSED

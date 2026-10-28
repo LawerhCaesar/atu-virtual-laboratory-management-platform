@@ -11,6 +11,8 @@
       <p>Engine Live Data uses imposed sensor values and does not model the common vehicle body or wheel dimensions. Its 3D and 2D mechanisms are generic educational illustrations.</p>
     {% elif walkthrough_module.route == "core:fuel_delivery" %}
       <p>The fuel simulation does not model vehicle geometry or mass. Its 3D fuel assembly is generic, not verified GV70 component geometry.</p>
+    {% elif walkthrough_module.route == "core:bless" %}
+      <p>Bless retains the supplied passenger-van study: 3,004 kg converted kerb mass, 2,650 kg diesel kerb mass, 540 kg common payload and 0.35 m wheel radius. Its illustration is a generic van. GV70 dimensions are not substituted into this validated model.</p>
     {% elif walkthrough_module.route == "core:p2_hybrid" %}
       <p>P2 Hybrid uses independent torque, motor and battery parameters. No vehicle mass, wheel radius or body geometry enters its equations. Its power-flow illustration is a technical schematic, not a calibrated GV70 powertrain.</p>
     {% elif walkthrough_module.route == "core:micro_hybrid" %}

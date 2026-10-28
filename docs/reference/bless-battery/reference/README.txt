@@ -1,0 +1,1 @@
+The SLX and PDF are copies of the local verified project, retained for traceability. The exporter and original validation source record the extraction/provenance workflow; they contain original local paths and need adaptation before rerunning on another computer. Nothing here changes the original model.

@@ -1,0 +1,135 @@
+VISUAL AND INTERACTION CONTRACT - BLESS VIRTUAL LAB
+
+Purpose: let a student, researcher or project reviewer configure a clear experiment,
+understand energy flow, compare the two powertrains, and inspect the calculations'
+results without navigating a Simulink diagram.
+
+SCREEN ORGANIZATION
+
+Desktop: a compact setup column at left; vehicle and energy-flow stage in the
+center; electric/diesel comparison cards at right; synchronized charts and playback
+controls below. Avoid a wall of gauges. Use clear units, restrained colors, generous
+spacing and short labels. Place detailed calculations in an expandable expert view.
+On a phone stack setup, stage, comparison and charts in that order; let tabs expose
+analysis without shrinking labels. No horizontal page scrolling or clipped controls.
+
+Suggested experiment groups:
+  Driving: built-in cycle/constant speed, target speed, grade, duration, payload.
+  Environment: ambient temperature and auxiliary electrical load.
+  Power sources: fuel-cell enabled, initial hydrogen, initial battery SOC/temperature.
+  Energy prices: electricity, delivered hydrogen, diesel; date and source notes.
+  Advanced: vehicle masses, motor/converter ratings, efficiencies, full battery
+            mask and OCV curve, fuel-cell control thresholds and thermal parameters.
+
+Expose defaults from parameter_catalog.json, never invented defaults. The model's
+main operating clamps include 0-100 km/h, -20% to +20% grade and 0-20 kW auxiliary
+load; inspect the exact exported expressions and preserve them. Form validation
+must show the accepted/effective value when the model clamps an input. Add sensible
+validation for editable ratings: positive masses/capacity/resistance where required,
+efficiencies in (0,1], positive integer series/parallel counts, matching OCV arrays,
+exactly 13 matching OCV entries with SOC endpoints 0 and 100, strictly increasing
+SOC breakpoints, nondecreasing OCV within voltage limits, ordered SOC/temperature thresholds, and
+nonnegative fuel. Distinguish form rules from validated physical operating limits.
+Do not silently reinterpret or recalibrate a rejected input.
+
+Provide the ten test scenarios as labeled examples. Mark the price inputs in
+priced examples 'Illustrative test prices'. The ordinary default retains unentered
+prices. A scenario summary must state the chosen assumptions before Run.
+
+MANDATORY VISUALS AND THEIR DATA BINDINGS
+
+1. Passenger-van animation
+   Side view with rotating wheels, a scrolling demonstration road and a subtle grade
+   indicator. Wheel/road motion follows commanded speed, not a fabricated achieved
+   speed. Caption: 'Requested-cycle playback'. Show the same time cursor used by
+   every chart. At zero speed stop road and wheel motion. With unmet demand show a
+   persistent amber/red 'Requested demand not supported' banner; never imply proven
+   route completion. No geographic map or real route claim is required.
+
+2. Energy-flow diagram
+   Hydrogen -> fuel-cell module -> boost converter -> DC bus -> inverter -> motor.
+   Battery <-> bidirectional converter <-> DC bus, with a separate regeneration
+   path and a visible auxiliary-load branch. Highlight active paths from actual
+   power signals. Reverse the battery arrow when charging; stop it near zero using
+   a DISPLAY-only deadband. Show power in kW and the relevant loss/limit indicator.
+   Braking demand and accepted regenerative power are different quantities.
+   Do not animate unavailable hydrogen or an inactive fuel cell as generating power.
+   Map each path to output_contract.json; add verified internal telemetry only when
+   the existing outputs are insufficient, without changing the original equations.
+   Physical power paths differ from Simulink information-signal connections.
+
+3. State and status cards
+   Battery SOC %, temperature deg C, terminal voltage V, current A (signed), usable
+   hydrogen remaining kg, consumed hydrogen kg, and commanded speed km/h.
+   Always display a text status as well as color. Separate current operating mode
+   from the native cumulative comparison-eligibility flag. That flag does not
+   directly test motor shortfall or the mass screen; show both independently.
+   A low SOC/thermal limit must have a clear reason.
+
+4. Comparison cards
+   Commanded distance km; diesel used L and L/100 km; electric/diesel source energy
+   kWh; energy saving %; refill cost GHS and cost saving GHS; feasibility/cost-valid
+   indicators. Annotate the boundary: source energy excludes upstream production;
+   refill cost excludes vehicle and infrastructure costs. Missing prices show
+   'Enter prices', not zero cost or a misleading negative currency figure.
+   The cost-SAVING comparison must not be shown as valid when cost_valid is false.
+   Individual refill costs have the separate all-prices-entered gate. Do not
+   conflate these two rules or hide the model's surplus tolerance of 0.001 kWh.
+
+5. Synchronized charts (required, accessible legends and units)
+   a. Commanded speed against time, with shortfall intervals highlighted.
+   b. Battery SOC and hydrogen remaining, with separate units/axes or separate plots.
+   c. Fuel-cell DC, signed battery DC and accepted regenerative power in kW.
+   d. Battery temperature and current with their appropriate units.
+   e. Cumulative electric and diesel source energy in kWh.
+   f. Electric DC, motor and diesel shortfall in kW.
+   g. Refill-cost comparison only where valid, with an unavailable explanation otherwise.
+   A table exposes all 38 comparison channels, and an expert option exposes the
+   electric, diesel and road vectors with the labels from the output contract.
+   Exports contain original samples, not smoothed or screen-decimated values.
+
+PLAYBACK AND ACCESSIBILITY
+
+Run/recalculate, cancel calculation, play/pause playback, reset, one-second step,
+time scrubber and playback-speed selector. Clearly distinguish calculation progress
+from playback time. The engine's one-second calculation step never follows monitor
+refresh rate. Do not interpolate Boolean validity flags or control-state transitions.
+Screen readers must have numeric summaries and a table alternative. Every control
+must work by keyboard with visible focus; use text/icons as well as color. Honor
+prefers-reduced-motion and offer a manual motion toggle. Avoid flashing, constant
+particle clutter and autoplay that blocks reading. Pause motion when the tab is
+hidden while retaining the completed simulation data.
+
+DEFAULT DEMONSTRATION AND EDGE-CASE STORYBOARD
+
+Default: select built-in cycle -> Run -> watch requested-speed playback -> inspect
+fuel-cell/battery sharing -> pause and scrub -> compare energy -> see that cost is
+unavailable because default prices are not entered -> export the same result.
+
+Overload: choose the 20% uphill test -> show positive shortfall -> make infeasibility
+visible in the stage, charts and comparison -> do not advertise a valid saving.
+
+Fuel exhaustion: choose the hydrogen-depletion test -> hydrogen reaches zero ->
+fuel-cell flow stops -> battery/shortfall indicators follow the actual result.
+
+Regeneration: choose the downhill/high-SOC test -> show the charge-direction flow
+and accepted regeneration -> show limits without claiming all braking is recovered.
+
+Prices: enter the illustrative priced test -> show costs with its source/date note
+and valid flag -> export raw data and input snapshot. A genuine negative saving
+remains visible when valid; the sentinel rule must not hide it.
+
+VISUAL ACCEPTANCE DELIVERABLES
+
+Deliver the actual integrated browser feature, not only a design file. Supply:
+  - Desktop and narrow-phone screenshots of the final working default run.
+  - A 20-40 second screen recording showing motion, power-flow changes, pause/scrub,
+    and a correctly handled unavailable or infeasible result.
+  - Default-run source-energy and power-flow time-series exports (SVG/PNG or PDF)
+    generated from the converted engine, with units, legend, scenario and model version.
+  - CSV/JSON result and scenario exports that agree with the visible values.
+  - A numerical parity report for all ten scenarios/four streams, plus UI checks.
+
+The product is complete only when the visual outputs are driven by the converted,
+validated calculations and remain understandable in normal, constrained and invalid
+comparison states. Optional 3D can be proposed after this baseline is delivered.

@@ -1,0 +1,111 @@
+function validate_bless
+w=fileparts(mfilename('fullpath'));cd(w);
+diary(fullfile(w,'validation.txt'));
+m='Powertrain_Comparison';
+if bdIsLoaded(m),bdclose(m);end
+load_system(fullfile(w,'..','output',[m '.slx']));
+assert(isempty(get_param(m,'PostLoadFcn')),'Startup repair callback remains');
+fprintf('CLEAN_RELOAD_OK\n');
+set_param(m,'UnconnectedInputMsg','error','UnconnectedOutputMsg','error','UnconnectedLineMsg','error', ...
+    'SignalInfNanChecking','error','ReturnWorkspaceOutputs','on','SignalLogging','on','SignalLoggingName','logsout');
+logline(m,'Energy and cost comparison','comparison');
+logline(m,'Electric powertrain','electric');
+logline(m,'Diesel engine and transmission','diesel');
+logline(m,'Road load','road');
+scopes=find_system(m,'LookUnderMasks','all','BlockType','Scope');
+for k=1:numel(scopes)
+    c=get_param(scopes{k},'ScopeConfiguration');c.AxesScaling='Auto';c.ShowLegend=true;
+end
+save_system(m);
+base=[m '/Operating and component data/'];
+bat=[m '/Electric powertrain/Battery storage/Battery management'];
+dieselLHV=str2double(get_param([base 'Diesel LHV kWh per litre'],'Value'));
+names={'default_cycle','battery_only','fuel_cell_start','hydrogen_empty','constant_speed','uphill_shortfall','regeneration_high_soc','hydrogen_depletion','priced_cycle','stationary'};
+stops=[3600 3600 1200 1200 1200 600 600 1200 1200 600];
+records=struct([]);
+for k=1:numel(names)
+    in=Simulink.SimulationInput(m);in=in.setModelParameter('StopTime',num2str(stops(k)));
+    switch names{k}
+        case 'battery_only'
+            in=in.setBlockParameter([base 'Fuel cell enable 1 or 0'],'Value','0');
+        case 'fuel_cell_start'
+            in=in.setBlockParameter(bat,'initial_soc_pct','50');
+            in=in.setBlockParameter([base 'Electricity GHS per kWh'],'Value','2');
+            in=in.setBlockParameter([base 'Delivered hydrogen GHS per kg'],'Value','50');
+            in=in.setBlockParameter([base 'Diesel GHS per litre'],'Value','15');
+        case 'hydrogen_empty'
+            in=in.setBlockParameter(bat,'initial_soc_pct','50');
+            in=in.setBlockParameter([base 'Initial usable hydrogen kg'],'Value','0');
+        case 'constant_speed'
+            in=in.setBlockParameter([base 'Profile 1 cycle 0 constant'],'Value','0');
+            in=in.setBlockParameter([base 'Target speed km per h'],'Value','60');
+        case 'uphill_shortfall'
+            in=in.setBlockParameter([base 'Road gradient percent'],'Value','20');
+        case 'regeneration_high_soc'
+            in=in.setBlockParameter(bat,'initial_soc_pct','95');
+            in=in.setBlockParameter([base 'Road gradient percent'],'Value','-10');
+        case 'hydrogen_depletion'
+            in=in.setBlockParameter(bat,'initial_soc_pct','50');
+            in=in.setBlockParameter([base 'Initial usable hydrogen kg'],'Value','0.02');
+        case 'priced_cycle'
+            in=in.setBlockParameter([base 'Electricity GHS per kWh'],'Value','2');
+            in=in.setBlockParameter([base 'Delivered hydrogen GHS per kg'],'Value','50');
+            in=in.setBlockParameter([base 'Diesel GHS per litre'],'Value','15');
+        case 'stationary'
+            in=in.setBlockParameter([base 'Target speed km per h'],'Value','0');
+    end
+    fprintf('RUN_START %s stop=%g\n',names{k},stops(k));tic;
+    out=sim(in);secs=toc;
+    c=out.logsout.get('comparison').Values;e=out.logsout.get('electric').Values;
+    d=out.logsout.get('diesel').Values;r=out.logsout.get('road').Values;
+    y=c.Data;ev=e.Data;dv=d.Data;rv=r.Data;
+    save(fullfile(w,['result_' names{k} '.mat']),'out','-v7');
+    writematrix([c.Time y],fullfile(w,['result_' names{k} '.csv']));
+    assert(c.Time(end)==stops(k),'Simulation did not reach stop time');
+    assert(all(isfinite([y(:);ev(:);dv(:);rv(:)])),'Nonfinite result');
+    assert(size(y,2)==38 && size(ev,2)==51,'Result dimensions differ');
+    assert(all(y(:,3)>=15-1e-6 & y(:,3)<=95+1e-6),'SOC outside pack limits');
+    assert(all(y(:,7)>=-1e-8) && all(diff(y(:,8))>=-1e-8),'Hydrogen inventory invalid');
+    assert(max(abs(y(:,7)+y(:,8)-y(1,7)))<1e-7,'Hydrogen inventory does not balance');
+    assert(max(abs(y(:,22)-(y(:,8)*33.3+y(:,31))))<1e-6,'Source energy accounting does not balance');
+    assert(max(abs(y(:,23)-y(:,20)*dieselLHV))<1e-5,'Diesel energy accounting does not balance');
+    assert(max(abs(ev(:,15)-ev(:,13).*ev(:,14)))<1e-5,'Battery terminal power mismatch');
+    assert(all(y(:,9)>=-1e-7 & y(:,9)<=45+1e-7),'Fuel cell rated power violated');
+    assert(all(y(:,16:18)>=-1e-7,'all'),'Negative shortfall');
+    assert(all(diff(y(:,20))>=-1e-7),'Diesel cumulative consumption decreased');
+    switch names{k}
+        case {'battery_only','hydrogen_empty'}
+            assert(max(abs(y(:,9)))<1e-7 && max(abs(y(:,8)))<1e-7,'Fuel cell used unavailable or disabled fuel');
+        case 'fuel_cell_start'
+            assert(max(y(:,9))>1 && y(end,8)>0,'Fuel cell never activated');
+        case 'uphill_shortfall'
+            assert(max(y(:,16)+y(:,17)+y(:,18))>1 && y(end,25)==0,'Infeasibility flag missed the overload');
+        case 'regeneration_high_soc'
+            assert(max(y(:,12))>0,'Regeneration never engaged');
+        case 'hydrogen_depletion'
+            assert(y(end,7)<1e-8 && abs(y(end,9))<1e-7,'Fuel cell failed to shut down on empty tank');
+        case 'priced_cycle'
+            assert(y(end,30)==1,'Priced feasible cycle was not marked valid');
+            assert(abs(y(end,27)-(50*y(end,8)+2*y(end,26)))<1e-6,'Electric refill cost incorrect');
+            assert(abs(y(end,28)-15*y(end,20))<1e-6,'Diesel refill cost incorrect');
+            assert(abs(y(end,29)-(y(end,28)-y(end,27)))<1e-6,'Cost saving incorrect');
+        case 'stationary'
+            assert(max(abs(y(:,2)))<1e-7 && y(end,25)==0,'Zero-distance comparison must be unavailable');
+    end
+    if ~ismember(names{k},{'fuel_cell_start','priced_cycle'})
+        assert(all(y(:,27:29)==-1,'all') && all(y(:,30)==0),'Missing-price guard failed');
+    end
+    records(k).scenario=names{k};records(k).stop_seconds=stops(k);records(k).wall_seconds=secs;
+    records(k).final_outputs=y(end,:);records(k).min_outputs=min(y);records(k).max_outputs=max(y);
+    save(fullfile(w,['result_' names{k} '.mat']),'out','-v7');
+    writematrix([c.Time y],fullfile(w,['result_' names{k} '.csv']));
+    fprintf('RUN_PASS %s t=%g distance=%.6g SOC=%.6g H2used=%.6g diesel=%.6g feasible=%g wall=%.1f\n', ...
+        names{k},c.Time(end),y(end,2),y(end,3),y(end,8),y(end,20),y(end,25),secs);
+    fid=fopen(fullfile(w,'validation_summary.json'),'w');fwrite(fid,jsonencode(records,PrettyPrint=true));fclose(fid);
+end
+save_system(m);fprintf('ALL_SCENARIOS_PASSED\n');diary off;
+end
+function logline(m,b,name)
+p=get_param([m '/' b],'PortHandles');
+set_param(p.Outport(1),'DataLogging','on','DataLoggingNameMode','Custom','DataLoggingName',name);
+end

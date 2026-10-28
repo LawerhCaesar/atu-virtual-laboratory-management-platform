@@ -279,3 +279,8 @@ def support_review(request, ticket_id):
             messages.success(request, "Response saved and the account holder notified.")
             return redirect("core:support_management")
     return render(request, "core/support_review.html", {"ticket": ticket, "form": form})
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def bless(request):
+    return render(request, "core/bless.html")

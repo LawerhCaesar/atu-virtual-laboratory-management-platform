@@ -1,0 +1,339 @@
+BLESS FUEL-CELL / DIESEL VIRTUAL LAB
+EXECUTION BRIEF FOR CODEX AND THE IMPLEMENTING PROGRAMMER
+Prepared 25 October 2026. Target confirmed by the owner: browser-based platform.
+
+1. THE ASSIGNMENT
+
+Implement the supplied, verified Simulink model as a real, deterministic numerical
+engine that runs in a browser. Integrate it into the owner's existing virtual
+platform and build an approachable, professional interface driven by that engine.
+Deliver working calculations, useful explanations, synchronized visual outputs,
+repeatable experiments and evidence of numerical agreement with MATLAB.
+
+This handoff file prepares the source material and checks result files. It is not
+an already-converted simulation engine and does not build or deploy a website.
+The work requested below is the next implementation task for Codex.
+
+Start by inspecting the target repository and its AGENTS.md. Retain its framework,
+routing, design system, authentication and deployment conventions. If no platform
+repository exists, create a standalone browser module as the integration reference.
+Use TypeScript for the engine; use the existing UI framework, or React with
+TypeScript and a conventional browser build tool if starting from an empty repo.
+Pin the actual dependency versions selected and commit the lockfile. Do not
+introduce paid services, a server, a MATLAB runtime or a 3D engine as requirements.
+Ask only for integration details that cannot be discovered or safely defaulted.
+
+2. FIRST ACTIONS AND SOURCE PRIORITY
+
+Run the delivered Python file with --help, then:
+  python Bless_Platform_Codex.py prepare --out Bless_Platform_Handoff
+
+Use Python 3.10 or later. It uses the standard library, works offline and does not
+install dependencies. The destination must be new or empty. It extracts a verified
+archive with this brief, a native model export, parameter and signal catalogs,
+reference model and guide, test scenarios, and full MATLAB time histories.
+
+Read, in order:
+  manifest.json
+  model/native_model.json
+  model/parameter_catalog.json
+  model/output_contract.json
+  validation/scenarios.json
+  DESIGN_AND_ACCEPTANCE.txt
+  reference/Powertrain_Comparison_Guide.pdf
+
+The reference/Powertrain_Comparison.slx copy is the authoritative saved model.
+Its SHA-256 is recorded in manifest.json. The JSON export exposes block paths,
+types, dialog settings, expressions, masks, connections and explanatory notes.
+Keep the original F:/Scripts for codex/Bless/Powertrain_Comparison.slx unchanged.
+The exact saved block settings and executable MATLAB behavior outrank simplified
+prose, diagrams or assumptions in this brief. Investigate and report discrepancies.
+Do not silently replace the physics with a familiar generic fuel-cell model.
+
+The reference traces were produced by the repaired model in MATLAB R2024b. A
+subsequent layout pass preserved every computational block setting and all 1,727
+connections, and matched all 38 default-run comparison outputs within numerical
+precision. The manifest records this provenance explicitly. The ten scenario
+traces are regression evidence, not independent experimental validation.
+
+3. WHAT THIS MODEL MEANS
+
+This is a one-second, requested-speed system-energy comparison of a fuel-cell /
+battery electric passenger van and a conventional diesel reference van. It uses
+the same commanded driving cycle, grade and payload, with different vehicle masses.
+The model assesses whether component limits support the requested operation.
+It DOES NOT solve longitudinal dynamics to predict achieved vehicle speed.
+
+The current default study uses a 120 kW electric motor, 120 kW diesel engine,
+96s41p battery (59.51232 kWh nominal), 45 kW fuel-cell module, and 2 kg usable
+hydrogen. Treat these as editable study assumptions. Preserve the actual parameters
+from the catalog; do not reconstruct all values from this short description.
+
+Keep these distinct in the UI and API:
+  - Commanded speed and commanded distance versus demonstrated achievable motion.
+  - Fuel-cell module output versus output after its boost-converter loss.
+  - Battery stored-energy inventory versus nominal voltage times amp-hours.
+  - Battery terminal power versus power on the regulated DC bus.
+  - Accepted regenerative energy versus total requested braking energy.
+  - Source energy versus electrical energy circulating within the powertrain.
+  - Input price assumptions versus measured market prices.
+
+Do not add measured-route, range-completion, emissions, tank-pressure, detailed
+electrochemistry, switching-waveform, axle-load or structural-safety claims. They
+require models or evidence not supplied here. Changing component ratings does not
+automatically change vehicle mass: make the separate mass inputs visible.
+
+4. CONVERSION METHOD AND EXECUTION ORDER
+
+Implement a pure numerical package independent of React, the DOM and charting.
+Use JavaScript Number / Float64 precision. Never round intermediate calculations.
+Use explicit units at boundaries and descriptive internal names. Round only display
+strings. The simulation clock remains a fixed 1 s; UI playback rate changes neither
+the solver step nor the computed results.
+
+First inventory every block type in native_model.json. Produce a conversion map
+from original full block path and SID to the implementing module/function. Account
+for every computational block. Display and Scope blocks become presentation and
+logging; annotations and coordinates become documentation. Subsystems, Inports,
+Outports and Mux blocks define hierarchy and vector order, not new equations.
+
+Resolve From/Goto references by their exported tag visibility and subsystem scope.
+Do not match similarly named tags globally. Resolve mask parameters in the correct
+parent scope, including vector entries and derived constants. Inspect the exported
+mask initialization code and preserve relevant calculations explicitly. Do not
+evaluate arbitrary user expressions or execute MATLAB code in the browser.
+
+Translate Fcn expressions using a tested parser or explicit generated functions.
+Preserve one-based u(i) indexing, operator precedence, numeric true/false values,
+and each function's semantics. MATLAB/Simulink ^ means exponentiation, not the
+JavaScript XOR operator. Preserve guards and small denominator tolerances exactly;
+changing them to generic clamps can change feasibility flags. Do not use eval or
+new Function on values supplied by the user or imported scenarios.
+
+This exact export has 23 block types, 302 Fcn blocks, 17 UnitDelay state blocks,
+one DigitalClock and one one-dimensional Lookup_n-D block. There are no
+DiscreteIntegrator blocks: integration is expressed through explicit arithmetic
+and UnitDelay feedback. Port those recurrences as exported, not as newly invented
+integrators. All 70 user-editable entries (52 operating/component constants and
+18 battery-mask settings) are enumerated in the parameter catalog.
+
+Construct an execution graph. Separate stateful blocks from direct-feedthrough
+calculations, resolve dependencies and detect unresolved algebraic loops. Apply
+each block's actual sample time, initialization, update method, saturation, reset
+and output behavior. Preserve Unit Delay initial state and one-step latency. For
+Forward Euler discrete integrators, expose the current state as this step's output
+and compute the next state from this step's input; confirm the actual configured
+initial-condition semantics. Do not update states opportunistically while walking
+the graph. Emit the t=0 sample, then each second through the stop time inclusive.
+The 3600 s reference run therefore has 3601 samples.
+
+The current OCV Lookup_n-D block has one dimension, linear point-slope interpolation
+and Clip extrapolation. Its dormant settings for higher dimensions are not active.
+Check all Lookup Table breakpoint, interpolation and extrapolation settings. The
+battery OCV curve and its integrated stored-energy inventory must remain consistent.
+Respect the exact Switch criteria and threshold, Sum signs, Product multiplication
+or division order, MinMax mode/port count, Saturation limits, RelationalOperator
+and Logic output types, and gain expressions. Unsupported behavior must produce
+an actionable error naming the original block, not a fabricated default result.
+
+The 27 diagram systems may be reorganized into maintainable modules AFTER parity
+is established. Keep these domain boundaries recognizable:
+  parameters / drive cycle / road demand
+  motor / inverter / energy management / fuel cell / hydrogen inventory
+  boost converter / DC bus and braking / battery converter and power limits
+  battery configuration / SOC and OCV / current limits / thermal behavior
+  battery electrical losses and energy inventory
+  diesel reference / source-energy and cost accounting / result adapters
+
+5. MODEL RULES THAT MUST SURVIVE THE CONVERSION
+
+Copy exact behavior from the export, including boundary conditions. At minimum:
+  - The built-in demonstration cycle repeats every 600 s. Its ramp, cruise,
+    deceleration and stop portions must match the source, including transitions.
+  - Battery current is positive for discharge and negative for charge. Preserve
+    SOC-, temperature-, current- and voltage-based limits and coulombic efficiency.
+  - Initial battery temperature differs from ambient temperature. Keep I^2 R
+    heating and thermal transfer to ambient, with the configured initial state.
+  - Fuel-cell control includes SOC hysteresis, enable state, hydrogen availability,
+    ramp limits, converter loss and charging allowance. Protective reductions can
+    differ from the normal upward ramp. Empty hydrogen must disable fuel production.
+  - Diesel fuel includes idle and simplified overrun fuel cut, accessory load,
+    rated power, engine efficiency and transmission/alternator losses.
+  - Preserve each shortfall calculation and the cumulative feasibility conditions.
+    Do not infer journey feasibility from the final instantaneous shortfall alone.
+
+The exported comparison flag is specifically: commanded distance > 0.0001 km,
+cumulative electric DC unmet energy < 0.000001 kWh, and cumulative diesel unmet
+energy < 0.000001 kWh. It does not directly test motor shortfall or the mass screen.
+Preserve that raw rule for parity, and show motor shortfall and mass excess as
+separate limitations. Label the UI status 'Model comparison eligible', not a claim
+of comprehensive vehicle feasibility. Never silently strengthen the native flag
+while claiming an exact port. A broader eligibility rule needs a separately
+versioned model change and new reference results.
+
+Preserve the source-energy comparison without double counting:
+  signed battery depletion = initial stored inventory - current stored inventory
+  electric source energy = hydrogen used * hydrogen LHV + signed battery depletion
+  diesel source energy = diesel litres used * diesel LHV
+  energy saving (%) = 100 * (1 - electric source energy / diesel source energy)
+  electric refill cost = hydrogen used * hydrogen price
+      + max(battery depletion, 0) / grid-charge efficiency * electricity price
+  diesel refill cost = diesel litres used * diesel price
+  cost saving = diesel refill cost - electric refill cost
+
+Apply the model's guards to these expressions. Fuel-cell electrical output and
+gross battery discharge must not be added again as independent source energy.
+Zero default prices mean not entered. Individual refill costs require all three
+prices to be positive. The cost-saving comparison additionally requires the native
+comparison flag and signed battery depletion >= -0.001 kWh. A larger final
+battery-energy surplus receives no refill-cost credit and suppresses the model's
+cost-saving comparison. Keep the 0.001 kWh tolerance. Source energy excludes upstream fuel production; costs
+exclude vehicle purchase, maintenance and infrastructure.
+
+Use validity flags, not the sign of a result, to distinguish unavailable values
+from real negative savings. A numeric -1 is a raw-model sentinel when its relevant
+validity flag is false; it can also be a real numeric saving when the flag is true.
+Retain raw values in the engine/CSV. In the user interface use null plus a status
+and a clear reason, such as 'Enter all three energy prices', 'Zero commanded
+distance', 'Requested demand not fully supported', or 'Battery ended with a surplus'.
+Trace each reason to the relevant source logic; do not replace model flags with
+invented approximations.
+
+6. ENGINE API AND PLATFORM INTEGRATION
+
+Provide typed public boundaries, with concrete definitions for every state field:
+  validateScenario(input) -> validation messages + normalized scenario
+  createSimulation(scenario) -> initialized state
+  stepSimulation(state, scenario) -> { sample, nextState }
+  runScenario(scenario, cancellation) -> complete result + metadata
+  toDisplaySample(rawSample) -> named values with units and availability reasons
+  exportScenario / importScenario / exportResultsCsv / exportResultsJson
+
+Scenario contains schemaVersion, modelVersion/hash, duration_s, fixedStep_s=1,
+and operating/component/battery settings. Use semantic names at the public API;
+keep a catalog mapping each one to its MATLAB block path and parameter. Array
+positions are confined to a documented adapter using output_contract.json.
+Store an immutable input snapshot and source version with every completed result.
+Reject unknown incompatible scenario versions and nonfinite or malformed values.
+
+Use a Web Worker so calculation cannot freeze navigation, forms or animation.
+Messages should include an id and runId and support INITIALIZE/RUN, CANCEL,
+PROGRESS, COMPLETE and ERROR. Ignore stale responses from cancelled/previous runs.
+Send batched samples, not a DOM update for every block. Do not ship the embedded
+MATLAB files or golden traces as production UI assets unless explicitly needed.
+
+Separate simulation from playback. Run the deterministic scenario, then play or
+scrub its recorded outputs using browser animation timing. Interpolate visual
+position only; charts, flags and exported numeric values retain their original
+sample timing. A reduced-motion mode keeps all numbers, controls and explanations.
+Changing an input marks the previous run as 'Results from previous settings'.
+Require a new run to apply edits; Reset restores initial states and clears stale
+results. Do not claim interactive control changes mid-run unless separately modeled
+and validated. Pause/resume playback and cancellation must be unambiguous.
+
+Expose the module as a route/component plus an engine package. Document required
+props/configuration, worker URL/build integration and emitted events. Use the host
+platform's scenario storage if available; otherwise local browser persistence and
+download/import are sufficient. No account or network service is required to run
+the default study. Do not publish or deploy without the owner's instruction.
+
+7. USER INTERFACE AND REQUIRED VISUAL OUTPUT
+
+Follow DESIGN_AND_ACCEPTANCE.txt. Deliver these working views:
+  A. Experiment setup: understandable controls, units, presets, validation and help.
+  B. Live/playback overview: animated passenger van, physical energy flow, key
+     battery/hydrogen indicators, commanded speed and visible feasibility status.
+  C. Comparison: electric and diesel results with the same time and input boundary.
+  D. Analysis: synchronized time-history charts, a data table and CSV/JSON export.
+  E. Assumptions: model version, limitations, defaults and input provenance.
+
+A lightweight SVG/Canvas side-view passenger van with moving wheels and an energy
+flow schematic is the recommended first release. It communicates the model better
+than an expensive 3D driving game. Optional 3D is a later visual layer and must
+consume the same validated result API. Do not add 3D vehicle physics as a substitute
+for this conversion. The graphic represents the passenger-van study, not a claim
+that a specific commercial hydrogen vehicle has been reproduced.
+
+The final platform MUST show output generated by the converted logic. Decorative
+animation, hard-coded example charts and playback of the golden files alone do not
+satisfy this task. Data used for animation, KPI cards, charts and exports must all
+belong to the same runId and time cursor. Preserve the source model's limits in
+captions and interpretation, especially when the requested demand is infeasible.
+
+8. VERIFICATION AND DELIVERY GATES
+
+Gate 1 - traceability: account for all exported computational block types, scope
+resolution, states, mask parameters and output channels. Provide a mapping report.
+
+Gate 2 - numerical parity: run all ten supplied scenarios and emit four full-stream
+CSV files per scenario using output_contract.json order. Files are named
+<scenario>__comparison.csv, __electric.csv, __diesel.csv and __road.csv. Columns
+are time_s followed by the stream's ordered numeric values, without a header.
+Write result_manifest.json beside those files using the supplied
+validation/result_manifest_template.json structure. Populate it from the actual
+run's model hash, duration, fixed step and all 70 resolved input settings; do not
+use the template to disguise different inputs. The checker validates this metadata.
+The supplied checker requires the correct samples, time grid, finite values,
+exact designated flags and fixed numerical tolerances. Run:
+  python Bless_Platform_Codex.py validate-results --results-dir PATH_TO_OUTPUTS
+Do not loosen the checker to make a failing port pass. Diagnose the earliest
+divergence and the source block; pay particular attention to one-step offsets,
+OCV interpolation, hysteresis, zero-speed guards and saturation behavior.
+
+Gate 3 - behavior beyond fixtures: test fresh unseen parameter combinations,
+repeat-run/reset equality, simultaneous independent runs, invalid inputs, lookup
+boundaries and event transitions. Where MATLAB is available, produce new native
+golden runs for several unseen configurations and compare them. If it is not,
+document that limitation and retain invariant/unit tests; do not claim new native
+parity. Never read golden result arrays inside the production simulation engine.
+
+Gate 4 - UI correctness: verify input changes affect results; each visual follows
+the chosen run/time; missing prices and infeasible demand are clearly handled;
+reset/cancel/import/export work; keyboard navigation and reduced motion work;
+labels do not overlap at desktop, tablet or narrow-phone sizes. Test at least
+1440x900, 1024x768 and 390x844, and in current Chrome/Edge and Firefox where available.
+
+Gate 5 - handover: deliver the integrated source, build/run instructions, typed
+engine API, conversion mapping, test report, scenario examples, and actual
+screenshots plus a short recording of the working interface. Include a default-run
+chart export and an overload example that correctly reports infeasibility. State
+exactly which acceptance checks passed and any remaining limits.
+
+Do not stop after a plan, a static mockup or a screenshot. Finish the numerical
+engine, integration and corresponding visual outputs, and make the local result
+reviewable. Only claim conversion complete after the required evidence passes.
+
+9. RETURN TO THE ORIGINAL CONVERSATION
+
+Chat title: Fix Bless Fuel Cell MATLAB file
+Local Codex link: codex://threads/01a173ef-809f-7e80-b36a-a3fb541b5c4c
+Thread id: 01a173ef-809f-7e80-b36a-a3fb541b5c4c
+Host id: local
+
+In Codex, use read_thread with that threadId and hostId to retrieve the history;
+use pagination for older turns. It covers the native repairs, guide, layout cleanup,
+validation, and the request for this browser-platform handoff. The app link requires
+access to this local Codex chat; it is not a public web share. A public-share request
+timed out, so no public URL is asserted. The packaged specification and tests are
+self-contained even if the conversation is inaccessible on another computer.
+
+10. PRIMARY TECHNICAL REFERENCES
+
+Use R2024b behavior and the exported parameters as the baseline; online docs may
+describe newer releases. Consult these sources for implementation semantics:
+  https://www.mathworks.com/help/simulink/slref/fcn.html
+  https://www.mathworks.com/help/simulink/slref/discretetimeintegrator.html
+  https://www.mathworks.com/help/simulink/slref/1dlookuptable.html
+  https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
+  https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+  https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion
+
+The assignment and product design in this file are project-specific requirements,
+not claims that these documentation sources validate the vehicle assumptions.
+
+FINAL DELIVERY REQUIREMENT: Deliver the working browser feature with its validated
+numerical engine AND the corresponding animated vehicle, physical energy flows,
+synchronized charts, comparison indicators and exports. Demonstrate that changing
+the experiment changes these visuals through the converted calculations. A code
+port without usable visual results, or visuals without a faithful engine, is not
+the requested finished platform.

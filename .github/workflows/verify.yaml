@@ -34,7 +34,7 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm run sync-assets
-      - run: git diff --exit-code -- static/vendor/bootstrap static/vendor/three static/js/engine-live-data/cutaway.bundle.mjs
+      - run: git diff --exit-code -- static/vendor/bootstrap static/vendor/three static/js/engine-live-data/cutaway.bundle.mjs static/js/bless/engine.mjs
       - run: python -m playwright install --with-deps chromium
       - run: python manage.py migrate --noinput
       - run: python manage.py check_database --require-postgresql

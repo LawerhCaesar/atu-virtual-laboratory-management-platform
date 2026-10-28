@@ -42,7 +42,7 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.locator('a[href*="engine-live-data"]')).to_have_count(0)
         if system["slug"] != "ice":
             expect(page.get_by_role("heading", name="Engine Live Data Demonstration", exact=True)).to_have_count(0)
-        if system["slug"] not in ("ice", "bev", "hybrid", "vehicle-dynamics"):
+        if system["slug"] not in ("ice", "bev", "hybrid", "vehicle-dynamics", "fcev"):
             expect(page.get_by_role("heading", name="No simulations added yet", exact=True)).to_be_visible()
             expect(page.locator(".lab-model-grid article, .lab-launch")).to_have_count(0)
             expect(page.get_by_text("Scope for future models", exact=False)).to_have_count(0)
@@ -57,6 +57,9 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.locator(".lab-model-grid article")).to_have_count(2)
             expect(page.get_by_role("heading", name="P2 Full-Parallel Hybrid", exact=True)).to_be_visible()
             expect(page.get_by_role("heading", name="12 V Micro-Hybrid Stop-Start", exact=True)).to_be_visible()
+        elif system["slug"] == "fcev":
+            expect(page.locator(".lab-model-grid article")).to_have_count(1)
+            expect(page.get_by_role("link", name="Open Fuel-Cell / Battery and Diesel Comparison", exact=True)).to_be_visible()
         else:
             expect(page.locator(".lab-model-grid article")).to_have_count(2)
             expect(page.get_by_role("heading", name="Wheel-Slip Control Using ABS and TCS", exact=True)).to_be_visible()

@@ -23,3 +23,5 @@ await build({
   bundle: true, minify: true, format: 'esm', target: 'es2022', legalComments: 'eof',
 });
 console.log('Local fuel-delivery 3D bundle generated.');
+
+await build({entryPoints:[`${root}static/js/bless/engine.ts`], outfile:`${root}static/js/bless/engine.mjs`,format:"esm",target:"es2022"});

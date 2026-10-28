@@ -149,3 +149,5 @@ The [Administrator management guide](docs/administrator-management-guide.md) exp
 HEV also includes **P2 Full-Parallel Hybrid** at `/virtual-lab/hev/p2-full-parallel-hybrid/`: torque intensity, battery energy, an animated P2 powertrain, seven scope groups, comparison and exports. See [integration, equations and verification](docs/p2-hybrid.md).
 
 ICE includes **Engine Live Data Demonstration** at `/virtual-lab/engine-live-data/`; see the [revision-2 model and verification guide](docs/engine-lab-revision-2.md).
+
+FCEV includes **Fuel-Cell / Battery and Diesel Comparison** at `/virtual-lab/fcev/fuel-cell-battery-diesel/`: the Bless passenger-van study with 70 settings, 106 channels, animated playback, a tutorial and native MATLAB-trace parity. See [integration and verification](docs/bless-powertrain.md).

@@ -44,4 +44,8 @@ HYBRID_MODELS = (
     {"title": "12 V Micro-Hybrid Stop-Start", "route_name": "core:micro_hybrid",
      "description": "Compare conventional idling with stop-start fuel use and explore battery and restart constraints."},
 )
-SYSTEM_MODELS = {"ice": ICE_MODELS, "bev": BEV_MODELS, "hybrid": HYBRID_MODELS, "vehicle-dynamics": VEHICLE_DYNAMICS_MODELS}
+FCEV_MODELS = (
+    {"title": "Fuel-Cell / Battery and Diesel Comparison", "route_name": "core:bless",
+     "description": "Bless passenger-van study: explore battery limits, hydrogen energy, regeneration and diesel comparison."},
+)
+SYSTEM_MODELS = {"fcev": FCEV_MODELS, "ice": ICE_MODELS, "bev": BEV_MODELS, "hybrid": HYBRID_MODELS, "vehicle-dynamics": VEHICLE_DYNAMICS_MODELS}

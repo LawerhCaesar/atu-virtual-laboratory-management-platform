@@ -1,0 +1,565 @@
+{
+  "passed": true,
+  "metadata_errors": [],
+  "checked_streams": 40,
+  "absolute_tolerance": 1e-08,
+  "relative_tolerance": 1e-09,
+  "time_and_designated_flags": "exact",
+  "checks": [
+    {
+      "passed": true,
+      "scenario": "default_cycle",
+      "stream": "comparison",
+      "samples": 3601,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "default_cycle",
+      "stream": "electric",
+      "samples": 3601,
+      "max_absolute_error": 5.093170329928398e-11,
+      "worst": {
+        "time_s": 55.0,
+        "key": "battery_terminal_power_w",
+        "expected": 30736.8918325613,
+        "actual": 30736.89183256125
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "default_cycle",
+      "stream": "diesel",
+      "samples": 3601,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "default_cycle",
+      "stream": "road",
+      "samples": 3601,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "battery_only",
+      "stream": "comparison",
+      "samples": 3601,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "battery_only",
+      "stream": "electric",
+      "samples": 3601,
+      "max_absolute_error": 5.093170329928398e-11,
+      "worst": {
+        "time_s": 55.0,
+        "key": "battery_terminal_power_w",
+        "expected": 30736.8918325613,
+        "actual": 30736.89183256125
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "battery_only",
+      "stream": "diesel",
+      "samples": 3601,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "battery_only",
+      "stream": "road",
+      "samples": 3601,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "fuel_cell_start",
+      "stream": "comparison",
+      "samples": 1201,
+      "max_absolute_error": 5.820766091346741e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_source_kwh_per_100km",
+        "expected": 142622.456952051,
+        "actual": 142622.45695205106
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "fuel_cell_start",
+      "stream": "electric",
+      "samples": 1201,
+      "max_absolute_error": 4.729372449219227e-11,
+      "worst": {
+        "time_s": 83.0,
+        "key": "battery_terminal_power_w",
+        "expected": -11002.857096622,
+        "actual": -11002.857096621952
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "fuel_cell_start",
+      "stream": "diesel",
+      "samples": 1201,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "fuel_cell_start",
+      "stream": "road",
+      "samples": 1201,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_empty",
+      "stream": "comparison",
+      "samples": 1201,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_empty",
+      "stream": "electric",
+      "samples": 1201,
+      "max_absolute_error": 5.093170329928398e-11,
+      "worst": {
+        "time_s": 69.0,
+        "key": "battery_terminal_power_w",
+        "expected": 40832.2976061207,
+        "actual": 40832.29760612065
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_empty",
+      "stream": "diesel",
+      "samples": 1201,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_empty",
+      "stream": "road",
+      "samples": 1201,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "constant_speed",
+      "stream": "comparison",
+      "samples": 1201,
+      "max_absolute_error": 4.547473508864641e-12,
+      "worst": {
+        "time_s": 14.0,
+        "key": "motor_speed_rpm",
+        "expected": 3956.13715685568,
+        "actual": 3956.1371568556847
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "constant_speed",
+      "stream": "electric",
+      "samples": 1201,
+      "max_absolute_error": 4.3655745685100555e-11,
+      "worst": {
+        "time_s": 15.0,
+        "key": "battery_terminal_power_w",
+        "expected": 75938.702635547,
+        "actual": 75938.70263554696
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "constant_speed",
+      "stream": "diesel",
+      "samples": 1201,
+      "max_absolute_error": 4.831690603168681e-13,
+      "worst": {
+        "time_s": 13.0,
+        "key": "diesel_chemical_kw",
+        "expected": 184.853118531469,
+        "actual": 184.8531185314685
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "constant_speed",
+      "stream": "road",
+      "samples": 1201,
+      "max_absolute_error": 1.3642420526593924e-12,
+      "worst": {
+        "time_s": 16.0,
+        "key": "electric_wheel_force_n",
+        "expected": 3063.18434666667,
+        "actual": 3063.1843466666714
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "uphill_shortfall",
+      "stream": "comparison",
+      "samples": 601,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "uphill_shortfall",
+      "stream": "electric",
+      "samples": 601,
+      "max_absolute_error": 4.94765117764473e-10,
+      "worst": {
+        "time_s": 39.0,
+        "key": "battery_terminal_power_w",
+        "expected": 104502.781025259,
+        "actual": 104502.7810252595
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "uphill_shortfall",
+      "stream": "diesel",
+      "samples": 601,
+      "max_absolute_error": 5.115907697472721e-13,
+      "worst": {
+        "time_s": 37.0,
+        "key": "diesel_chemical_kw",
+        "expected": 270.044323403905,
+        "actual": 270.0443234039045
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "uphill_shortfall",
+      "stream": "road",
+      "samples": 601,
+      "max_absolute_error": 5.4569682106375694e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 8211.86194320859,
+        "actual": 8211.861943208585
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "regeneration_high_soc",
+      "stream": "comparison",
+      "samples": 601,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "regeneration_high_soc",
+      "stream": "electric",
+      "samples": 601,
+      "max_absolute_error": 4.774847184307873e-12,
+      "worst": {
+        "time_s": 21.0,
+        "key": "motor_speed_rpm",
+        "expected": 1553.65539684945,
+        "actual": 1553.6553968494547
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "regeneration_high_soc",
+      "stream": "diesel",
+      "samples": 601,
+      "max_absolute_error": 2.1316282072803006e-14,
+      "worst": {
+        "time_s": 0.0,
+        "key": "diesel_chemical_kw",
+        "expected": 13.986013986014,
+        "actual": 13.986013986013978
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "regeneration_high_soc",
+      "stream": "road",
+      "samples": 601,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 22.0,
+        "key": "diesel_wheel_force_n",
+        "expected": -1816.20637019513,
+        "actual": -1816.206370195135
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_depletion",
+      "stream": "comparison",
+      "samples": 1201,
+      "max_absolute_error": 5.820766091346741e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_source_kwh_per_100km",
+        "expected": 142622.456952051,
+        "actual": 142622.45695205106
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_depletion",
+      "stream": "electric",
+      "samples": 1201,
+      "max_absolute_error": 5.093170329928398e-11,
+      "worst": {
+        "time_s": 60.0,
+        "key": "battery_terminal_power_w",
+        "expected": 34133.5582167036,
+        "actual": 34133.55821670365
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_depletion",
+      "stream": "diesel",
+      "samples": 1201,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "hydrogen_depletion",
+      "stream": "road",
+      "samples": 1201,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "priced_cycle",
+      "stream": "comparison",
+      "samples": 1201,
+      "max_absolute_error": 2.1827872842550278e-11,
+      "worst": {
+        "time_s": 1.0,
+        "key": "diesel_l_per_100km",
+        "expected": 39054.3202831439,
+        "actual": 39054.320283143876
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "priced_cycle",
+      "stream": "electric",
+      "samples": 1201,
+      "max_absolute_error": 5.093170329928398e-11,
+      "worst": {
+        "time_s": 55.0,
+        "key": "battery_terminal_power_w",
+        "expected": 30736.8918325613,
+        "actual": 30736.89183256125
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "priced_cycle",
+      "stream": "diesel",
+      "samples": 1201,
+      "max_absolute_error": 4.973799150320701e-13,
+      "worst": {
+        "time_s": 65.0,
+        "key": "diesel_chemical_kw",
+        "expected": 110.660443423131,
+        "actual": 110.6604434231315
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "priced_cycle",
+      "stream": "road",
+      "samples": 1201,
+      "max_absolute_error": 5.002220859751105e-12,
+      "worst": {
+        "time_s": 1.0,
+        "key": "electric_wheel_force_n",
+        "expected": 1401.66461055556,
+        "actual": 1401.664610555555
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "stationary",
+      "stream": "comparison",
+      "samples": 601,
+      "max_absolute_error": 5.21540641784668e-08,
+      "worst": {
+        "time_s": 392.0,
+        "key": "electric_source_kwh_per_100km",
+        "expected": 33702927.0562987,
+        "actual": 33702927.05629865
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "stationary",
+      "stream": "electric",
+      "samples": 601,
+      "max_absolute_error": 4.092726157978177e-12,
+      "worst": {
+        "time_s": 59.0,
+        "key": "battery_terminal_power_w",
+        "expected": 3092.78350515465,
+        "actual": 3092.783505154646
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "stationary",
+      "stream": "diesel",
+      "samples": 601,
+      "max_absolute_error": 2.1316282072803006e-14,
+      "worst": {
+        "time_s": 0.0,
+        "key": "diesel_chemical_kw",
+        "expected": 13.986013986014,
+        "actual": 13.986013986013978
+      },
+      "failures": []
+    },
+    {
+      "passed": true,
+      "scenario": "stationary",
+      "stream": "road",
+      "samples": 601,
+      "max_absolute_error": 0.0,
+      "worst": null,
+      "failures": []
+    }
+  ]
+}

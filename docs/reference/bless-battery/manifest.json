@@ -1,0 +1,278 @@
+{
+  "schema_version": "1.0",
+  "title": "Bless fuel-cell / diesel browser-platform implementation handoff",
+  "created_date": "2026-10-25",
+  "purpose": "Self-contained reference export, Codex execution brief, visual acceptance requirements and numerical checker. The browser engine still needs to be implemented.",
+  "target": "Browser-based platform; TypeScript engine separated from UI; existing platform framework preferred.",
+  "source_model": {
+    "filename": "Powertrain_Comparison.slx",
+    "original_path": "F:\\Scripts for codex\\Bless\\Powertrain_Comparison.slx",
+    "sha256": "6ff353c6fd9cbb994c163e26ad183b9e6f780f45d4ac4ec788bcbc4528cf8987",
+    "matlab_version": "R2024b",
+    "solver": "FixedStepDiscrete",
+    "step_seconds": 1,
+    "default_duration_seconds": 3600
+  },
+  "inventory": {
+    "diagram_systems": 27,
+    "blocks": 2063,
+    "explicit_connections": 1727,
+    "block_types": 23,
+    "fcn_blocks": 302,
+    "stateful_unit_delays": 17,
+    "user_editable_entries": 70,
+    "operating_component_entries": 52,
+    "battery_mask_entries": 18,
+    "output_widths": {
+      "comparison": 38,
+      "electric": 51,
+      "diesel": 8,
+      "road": 9
+    },
+    "reference_scenarios": 10,
+    "reference_csv_files": 40
+  },
+  "chat": {
+    "title": "Fix Bless Fuel Cell MATLAB file",
+    "local_link": "codex://threads/01a173ef-809f-7e80-b36a-a3fb541b5c4c",
+    "thread_id": "01a173ef-809f-7e80-b36a-a3fb541b5c4c",
+    "host_id": "local",
+    "lookup": "Use Codex read_thread with threadId and hostId; paginate older turns.",
+    "public_share_url": null,
+    "public_share_status": "share_thread request timed out; no public URL was returned."
+  },
+  "verification": {
+    "native_tests": "All ten scenarios passed on the repaired model; full native logs for all four streams are embedded.",
+    "layout_pass": "All computational block settings and all 1727 connections unchanged; saved model reopened and compiled.",
+    "layout_default_run_max_comparison_difference": 2.18278728425503e-11,
+    "golden_source_model_sha256": "d009b0daf035b59cdbdb658640b35667e5e1d6c8080b2a62830d1636825bcd5a",
+    "comparison_rule": "abs(actual-reference) <= 1e-8 + 1e-9*abs(reference); time and designated flags exact.",
+    "scope": "Numerical execution and porting regressions; not measured vehicle or route validation."
+  },
+  "files": {
+    "START_HERE.txt": {
+      "bytes": 482,
+      "sha256": "5cbe807a8279825b762198a4c4351684de0397b2f418badf55d599a7d7e2979a"
+    },
+    "BUILD_INSTRUCTIONS.txt": {
+      "bytes": 21094,
+      "sha256": "bf23e7a000bd60a154d5862fdd09dca06c5fef1b103a106dcbc36cb7b03b29be"
+    },
+    "DESIGN_AND_ACCEPTANCE.txt": {
+      "bytes": 8377,
+      "sha256": "18e9b22219797a1cf07b82b48bd6ce3a27c0bf9f0e7987b0bd3ef6c6bc87883c"
+    },
+    "model/native_model.json": {
+      "bytes": 1962340,
+      "sha256": "d31e7baf3e25955993fa4eba0bd6c0046a7d18f9c99f617fe8f17861739fea76"
+    },
+    "model/parameter_catalog.json": {
+      "bytes": 34136,
+      "sha256": "609f43843202d26ba1f1f734080c80dec8241c1cf88b38fd3717c1f8c65d9ee1"
+    },
+    "model/output_contract.json": {
+      "bytes": 49666,
+      "sha256": "46e469901d20a86bfd9978cf7c16e90ce2c0272502d1f4a811e0accf7347ba49"
+    },
+    "reference/Powertrain_Comparison.slx": {
+      "bytes": 1061235,
+      "sha256": "6ff353c6fd9cbb994c163e26ad183b9e6f780f45d4ac4ec788bcbc4528cf8987"
+    },
+    "reference/Powertrain_Comparison_Guide.pdf": {
+      "bytes": 467301,
+      "sha256": "cb09f921d7c0e73f8345d4e8effe13a494a47f030bf59a7c8fad905ab70e7edd"
+    },
+    "reference/native_exporter.m": {
+      "bytes": 3259,
+      "sha256": "303f7e0224ba7b0621b8e8bea4dbb593a6f074b8634c7e462f8693709fd18ba8"
+    },
+    "validation/scenarios.json": {
+      "bytes": 18300,
+      "sha256": "e53b95de0690071713c2f32b5da4fadd41a1656a704ffc4b6ad4bfc6cd61b312"
+    },
+    "validation/result_manifest_template.json": {
+      "bytes": 39558,
+      "sha256": "d2a456caba4bcfbcd725db9c5e747816ff22b021a0412df253abdfcb11729e2d"
+    },
+    "validation/native_validation_summary.json": {
+      "bytes": 21981,
+      "sha256": "44ce75f7e7f678c8d178d499d83d02883bf934e872e06e79813e9d007b7baec3"
+    },
+    "validation/native_validation_log.txt": {
+      "bytes": 2811,
+      "sha256": "cc2bc86b1d7b5e30b9573a599584cf6b69b0884b53e195e751be1cda78189d4c"
+    },
+    "validation/original_validation_source.txt": {
+      "bytes": 6852,
+      "sha256": "6c046452c5aae9c8f00e3b1d9ddb189c271cf509ed5dc64b2828ec436e5cc1f1"
+    },
+    "validation/layout_verification.txt": {
+      "bytes": 179,
+      "sha256": "a3d2d655cc156d6c2b6c36a999a858c6743516e1a299818b1692639fc0fbfb07"
+    },
+    "reference/README.txt": {
+      "bytes": 305,
+      "sha256": "b2f26b742ffa9351728be4ba6863cda2b6c925fe4f209320cc140a0c7457ba6d"
+    },
+    "validation/golden/battery_only__comparison.csv": {
+      "bytes": 1459835,
+      "sha256": "0bed9ed20ef59d6927c1d20d1abda34363b1eb16dbdd97474277636de7828e7c"
+    },
+    "validation/golden/battery_only__diesel.csv": {
+      "bytes": 430789,
+      "sha256": "310862b1ed05d31589afa1148a96a1770634c1c2555d3a69455e656582cdcfd3"
+    },
+    "validation/golden/battery_only__electric.csv": {
+      "bytes": 2266533,
+      "sha256": "147dc064d4062217bd3d1995893b737f64921a5013949257e3dae1d6cd6c0386"
+    },
+    "validation/golden/battery_only__road.csv": {
+      "bytes": 436801,
+      "sha256": "c7d8b61565f90780824a0d30dae40fe03f3544cc2f7d724e0960404a60f3044d"
+    },
+    "validation/golden/constant_speed__comparison.csv": {
+      "bytes": 478126,
+      "sha256": "caa44bc552fdcf9265c3ad777f93e708d2e78f8a403beb79c2f2bf56379ae8f7"
+    },
+    "validation/golden/constant_speed__diesel.csv": {
+      "bytes": 138803,
+      "sha256": "74c6764ca1348cc69c4326e4e1a3f767cfb783133bfda17cb2a6e053eb3740bf"
+    },
+    "validation/golden/constant_speed__electric.csv": {
+      "bytes": 755261,
+      "sha256": "36ec7a60cf99885f68407f988f8a94b1eaab9b3ec84f8f9879c912fddb8d6f9b"
+    },
+    "validation/golden/constant_speed__road.csv": {
+      "bytes": 123896,
+      "sha256": "7d92b514abffdc6d3c723c5f6e46d400b18356ce799f9873f19e6d21ff332dc6"
+    },
+    "validation/golden/default_cycle__comparison.csv": {
+      "bytes": 1503636,
+      "sha256": "e7078cbac91a8e73e5dec642a377facfe8450cb6b8581ebe32bcd6a323e55d39"
+    },
+    "validation/golden/default_cycle__diesel.csv": {
+      "bytes": 430789,
+      "sha256": "310862b1ed05d31589afa1148a96a1770634c1c2555d3a69455e656582cdcfd3"
+    },
+    "validation/golden/default_cycle__electric.csv": {
+      "bytes": 2327382,
+      "sha256": "6a13061825ea2b1b8c8f8548ee70c0c39a3be5d97e66a7d1f99a6f91a9b3e65b"
+    },
+    "validation/golden/default_cycle__road.csv": {
+      "bytes": 436801,
+      "sha256": "c7d8b61565f90780824a0d30dae40fe03f3544cc2f7d724e0960404a60f3044d"
+    },
+    "validation/golden/fuel_cell_start__comparison.csv": {
+      "bytes": 607093,
+      "sha256": "6d3dc24759dc99e0c4f1c1cf3d95c2ef350a4344403da6a8d77c7f69311977dd"
+    },
+    "validation/golden/fuel_cell_start__diesel.csv": {
+      "bytes": 143321,
+      "sha256": "cbba7a2e699618011e66d3ab9761c9f8b1e0927ffc1228ff85a2b06c9eaae536"
+    },
+    "validation/golden/fuel_cell_start__electric.csv": {
+      "bytes": 908450,
+      "sha256": "7a598dedae414be58471f5f01b5e845e04150559cd74ac6811866518c9152775"
+    },
+    "validation/golden/fuel_cell_start__road.csv": {
+      "bytes": 144427,
+      "sha256": "17da0c41310ab7f53d02faa75abd758a053bb2518db92e891d8cc9a826597b0f"
+    },
+    "validation/golden/hydrogen_depletion__comparison.csv": {
+      "bytes": 505270,
+      "sha256": "72bf1dd04e53925210a4094b115d169d3d00a0f98f9aa6859fb3009dc097dc60"
+    },
+    "validation/golden/hydrogen_depletion__diesel.csv": {
+      "bytes": 143321,
+      "sha256": "cbba7a2e699618011e66d3ab9761c9f8b1e0927ffc1228ff85a2b06c9eaae536"
+    },
+    "validation/golden/hydrogen_depletion__electric.csv": {
+      "bytes": 762647,
+      "sha256": "27ff7b5ced4f83e36f91ec70d9d84ccfbe515a2850a27635dce7813d8747fd2e"
+    },
+    "validation/golden/hydrogen_depletion__road.csv": {
+      "bytes": 144427,
+      "sha256": "17da0c41310ab7f53d02faa75abd758a053bb2518db92e891d8cc9a826597b0f"
+    },
+    "validation/golden/hydrogen_empty__comparison.csv": {
+      "bytes": 480395,
+      "sha256": "e6cb54140d857258e175f6eb8078b55227c61c87c73e4712338e55b3352280af"
+    },
+    "validation/golden/hydrogen_empty__diesel.csv": {
+      "bytes": 143321,
+      "sha256": "cbba7a2e699618011e66d3ab9761c9f8b1e0927ffc1228ff85a2b06c9eaae536"
+    },
+    "validation/golden/hydrogen_empty__electric.csv": {
+      "bytes": 742929,
+      "sha256": "0077664f4778416522d9dc30167e10ff0f0aa55996c57b793a124228b0132625"
+    },
+    "validation/golden/hydrogen_empty__road.csv": {
+      "bytes": 144427,
+      "sha256": "17da0c41310ab7f53d02faa75abd758a053bb2518db92e891d8cc9a826597b0f"
+    },
+    "validation/golden/priced_cycle__comparison.csv": {
+      "bytes": 531336,
+      "sha256": "2c2f90f33b6690b53e46cad5c5ad05e05cf0bc91230096781c0e8d07c3b59c3f"
+    },
+    "validation/golden/priced_cycle__diesel.csv": {
+      "bytes": 143321,
+      "sha256": "cbba7a2e699618011e66d3ab9761c9f8b1e0927ffc1228ff85a2b06c9eaae536"
+    },
+    "validation/golden/priced_cycle__electric.csv": {
+      "bytes": 752514,
+      "sha256": "107aa8926b0ae58e6114b05f7660057714f80a20f33e2ed5cdc949de4c32bf37"
+    },
+    "validation/golden/priced_cycle__road.csv": {
+      "bytes": 144427,
+      "sha256": "17da0c41310ab7f53d02faa75abd758a053bb2518db92e891d8cc9a826597b0f"
+    },
+    "validation/golden/regeneration_high_soc__comparison.csv": {
+      "bytes": 263230,
+      "sha256": "70c261ad3dd52e3f78bec09ca5f3f9f472d3f318247a5dda4d1a38b6959ca60b"
+    },
+    "validation/golden/regeneration_high_soc__diesel.csv": {
+      "bytes": 66353,
+      "sha256": "379d8dc96fc8228018622c1bdd9402fc6eeafc64c002a0dacdd89d0005902e65"
+    },
+    "validation/golden/regeneration_high_soc__electric.csv": {
+      "bytes": 419869,
+      "sha256": "23626b8e480927a640fbcba3f3d6e38394543cc68f39675fa71682b10288f7c8"
+    },
+    "validation/golden/regeneration_high_soc__road.csv": {
+      "bytes": 74867,
+      "sha256": "bacb3886358374913d2aa97afe4ce282808e611ddd6004467e08ad54e99ea06e"
+    },
+    "validation/golden/stationary__comparison.csv": {
+      "bytes": 193229,
+      "sha256": "1aea21aa6276f308c0296670dbc7aef3b31576ea16a3d6ae7524b5a70e712f0f"
+    },
+    "validation/golden/stationary__diesel.csv": {
+      "bytes": 80739,
+      "sha256": "b002f9cdabc3d0275410fd179dc3b615edc021b76cb07e7f05175b69ee53f76f"
+    },
+    "validation/golden/stationary__electric.csv": {
+      "bytes": 255085,
+      "sha256": "86ca9a0e1c1a1652d5c4323f75c154e39f8bf8e52ab27c76b42187542414a7fa"
+    },
+    "validation/golden/stationary__road.csv": {
+      "bytes": 17319,
+      "sha256": "1c1abb7c56b16674f9da7ec1ce79f2aea8a41a424e47f2db4f8d6fa793c79034"
+    },
+    "validation/golden/uphill_shortfall__comparison.csv": {
+      "bytes": 235177,
+      "sha256": "9fa5ffb0f4751876a8ccd8ac8c35f8efb978b522aca5a576e06958d43f88ba5b"
+    },
+    "validation/golden/uphill_shortfall__diesel.csv": {
+      "bytes": 68904,
+      "sha256": "3dba2d077da1b8bfde1b6d503aa7eadd64056d216698703b12e52300d1e8adc2"
+    },
+    "validation/golden/uphill_shortfall__electric.csv": {
+      "bytes": 344941,
+      "sha256": "bff89e2fa08beb662ce610afd71ef4fb2d6e91e1d7c442e5c8a43e038c5bcd99"
+    },
+    "validation/golden/uphill_shortfall__road.csv": {
+      "bytes": 72483,
+      "sha256": "88b0149858dc33ab6f5ae059a0bbcb2ebe998172945b2b702b36315830c5459f"
+    }
+  }
+}
