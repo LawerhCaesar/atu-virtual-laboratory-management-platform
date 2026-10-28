@@ -18,7 +18,7 @@ export function linePlot(svg,rows,series,start,end,cursorTime){
  // Keep each bucket's extrema for every series, including abrupt protection events.
  const keep=new Set([0,selected.length-1]),bucket=Math.max(1,Math.ceil(selected.length/150));
  for(let i=0;i<selected.length;i+=bucket){const end=Math.min(selected.length,i+bucket);keep.add(i);keep.add(end-1);for(const s of series){let lo=i,hi=i;for(let j=i+1;j<end;j++){if(selected[j][s.key]<selected[lo][s.key])lo=j;if(selected[j][s.key]>selected[hi][s.key])hi=j;}keep.add(lo);keep.add(hi);}}
- const points=[...keep].sort((a,b)=>a-b).map(i=>selected[i]);series.forEach((s,i)=>add('polyline',{points:points.map(r=>`${x(r.time_s).toFixed(2)},${y(r[s.key]).toFixed(2)}`).join(' '),fill:'none',stroke:COLORS[i%4],'stroke-width':2.2,'stroke-dasharray':i?`${8-i} ${3+i}`:'none'}));
+ const points=[...keep].sort((a,b)=>a-b).map(i=>selected[i]);series.forEach((s,i)=>add('polyline',{points:points.map(r=>`${x(r.time_s).toFixed(2)},${y(r[s.key]).toFixed(2)}`).join(' '),fill:'none',stroke:COLORS[i%4],'stroke-width':2.2,'stroke-dasharray':i===1?'7 4':i===2?'2 4':'none'}));
  const cursor=add('line',{x1:x(cursorTime),x2:x(cursorTime),y1:30,y2:205,stroke:'#526476','stroke-dasharray':'3 3','data-cursor':''});cursor.setAttribute('visibility',cursorTime>=start&&cursorTime<=end?'visible':'hidden');
 }
 export function createCharts(container,info,onTime){
