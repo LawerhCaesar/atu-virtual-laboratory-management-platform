@@ -18,7 +18,7 @@ def test_guide_content_contract():
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("route", ["core:fuel_delivery", "core:brakelab", "core:wheel_slip", "core:micro_hybrid", "core:steering_response"])
+@pytest.mark.parametrize("route", ["core:fuel_delivery", "core:brakelab", "core:wheel_slip", "core:micro_hybrid", "core:steering_response", "core:p2_hybrid"])
 def test_active_module_renders_reusable_guide(client, route):
     user = User.objects.create_user(email=f"{route.replace(':', '-')}@example.test", full_name="Tutorial QA",
         password="SyntheticPass!742", role=User.Role.STUDENT, approval_status=User.ApprovalStatus.ACTIVE)

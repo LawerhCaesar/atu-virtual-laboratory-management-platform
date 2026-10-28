@@ -1,11 +1,15 @@
 from django.urls import path
 
-from . import views
+from . import views, p2_views
 
 
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/hev/p2-full-parallel-hybrid/", p2_views.page, name="p2_hybrid"),
+    path("api/v1/hybrid/p2/model-info", p2_views.info, name="p2_info"),
+    path("api/v1/hybrid/p2/simulate", p2_views.simulate, name="p2_simulate"),
+    path("api/v1/hybrid/p2/compare", p2_views.compare, name="p2_compare"),
     path("virtual-lab/fuel-delivery-optimisation/", views.fuel_delivery, name="fuel_delivery"),
     path("virtual-lab/brakelab/", views.brakelab, name="brakelab"),
     path("virtual-lab/hev/12v-micro-hybrid-stop-start/", views.micro_hybrid, name="micro_hybrid"),

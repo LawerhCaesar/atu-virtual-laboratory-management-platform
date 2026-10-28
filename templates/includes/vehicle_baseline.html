@@ -9,6 +9,8 @@
       <p>Wheel-Slip retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Both are adjustable in the inputs. Its numerical outputs therefore do not use the common baseline by default.</p>
     {% elif walkthrough_module.route == "core:fuel_delivery" %}
       <p>The fuel simulation does not model vehicle geometry or mass. Its 3D fuel assembly is generic, not verified GV70 component geometry.</p>
+    {% elif walkthrough_module.route == "core:p2_hybrid" %}
+      <p>P2 Hybrid uses independent torque, motor and battery parameters. No vehicle mass, wheel radius or body geometry enters its equations. Its power-flow illustration is a technical schematic, not a calibrated GV70 powertrain.</p>
     {% elif walkthrough_module.route == "core:micro_hybrid" %}
       <p>The stop-start calculation does not use a vehicle body, mass or wheel dimensions. Its car and traffic-light sequence is illustrative.</p>
     {% elif walkthrough_module.route == "core:steering_response" %}

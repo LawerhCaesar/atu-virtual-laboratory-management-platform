@@ -63,6 +63,8 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert reverse("core:steering_response").encode() in environment.content
             assert reverse("core:fuel_delivery").encode() not in environment.content
         elif system["slug"] == "hybrid":
+            assert b"P2 Full-Parallel Hybrid" in environment.content
+            assert reverse("core:p2_hybrid").encode() in environment.content
             assert b"12 V Micro-Hybrid Stop-Start" in environment.content
             assert reverse("core:micro_hybrid").encode() in environment.content
             assert reverse("core:fuel_delivery").encode() not in environment.content

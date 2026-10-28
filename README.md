@@ -145,3 +145,5 @@ The functional core and production-hardening implementation are present. Release
 See the [implementation verification record](docs/implementation-verification-record.md) for observed local results and remaining gates, and the [acceptance/evaluation pack](docs/acceptance-test-and-evaluation-pack.md) for objective traceability, UAT cases and genuine-data collection forms. The pack explicitly records outstanding approved requirements rather than assuming the current implementation is complete.
 
 The [Administrator management guide](docs/administrator-management-guide.md) explains the completed controls, resource-history rules, notice delivery and local database upgrade. Start from `/dashboard/` after signing in as an active Administrator.
+
+HEV also includes **P2 Full-Parallel Hybrid** at `/virtual-lab/hev/p2-full-parallel-hybrid/`: torque intensity, battery energy, an animated P2 powertrain, seven scope groups, comparison and exports. See [integration, equations and verification](docs/p2-hybrid.md).
