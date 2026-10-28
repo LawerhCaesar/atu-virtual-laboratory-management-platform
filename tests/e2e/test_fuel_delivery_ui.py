@@ -336,24 +336,30 @@ def test_fuel_cylinder_highlight_tracks_events_and_honours_motion_preferences(pa
     open_fuel(page, demo_records, live_server)
     page.clock.install()
     cylinder = page.locator("#fuel-cylinder-fill")
+
+    def assert_cylinder_animates():
+        # A periodic animation can legitimately pass through its resting opacity.
+        # Sample several frames instead of requiring one wall-clock instant to glow.
+        opacities = []
+        for _ in range(5):
+            page.clock.run_for(137)
+            opacities.append(float(cylinder.get_attribute("opacity")))
+        assert max(opacities) > .22
+        assert max(opacities) - min(opacities) > .001
+
     page.get_by_role("button", name="Run new simulation", exact=True).click()
-    page.clock.run_for(400)
-    first = cylinder.get_attribute("opacity")
-    page.clock.run_for(400)
-    assert cylinder.get_attribute("opacity") != first
+    assert_cylinder_animates()
     page.get_by_role("button", name="Pause", exact=True).click()
     expect(cylinder).to_have_attribute("opacity", ".22")
     page.clock.run_for(400)
     expect(cylinder).to_have_attribute("opacity", ".22")
     page.get_by_role("button", name="Resume", exact=True).click()
-    page.clock.run_for(400)
-    assert float(cylinder.get_attribute("opacity")) > .22
+    assert_cylinder_animates()
     page.get_by_label("Animate illustrative flow", exact=True).uncheck()
     page.clock.run_for(400)
     expect(cylinder).to_have_attribute("opacity", ".22")
     page.get_by_label("Animate illustrative flow", exact=True).check()
-    page.clock.run_for(400)
-    assert float(cylinder.get_attribute("opacity")) > .22
+    assert_cylinder_animates()
     page.emulate_media(reduced_motion="reduce")
     expect(page.get_by_label("Animate illustrative flow", exact=True)).not_to_be_checked()
     page.clock.run_for(400)
