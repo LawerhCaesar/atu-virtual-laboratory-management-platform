@@ -41,8 +41,10 @@ def test_live_run_pause_pending_emergency_preset_and_csv(page,demo_records,live_
     start_engine(page)
     expect(page.locator('[data-signal="InjectorPW"]')).to_have_text('1.679 ms')
     destination=Path('test-results/engine-live-data');destination.mkdir(parents=True,exist_ok=True)
-    page.locator('#engine-chart').scroll_into_view_if_needed();page.screenshot(path=str(destination/'warm-run-trends.png'))
+    # Capture only after pausing: a slow screenshot may trigger the intentional
+    # wall-clock stall protection on CI and disable Pause before the click.
     page.get_by_role('button',name='Pause',exact=True).click()
+    page.locator('#engine-chart').scroll_into_view_if_needed();page.screenshot(path=str(destination/'warm-run-trends.png'))
     time=page.locator('#engine-time').inner_text();page.clock.run_for(1000)
     expect(page.locator('#engine-time')).to_have_text(time)
     page.get_by_label('Oxygen-sensor voltage (V)',exact=True).fill('0.10')
