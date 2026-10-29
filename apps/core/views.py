@@ -289,3 +289,8 @@ def bless(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def battery_energy(request):
     return render(request, "core/battery_energy.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def engine_generator(request):
+    return render(request, "core/engine_generator.html")

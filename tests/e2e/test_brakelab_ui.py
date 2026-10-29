@@ -14,7 +14,7 @@ def open_brake(page, demo_records, live_server):
     page.get_by_role("button", name="Sign in", exact=True).click()
     page.get_by_role("link", name="Virtual laboratory", exact=True).click()
     page.get_by_role("link", name="Enter BEV environment", exact=True).click()
-    expect(page.locator(".lab-model-grid article")).to_have_count(1)
+    expect(page.locator(".lab-model-grid article")).to_have_count(2)
     page.get_by_role("link", name="Open Regenerative and Friction Brake-Force Allocation", exact=True).click()
     expect(page.locator("#brake-input-fields input")).to_have_count(21)
     expect(page.locator("#brakelab [data-brake-output]")).to_have_count(24)

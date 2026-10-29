@@ -15,6 +15,8 @@
       <p>Battery Energy Management retains its supplied 96s24p equivalent pack: 345.6 V nominal, 100.8 Ah and 200 kg thermal mass. The stationary silhouette is illustrative; vehicle geometry, driving range and cell-level variation are not modelled.</p>
     {% elif walkthrough_module.route == "core:bless" %}
       <p>Bless retains the supplied passenger-van study: 3,004 kg converted kerb mass, 2,650 kg diesel kerb mass, 540 kg common payload and 0.35 m wheel radius. Its illustration is a generic van. GV70 dimensions are not substituted into this validated model.</p>
+    {% elif walkthrough_module.route == "core:engine_generator" %}
+      <p>Engine–Generator retains independent fuel and normalized component maps. Vehicle mass and geometry do not enter its equations. Its stationary silhouette is illustrative; external SOC is not a battery dynamics model.</p>
     {% elif walkthrough_module.route == "core:p2_hybrid" %}
       <p>P2 Hybrid uses independent torque, motor and battery parameters. No vehicle mass, wheel radius or body geometry enters its equations. Its power-flow illustration is a technical schematic, not a calibrated GV70 powertrain.</p>
     {% elif walkthrough_module.route == "core:micro_hybrid" %}

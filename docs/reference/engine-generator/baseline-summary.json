@@ -1,0 +1,12 @@
+{
+  "generatedEnergyKWh": 0.5896190751300772,
+  "fuelEnergyKWh": 1.8824256750242827,
+  "lossEnergyKWh": 1.2928065998942044,
+  "shortfallEnergyKWh": 0.01537859488060554,
+  "totalFuelG": 157.59842860668385,
+  "caseFuelToElectricEfficiencyPct": 31.3223030769845,
+  "averageGeneratorUtilisationPct": 58.961907513007716,
+  "maximumGeneratorPowerKW": 22.5,
+  "maximumDemandShortfallKW": 18.423487409933315,
+  "maximumAbsoluteEnergyResidualKW": 3.552713678800501e-15
+}

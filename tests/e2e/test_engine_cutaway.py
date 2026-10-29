@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import pytest
 from playwright.sync_api import expect
 from tests.e2e.test_engine_demo import open_engine,start_engine
@@ -12,7 +13,11 @@ def test_3d_cutaway_tracks_sample_and_honours_pause(page,demo_records,live_serve
     open_engine(page,demo_records,live_server)
     expect(page.locator('#cutaway-status')).to_contain_text('3D ready',timeout=20000)
     if width==390:expect(page.get_by_label('Animate motion',exact=True)).not_to_be_checked();page.get_by_label('Animate motion',exact=True).check()
-    page.clock.install();start_engine(page)
+    # Freeze wall-clock progression between actions; software WebGL on CI can
+    # otherwise trigger the app's deliberate >0.5 s stall auto-pause.
+    clock_start=datetime(2026,1,1,tzinfo=timezone.utc)
+    page.clock.install(time=clock_start);page.clock.pause_at(clock_start)
+    start_engine(page)
     expect(page.locator('[data-cutaway-signal="state"]')).to_have_text('RUN')
     page.get_by_role('button',name='Pause',exact=True).click();page.clock.run_for(100)
     phase=page.locator('#cutaway-viewport').get_attribute('data-phase');assert float(phase)>0

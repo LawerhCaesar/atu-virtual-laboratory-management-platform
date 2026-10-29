@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {GUIDES,guideFor} from "../../static/js/walkthrough/steps.mjs";
 
 test("every current and retained guide includes useful checkpoints",()=>{
-  for(const route of ["core:fuel_delivery","core:brakelab","core:wheel_slip","core:engine_live_data","core:bless", "core:battery_energy"]){
+  for(const route of ["core:fuel_delivery","core:brakelab","core:wheel_slip","core:engine_live_data","core:bless", "core:battery_energy", "core:engine_generator"]){
     const steps=guideFor(route,"Example");
     assert.equal(steps,GUIDES[route]);
     assert.ok(steps.length>=4);
