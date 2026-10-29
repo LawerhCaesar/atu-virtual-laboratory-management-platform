@@ -22,6 +22,7 @@ ENGINE_MODEL_NAME = "Engine Live Data Demonstration"
 ENGINE_VIEW_KEYS = frozenset({"fuel", "idle", "cooling", "startRun"})
 
 ICE_MODELS = (
+    {"title": "Authenticated Engine Starting", "route_name": "core:yankson", "description": "Emmanuel Yankson Sackey: explore simulated fingerprint contacts, authorized voice starting and starter supervision."},
     {"title": "Engine Coolant Temperature Sensor", "route_name": "core:ect",
      "description": "Amachie ECT: explore thermal lag, thermistor resistance, ADC conversion and ECU temperature reconstruction."},
     {"title": ENGINE_MODEL_NAME, "route_name": "core:engine_live_data",

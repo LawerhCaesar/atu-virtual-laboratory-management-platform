@@ -4,6 +4,7 @@ Add approved biography text and a local static portrait path when supplied.
 Partial source names remain partial until the student confirms their full name.
 """
 MODULE_STUDENTS = {
+    "core:yankson": {"name": "Emmanuel Yankson Sackey"},
     "core:ect": {"name": "David Amachie"},
     "core:edward": {"name": "Edward Selorm"},
     "core:p2_hybrid": {"name": "Lawrence Andoh"},

@@ -309,3 +309,8 @@ def edward(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def series_parallel(request):
     return render(request, "core/series_parallel.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def yankson(request):
+    return render(request, "core/yankson.html")
