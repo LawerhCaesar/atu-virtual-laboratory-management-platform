@@ -16,10 +16,12 @@ def simulation_walkthrough(request):
         return {}
     from .laboratory import SYSTEM_MODELS
     from .vehicle_baseline import VEHICLE_BASELINE
+    from .module_students import student_profile
 
     for models in SYSTEM_MODELS.values():
         for model in models:
             if model["route_name"] == route:
                 return {"walkthrough_module": {"route": route, "name": model["title"], "user_id": str(request.user.pk)},
-                        "vehicle_baseline": VEHICLE_BASELINE}
+                        "vehicle_baseline": VEHICLE_BASELINE,
+                        "module_student": student_profile(route, model["title"])}
     return {}

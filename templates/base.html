@@ -9,6 +9,7 @@
   <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'css/platform.css' %}" rel="stylesheet">
   <link href="{% static 'css/motion.css' %}" rel="stylesheet">
+  {% if module_student %}<link href="{% static 'css/module-student.css' %}" rel="stylesheet">{% endif %}
   {% if walkthrough_module %}<link href="{% static 'css/walkthrough.css' %}" rel="stylesheet">{% endif %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -47,6 +48,7 @@
     {% endif %}
     {% if walkthrough_module %}{% include "includes/simulation_walkthrough.html" %}{% endif %}
     {% block content %}{% endblock %}
+    {% if module_student %}{% include "includes/module_student.html" %}{% endif %}
     {% if vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
   </main>
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}

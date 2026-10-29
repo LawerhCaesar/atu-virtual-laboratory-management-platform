@@ -1,0 +1,21 @@
+{% load static %}
+<section class="module-student" aria-labelledby="module-student-heading">
+  <div class="module-student-portrait">
+    {% if module_student.portrait %}
+      <img src="{% static module_student.portrait %}" alt="Portrait of {{ module_student.name }}" width="240" height="300" loading="lazy">
+    {% else %}
+      <div class="module-student-placeholder" role="img" aria-label="Student portrait to be added">
+        <svg viewBox="0 0 120 140" aria-hidden="true" focusable="false"><circle cx="60" cy="43" r="23"/><path d="M18 130v-12a42 42 0 0 1 84 0v12Z"/></svg>
+        <span>Portrait coming soon</span>
+      </div>
+    {% endif %}
+  </div>
+  <div class="module-student-copy">
+    <p class="module-student-eyebrow">The student behind this module</p>
+    <h2 id="module-student-heading">{{ module_student.name }}</h2>
+    {% if module_student.name_note %}<p class="module-student-note">{{ module_student.name_note }}</p>{% endif %}
+    <p class="module-student-project">{{ module_student.module_name }}</p>
+    <h3>About the student</h3>
+    <p class="module-student-bio">{{ module_student.bio }}</p>
+  </div>
+</section>
