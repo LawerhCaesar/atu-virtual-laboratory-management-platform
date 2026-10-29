@@ -55,7 +55,7 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.get_by_role("heading", name="Regenerative and Friction Brake-Force Allocation", exact=True)).to_be_visible()
             expect(page.get_by_role("link", name="Open Fuel Delivery Optimisation", exact=True)).to_have_count(0)
         elif system["slug"] == "hybrid":
-            expect(page.locator(".lab-model-grid article")).to_have_count(3)
+            expect(page.locator(".lab-model-grid article")).to_have_count(4)
             expect(page.get_by_role("heading", name="P2 Full-Parallel Hybrid", exact=True)).to_be_visible()
             expect(page.get_by_role("heading", name="12 V Micro-Hybrid Stop-Start", exact=True)).to_be_visible()
         elif system["slug"] == "fcev":

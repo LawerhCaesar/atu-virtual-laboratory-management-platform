@@ -9,6 +9,13 @@ const close = {stage:"Keep learning", title:"Save evidence and revisit the guide
   check:"Local exports are not automatically submitted as assessments. Reset only when you are ready to clear the current run."};
 
 export const GUIDES = {
+ "core:series_parallel": [
+ welcome("Series–Parallel Hybrid", "#sp-title"),
+ {stage:"Set the experiment",title:"Choose a scenario and apply inputs",target:"#sp-basic",description:"Choose all-mode verification, urban, highway or manual power. Change SOC, demand and grade, then Run / apply inputs. Advanced vehicle and powertrain parameters use the supplied reference defaults.",tip:"The all-mode scenario forces a low-SOC control stimulus from 23 to 29 seconds, without forcing the displayed battery SOC.",check:"Run defaults: final speed should be about 69.60 km/h, SOC 60.279%, fuel 0.07706 L and recovered energy 0.08269 kWh."},
+ {stage:"Watch the paths",title:"Trace the active mechanical and electrical branches",target:"#sp-stage",description:"Play or scrub Recorded time. Labels and path intensity follow calculated component power. The clutch locks only for mechanical and combined drive. Negative battery power means charging.",tip:"Use reduced-motion settings to hold the wheel illustration still. Recorded values remain available.",check:"At 8 seconds expect combined drive; at 19 seconds regenerative braking; at 24 seconds engine charging."},
+ {stage:"Review evidence",title:"Compare modes, losses and tracking",target:"#sp-results",description:"Review mode dwell totals and transition times, then inspect the six chart groups. Different units use separate panels. Drag across a chart to select a recorded sample.",tip:"Recovered energy includes engine charging. Unmet power counts positive propulsion shortfall only.",check:"The first electric mode begins at 0.4 seconds, series at 4.4 seconds, and regeneration at 18 seconds. Inspect the parameter snapshot with every comparison."},
+ {...close,target:"#sp-csv",check:"Export CSV and JSON. The default has 301 frames from 0 to 30 seconds. Playback speed never changes the numerical step or exported run."}
+ ],
   "core:edward": [
     welcome("Electric Motor Drive and Power Conversion", "#edward-title"),
     {stage:"Run a scenario",title:"Start with the baseline drive",target:"#edward-lab >>> .toolbar",description:"The opening run computes automatically. Choose an experiment or edit Model settings and select Simulate / apply settings. Cancel retains the last completed result.",tip:"Playback speed changes the viewing cursor, never the RK4 integration step.",check:"Default recorded data has 5001 samples. At the end, speed approaches 1500 rpm and DC-link voltage about 298.9 V."},

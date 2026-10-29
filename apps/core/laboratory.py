@@ -45,6 +45,7 @@ VEHICLE_DYNAMICS_MODELS = (
      "description": "Explore lateral-yaw response, tyre forces and a calculated X-Y vehicle trajectory."},
 )
 HYBRID_MODELS = (
+    {"title": "Series–Parallel Hybrid", "route_name": "core:series_parallel", "description": "Explore supervisory modes, mechanical and electrical power paths, SOC and fuel use."},
     {"title": "Engine–Generator Fuel-to-Electric", "route_name": "core:engine_generator",
      "description": "Explore fuel conversion, generator response, component maps, losses and electrical shortfall in a series-hybrid energy path."},
     {"title": "P2 Full-Parallel Hybrid", "route_name": "core:p2_hybrid",

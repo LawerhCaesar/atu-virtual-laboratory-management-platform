@@ -304,3 +304,8 @@ def ect(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def edward(request):
     return render(request, "core/edward.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def series_parallel(request):
+    return render(request, "core/series_parallel.html")

@@ -15,7 +15,7 @@ def open_p2(page,demo_records,live_server):
     page.get_by_role('button',name='Sign in',exact=True).click()
     page.get_by_role('link',name='Virtual laboratory',exact=True).click()
     page.get_by_role('link',name='Enter HEV environment',exact=True).click()
-    expect(page.locator('.lab-model-grid article')).to_have_count(3)
+    expect(page.locator('.lab-model-grid article')).to_have_count(4)
     page.get_by_role('link',name='Open P2 Full-Parallel Hybrid',exact=True).click()
     expect(page.locator('#tour-title')).to_have_text('Explore P2 Full-Parallel Hybrid')
     page.get_by_role('button',name='Close module guide',exact=True).click()
