@@ -3,7 +3,8 @@
   <div class="mt-3 small">
     <p>The platform uses the {{ vehicle_baseline.identity }} as its common vehicle reference. Generic educational illustrations should not be treated as verified GV70 scans or manufacturer models.</p>
     <p>Reference values: {{ vehicle_baseline.mass_kg }} kg modelling mass; {{ vehicle_baseline.wheel_count }} wheels; {{ vehicle_baseline.tyre_size }} tyres; {{ vehicle_baseline.wheel_radius_m|floatformat:3 }} m wheel radius; {{ vehicle_baseline.wheelbase_m|floatformat:3 }} m wheelbase; {{ vehicle_baseline.length_m|floatformat:3 }} m length, {{ vehicle_baseline.width_m|floatformat:3 }} m width and {{ vehicle_baseline.height_m|floatformat:3 }} m height. The baseline centre-of-gravity height of {{ vehicle_baseline.cg_height_m|floatformat:3 }} m is an assumption.</p>
-    {% if walkthrough_module.route == "core:ect" %}
+    {% if walkthrough_module.route == "core:edward" %}<p>Edward BEV uses its supplied motor, converter and wheel conversion parameters. The generic stationary car is illustrative; common GV70 mass and dimensions do not enter the motor equations.</p>
+    {% elif walkthrough_module.route == "core:ect" %}
       <p>ECT retains the supplied sensor calibration and fixed-step RK4 timing. Vehicle mass and dimensions do not enter the sensor equations. The engine-bay schematic is illustrative and does not model coolant flow or fan control.</p>
     {% elif walkthrough_module.route == "core:brakelab" %}
       <p>BrakeLab retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Mass is adjustable; wheel radius is a fixed calibration in this model. Its numerical outputs therefore do not use the common baseline by default.</p>

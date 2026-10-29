@@ -31,6 +31,8 @@ ICE_MODELS = (
 )
 
 BEV_MODELS = (
+    {"title": "Electric Motor Drive and Power Conversion", "route_name": "core:edward",
+     "description": "Edward Selorm: explore PMSM control, inverter PWM and independent buck, boost and rectifier experiments."},
     {"title": "Battery Energy Management", "route_name": "core:battery_energy",
      "description": "Explore charging, load supply, thermal limits and SOC with a fixed-step battery model and live energy-flow cutaway."},
     {"title": "Regenerative and Friction Brake-Force Allocation", "route_name": "core:brakelab",

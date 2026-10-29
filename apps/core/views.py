@@ -299,3 +299,8 @@ def engine_generator(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def ect(request):
     return render(request, "core/ect.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def edward(request):
+    return render(request, "core/edward.html")

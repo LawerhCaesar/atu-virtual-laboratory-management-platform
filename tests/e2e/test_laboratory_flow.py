@@ -50,7 +50,7 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.locator(".lab-model-grid article")).to_have_count(3)
             expect(page.get_by_role("heading", name="Fuel Delivery Optimisation", exact=True)).to_be_visible()
         elif system["slug"] == "bev":
-            expect(page.locator(".lab-model-grid article")).to_have_count(2)
+            expect(page.locator(".lab-model-grid article")).to_have_count(3)
             expect(page.get_by_role("link", name="Open Battery Energy Management", exact=True)).to_be_visible()
             expect(page.get_by_role("heading", name="Regenerative and Friction Brake-Force Allocation", exact=True)).to_be_visible()
             expect(page.get_by_role("link", name="Open Fuel Delivery Optimisation", exact=True)).to_have_count(0)
