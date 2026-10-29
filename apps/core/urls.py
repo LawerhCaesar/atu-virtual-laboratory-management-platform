@@ -6,6 +6,7 @@ from . import views, p2_views
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/ice/coolant-temperature/", views.ect, name="ect"),
     path("virtual-lab/hev/engine-generator/", views.engine_generator, name="engine_generator"),
     path("virtual-lab/bev/battery-energy-management/", views.battery_energy, name="battery_energy"),
     path("virtual-lab/fcev/fuel-cell-battery-diesel/", views.bless, name="bless"),

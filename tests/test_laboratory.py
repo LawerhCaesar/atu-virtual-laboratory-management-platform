@@ -45,7 +45,7 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert b"Engine Live Data Demonstration" not in environment.content
             assert b"/virtual-lab/engine-live-data/" not in environment.content
         if system["slug"] == "ice":
-            assert len(ICE_MODELS) == 2
+            assert len(ICE_MODELS) == 3
             for model in ICE_MODELS:
                 assert model["title"].encode() in environment.content
                 assert reverse(model["route_name"]).encode() in environment.content

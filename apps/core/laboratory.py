@@ -22,6 +22,8 @@ ENGINE_MODEL_NAME = "Engine Live Data Demonstration"
 ENGINE_VIEW_KEYS = frozenset({"fuel", "idle", "cooling", "startRun"})
 
 ICE_MODELS = (
+    {"title": "Engine Coolant Temperature Sensor", "route_name": "core:ect",
+     "description": "Amachie ECT: explore thermal lag, thermistor resistance, ADC conversion and ECU temperature reconstruction."},
     {"title": ENGINE_MODEL_NAME, "route_name": "core:engine_live_data",
      "description": "Explore virtual fuel, idle, cooling and start/run signals with a shared engine model and visualisation."},
     {"title": "Fuel Delivery Optimisation", "route_name": "core:fuel_delivery",

@@ -3,6 +3,11 @@ import {guideFor} from "./steps.mjs";
 const root=document.getElementById("simulation-walkthrough");
 if(root) initialise(root);
 
+function findTarget(selector) {
+  return selector.split(" >>> ").reduce((scope, part, index) =>
+    (index ? scope?.shadowRoot : scope)?.querySelector(part), document);
+}
+
 function initialise(root) {
   const byId=id=>document.getElementById(id), panel=byId("tour-panel"), launcher=byId("tour-launch");
   // Keep the page's own heading first, while retaining a shared base-template integration.
@@ -24,7 +29,7 @@ function initialise(root) {
     byId("tour-stage").textContent=step.stage;byId("tour-step-title").textContent=step.title;byId("tour-description").textContent=step.description;
     byId("tour-tip").textContent=step.tip?`Tip: ${step.tip}`:"";byId("tour-check").textContent=step.check?`Try / check: ${step.check}`:"";
     byId("tour-back").disabled=index===0;byId("tour-next").textContent=index===steps.length-1?"Finish guide":"Next";
-    const target=step.target ? document.querySelector(step.target) : null;
+    const target=step.target ? findTarget(step.target) : null;
     byId("tour-show").disabled=!target;byId("tour-target-status").textContent=target?"":"This step has no specific page location.";
     save();
   }
@@ -37,7 +42,7 @@ function initialise(root) {
   byId("tour-back").addEventListener("click",()=>{if(index>0){index--;render();}});
   byId("tour-next").addEventListener("click",()=>{if(index<steps.length-1){index++;render();}else{index=0;dismiss();}});
   byId("tour-show").addEventListener("click",()=>{
-    clearTarget();const target=steps[index].target && document.querySelector(steps[index].target);
+    clearTarget();const target=steps[index].target && findTarget(steps[index].target);
     if(!target || !target.getClientRects().length){byId("tour-target-status").textContent="This section is not currently visible. Check whether it is collapsed, then try again.";return;}
     activeTarget=target;target.classList.add("tour-target-highlight");
     if(!target.matches("a, button, input, select, textarea, [tabindex]")){target.setAttribute("tabindex","-1");addedTabindex=true;}

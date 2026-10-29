@@ -294,3 +294,8 @@ def battery_energy(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def engine_generator(request):
     return render(request, "core/engine_generator.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def ect(request):
+    return render(request, "core/ect.html")

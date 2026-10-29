@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Engine Coolant Temperature Sensor · ATU Virtual Laboratory{% endblock %}
+{% block body_class %}fuel-delivery-page{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/fuel-delivery.css' %}">
+<nav aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'ice' %}">ICE environment</a> / ECT sensor</nav>
+<div class="page-heading"><div><p class="eyebrow">ICE · SENSOR AND ECU LABORATORY</p><h1 id="ect-title">Engine Coolant Temperature Sensor</h1><p>David Amachie’s ECT laboratory · from thermal response to a digital reading.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:laboratory_system' 'ice' %}">Back to ICE models</a></div>
+<div id="ect-lab"><noscript>Enable JavaScript to operate the ECT laboratory.</noscript></div>
+<details class="content-panel mt-4"><summary>Learning guide and reference evidence</summary><div class="mt-3"><p>The input sets coolant temperature. A first-order thermal model calculates sensor lag, then an NTC resistance equation and voltage divider feed the ADC. The ECU reconstructs temperature from that digital count.</p><p>Start with Default heating. At 20 seconds the coolant steps from 20 °C to 100 °C. Scrub to 23 seconds to inspect sensor lag, then to 120 seconds: expect 100 °C sensor temperature, about 174.380 Ω, 0.327243 V and ADC count 268.</p><p>Conversion error is ECU estimate minus sensor temperature, not sensor lag. At an ADC rail the finite estimate is a guarded fallback, explicitly invalid.</p><p>The supplied engine’s 37 checks are retained. The guide reports comparison with 12,001 Simulink samples; the independent CSV was not included, so that full native comparison has not been repeated here. Other presets are analytical and guard tests, not verified native traces.</p><p>Ideal educational sensor model; no combustion, coolant-flow rate, fan control, vehicle movement or production ECU calibration is implied.</p></div></details>
+<script src="{% static 'js/ect/Amachie_ECT_Virtual_Platform.js' %}" defer></script><script src="{% static 'js/ect/platform.js' %}" defer></script>
+{% endblock %}
