@@ -16,6 +16,6 @@
     {% if module_student.name_note %}<p class="module-student-note">{{ module_student.name_note }}</p>{% endif %}
     <p class="module-student-project">{{ module_student.module_name }}</p>
     {% if module_student.show_bio %}<h3>About the student</h3>
-    <p class="module-student-bio">{{ module_student.bio }}</p>{% endif %}
+    <p class="module-student-bio">{{ module_student.bio|linebreaksbr }}</p>{% endif %}
   </div>
 </section>

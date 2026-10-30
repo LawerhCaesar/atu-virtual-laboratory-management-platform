@@ -11,3 +11,5 @@ All biographies and portraits await supplied content. This change adds presentat
 Verification: `pytest tests/test_module_students.py` checks all registered routes and catalogue exclusion. `pytest -m e2e tests/e2e/test_module_students_ui.py` checks desktop/mobile rendering, no overflow and axe WCAG contrast/semantics.
 
 Profile update, 30 October 2026: Emmanuel Yankson Sackey has name/module attribution only, with `show_bio=False` and `show_portrait=False`; the biography heading, text and portrait placeholder are omitted entirely. Lawrence Andoh's user-supplied biography appears verbatim on P2 Full-Parallel Hybrid. Ebenezer Wilson's supplied biography awaits a confirmed module association and is not attached to an inferred project.
+
+Ebenezer Wilson is confirmed by the user as the student responsible for Regenerative and Friction Brake-Force Allocation. His supplied biography is displayed with paragraph breaks. The former BrakeLab page branding is now “Ebenezer Wilson’s Braking Laboratory”; its descriptive scientific title and existing route are retained. Portrait remains a placeholder pending a supplied image.

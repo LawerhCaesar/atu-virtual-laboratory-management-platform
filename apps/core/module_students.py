@@ -14,7 +14,7 @@ MODULE_STUDENTS = {
     "core:series_parallel": {"name": "Desmond", "name_note": "Full name to be confirmed"},
     "core:engine_live_data": {},
     "core:fuel_delivery": {},
-    "core:brakelab": {},
+    "core:brakelab": {"name": "Ebenezer Wilson", "bio": 'Ebenezer Wilson is a versatile automotive and mechanical engineering professional with a diverse background in vehicle maintenance, plant operation, driving, data entry, real estate, military intelligence, and military service. He began his career as a mechanic with Hajime Shokai before progressing into plant operation. He subsequently gained experience with Najafs Rentals and Adom Estate, as well as working as a Data Entry Clerk with JH Micro Finance. He later joined the Ghana Armed Forces as an Infantry Soldier, choosing vehicle maintenance and driving as his trades while also developing expertise in military intelligence.\n\nHis diverse professional experience has equipped him with practical technical skills, operational competence, analytical thinking, discipline, adaptability, and a strong sense of responsibility.\n\nHis professional interests include automotive and mechanical engineering, vehicle maintenance and diagnostics, fleet management, plant operations, military intelligence, and engineering innovation. He is committed to continuous professional development, effective leadership, problem-solving, and applying his technical and analytical expertise to improve operational efficiency and organisational performance.'},
     "core:wheel_slip": {},
     "core:steering_response": {},
     "core:engine_generator": {},

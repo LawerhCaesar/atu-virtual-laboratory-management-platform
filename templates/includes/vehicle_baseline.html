@@ -7,7 +7,7 @@
     {% elif walkthrough_module.route == "core:ect" %}
       <p>ECT retains the supplied sensor calibration and fixed-step RK4 timing. Vehicle mass and dimensions do not enter the sensor equations. The engine-bay schematic is illustrative and does not model coolant flow or fan control.</p>
     {% elif walkthrough_module.route == "core:brakelab" %}
-      <p>BrakeLab retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Mass is adjustable; wheel radius is a fixed calibration in this model. Its numerical outputs therefore do not use the common baseline by default.</p>
+      <p>Ebenezer Wilson’s braking model retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Mass is adjustable; wheel radius is a fixed calibration in this model. Its numerical outputs therefore do not use the common baseline by default.</p>
     {% elif walkthrough_module.route == "core:wheel_slip" %}
       <p>Wheel-Slip retains its supplied model-specific defaults: 1,500 kg vehicle mass and 0.31 m wheel radius. Both are adjustable in the inputs. Its numerical outputs therefore do not use the common baseline by default.</p>
     {% elif walkthrough_module.route == "core:engine_live_data" %}

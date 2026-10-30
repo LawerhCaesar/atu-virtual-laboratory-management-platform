@@ -3,7 +3,7 @@ import pytest
 from playwright.sync_api import expect
 pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 @pytest.mark.parametrize('path,name',[
- ('/virtual-lab/ice/coolant-temperature/','David Amachie'),
+ ('/virtual-lab/brakelab/','Ebenezer Wilson'),
  ('/virtual-lab/ice/authenticated-engine-starting/','Emmanuel Yankson Sackey'),
  ('/virtual-lab/hev/p2-full-parallel-hybrid/','Lawrence Andoh'),
 ])

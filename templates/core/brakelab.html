@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}BrakeLab · ATU Virtual Laboratory{% endblock %}
+{% block title %}Ebenezer Wilson’s Braking Laboratory · ATU Virtual Laboratory{% endblock %}
 {% block body_class %}fuel-delivery-page brake-lab-page{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/fuel-delivery.css' %}">
 <link rel="stylesheet" href="{% static 'css/brakelab.css' %}">
 <section id="brakelab" aria-labelledby="brake-title">
-  <nav class="small mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'bev' %}">BEV environment</a> / <span aria-current="page">BrakeLab</span></nav>
+  <nav class="small mb-3" aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'bev' %}">BEV environment</a> / <span aria-current="page">Ebenezer Wilson’s Braking Laboratory</span></nav>
   <div class="page-heading"><div><p class="eyebrow">BEV laboratory · Braking and energy recovery</p><h1 id="brake-title">Regenerative and Friction Brake-Force Allocation</h1><p class="text-secondary mb-0">Discover how driver demand, motor limits and battery acceptance share the braking work.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:laboratory_system' 'bev' %}">Back to BEV models</a></div>
-  <p class="small text-secondary">BrakeLab · Educational operating-point model, not a certified production brake controller. No hardware is connected. Implemented from the supplied programmer guide and prompt; no Simulink-file or MATLAB runtime verification is claimed.</p>
-  <noscript><p class="alert alert-warning">Enable JavaScript to calculate and visualise BrakeLab. Calculations run locally without MATLAB or a calculation API.</p></noscript>
+  <p class="small text-secondary">Ebenezer Wilson’s Braking Laboratory · Educational operating-point model, not a certified production brake controller. No hardware is connected. Implemented from the supplied programmer guide and prompt; no Simulink-file or MATLAB runtime verification is claimed.</p>
+  <noscript><p class="alert alert-warning">Enable JavaScript to calculate and visualise Ebenezer Wilson’s Braking Laboratory. Calculations run locally without MATLAB or a calculation API.</p></noscript>
   <div class="fuel-toolbar content-panel mt-0">
     <div class="d-flex flex-wrap gap-2"><button id="brake-run" type="button" class="btn btn-primary">Run Model</button><button id="brake-pause" type="button" class="btn btn-outline-secondary" disabled>Pause</button><button id="brake-resume" type="button" class="btn btn-outline-secondary" disabled>Resume</button><button id="brake-reset" type="button" class="btn btn-outline-secondary">Reset to Baseline</button><button id="brake-export" type="button" class="btn btn-outline-secondary">Export JSON</button><a class="btn btn-outline-secondary" href="#brake-input-title">Adjust inputs</a><a class="btn btn-outline-secondary" href="#brake-analysis">View analysis</a></div>
     <label class="small"><input id="brake-live" type="checkbox" checked> Live Update previews</label>

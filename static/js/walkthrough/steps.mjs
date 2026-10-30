@@ -98,7 +98,7 @@ export const GUIDES = {
     {...close,target:"#fuel-json"}
   ],
   "core:brakelab": [
-    welcome("BrakeLab", "#brake-title"),
+    welcome("Ebenezer Wilson’s Braking Laboratory", "#brake-title"),
     {stage:"Find the controls",title:"Preview, run and reset",target:"#brake-run",description:"Live Update previews the current operating point as inputs change. Run Model starts a scaled illustration; Pause and Resume control playback, and Reset to Baseline restores the defaults.",tip:"If Live Update is off, run the model after editing to refresh the result.",check:"The animation is a visual estimate. The numerical operating point stays fixed during playback."},
     {stage:"Change an input",title:"Test battery charge acceptance",target:"#brake-input-batterySocPct",description:"Adjust the operating conditions with the number field, slider or −/+ buttons. Battery SOC is a user input; it does not evolve during playback.",tip:"For a repeatable check, select Reset to Baseline and leave Live Update on.",check:"At the baseline, requested and regenerative force are both 2,100 N. Change Battery SOC from 50% to 95%: regenerative force should become 0 N and friction force 2,100 N."},
     {stage:"Interpret the vehicle",title:"Follow braking energy",target:"#brake-scene",description:"The illustration shows the wheel-to-motor and battery energy paths and a friction-braking cue. Its speed and travel are based on a scaled constant-deceleration estimate.",tip:"Use Pause to study a moment or disable motion for a static view.",check:"At high battery SOC, the calculation limits regeneration; look for the battery state-of-charge limit and the changed allocation."},

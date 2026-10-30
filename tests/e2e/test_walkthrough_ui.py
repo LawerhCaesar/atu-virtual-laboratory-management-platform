@@ -17,7 +17,7 @@ def sign_in(page, demo_records, live_server):
 
 @pytest.mark.parametrize("path,field,baseline,guide_name", [
     ("/virtual-lab/fuel-delivery-optimisation/", "Air flow (g/s)", "25", "Fuel Delivery Optimisation"),
-    ("/virtual-lab/brakelab/", "Battery SOC (%)", "50", "BrakeLab"),
+    ("/virtual-lab/brakelab/", "Battery SOC (%)", "50", "Ebenezer Wilson’s Braking Laboratory"),
     ("/virtual-lab/vehicle-dynamics/wheel-slip-abs-tcs/", "Road friction coefficient (ratio)", "0.35", "Wheel-Slip Control Using ABS and TCS"),
 ])
 def test_first_visit_reopen_navigation_and_no_mutation(page, demo_records, live_server, path, field, baseline, guide_name):

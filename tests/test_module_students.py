@@ -23,6 +23,9 @@ def test_student_profiles_on_every_module(client):
    assert b'Portrait coming soon' in r.content
    if route == 'core:p2_hybrid':
     assert b'torque-split dynamics' in r.content
+   elif route == 'core:brakelab':
+    assert b'Ebenezer Wilson' in r.content
+    assert b'Hajime Shokai' in r.content
    else:
     assert b'A short student biography' in r.content
  assert b'The student behind this module' not in client.get(reverse('core:laboratory')).content
