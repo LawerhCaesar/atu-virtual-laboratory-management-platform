@@ -9,3 +9,5 @@ Full names currently documented: David Amachie (ECT), Edward Selorm (motor drive
 All biographies and portraits await supplied content. This change adds presentation slots; it does not add an account-profile editor or alter identity records. Future modules automatically get the shared profile card; add attribution to the central mapping when confirmed.
 
 Verification: `pytest tests/test_module_students.py` checks all registered routes and catalogue exclusion. `pytest -m e2e tests/e2e/test_module_students_ui.py` checks desktop/mobile rendering, no overflow and axe WCAG contrast/semantics.
+
+Profile update, 30 October 2026: Emmanuel Yankson Sackey has name/module attribution only, with `show_bio=False` and `show_portrait=False`; the biography heading, text and portrait placeholder are omitted entirely. Lawrence Andoh's user-supplied biography appears verbatim on P2 Full-Parallel Hybrid. Ebenezer Wilson's supplied biography awaits a confirmed module association and is not attached to an inferred project.

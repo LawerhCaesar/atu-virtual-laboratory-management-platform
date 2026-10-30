@@ -14,6 +14,15 @@ def test_student_profiles_on_every_module(client):
   r=client.get(reverse(route))
   assert r.status_code==200
   assert b'The student behind this module' in r.content
-  assert b'Portrait coming soon' in r.content
-  assert b'A short student biography' in r.content
+  if route == 'core:yankson':
+   assert b'Portrait coming soon' not in r.content
+   assert b'About the student' not in r.content
+   assert b'module-student-portrait' not in r.content
+   assert b'Emmanuel Yankson Sackey' in r.content
+  else:
+   assert b'Portrait coming soon' in r.content
+   if route == 'core:p2_hybrid':
+    assert b'torque-split dynamics' in r.content
+   else:
+    assert b'A short student biography' in r.content
  assert b'The student behind this module' not in client.get(reverse('core:laboratory')).content

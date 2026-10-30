@@ -1,6 +1,6 @@
 {% load static %}
-<section class="module-student" aria-labelledby="module-student-heading">
-  <div class="module-student-portrait">
+<section class="module-student{% if not module_student.show_portrait %} module-student-text-only{% endif %}" aria-labelledby="module-student-heading">
+  {% if module_student.show_portrait %}<div class="module-student-portrait">
     {% if module_student.portrait %}
       <img src="{% static module_student.portrait %}" alt="Portrait of {{ module_student.name }}" width="240" height="300" loading="lazy">
     {% else %}
@@ -10,12 +10,12 @@
       </div>
     {% endif %}
   </div>
-  <div class="module-student-copy">
+  {% endif %}<div class="module-student-copy">
     <p class="module-student-eyebrow">The student behind this module</p>
     <h2 id="module-student-heading">{{ module_student.name }}</h2>
     {% if module_student.name_note %}<p class="module-student-note">{{ module_student.name_note }}</p>{% endif %}
     <p class="module-student-project">{{ module_student.module_name }}</p>
-    <h3>About the student</h3>
-    <p class="module-student-bio">{{ module_student.bio }}</p>
+    {% if module_student.show_bio %}<h3>About the student</h3>
+    <p class="module-student-bio">{{ module_student.bio }}</p>{% endif %}
   </div>
 </section>
