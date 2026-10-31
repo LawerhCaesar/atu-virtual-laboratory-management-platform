@@ -2,6 +2,8 @@ import {DEFAULTS, FIELDS, PRESETS, OPERATING_LIMITS, clamp, validate} from "./mo
 import {FuelSimulation} from "./controller.mjs";
 import {hasHardBounds, nudgeValue, sliderBounds} from "./controls.mjs";
 
+import {INPUT_HELP, renderLearningGuide} from "./learning.mjs";
+
 const root = document.getElementById("fuel-delivery");
 if (root) initialise();
 function initialise() {
@@ -10,6 +12,7 @@ function initialise() {
     const e = document.createElement(tag); if (text !== undefined) e.textContent = text;
     if (css) e.className = css; return e;
   };
+  renderLearningGuide(byId("fuel-learning-content"),FIELDS);
   const sim = new FuelSimulation(), controls = {}, cells = {};
   let draft = {...DEFAULTS}, valid = true, interval = null, stopped = false, errorKind = "Input error";
   let scene3d = null, sceneFailed = false, view3d = true, sceneOnscreen = false, sceneMode = 'vehicle';
@@ -77,7 +80,7 @@ function initialise() {
     const input = make("input"), error = make("small", "", "fuel-field-error");
     input.id = `fuel-input-${f.key}`; label.htmlFor = input.id; error.id = `fuel-error-${f.key}`;
     input.setAttribute("aria-describedby", `fuel-help-${f.key} ${typeof f.value === "boolean" ? "" : `fuel-purpose-${f.key} `}${error.id}`);
-    const help = make("small", typeof f.value === "boolean" ? f.purpose : `${hasHardBounds(f) ? "Allowed" : "Suggested"}: ${f.min}–${f.max} ${f.unit}. Default: ${f.value}.`); help.id = `fuel-help-${f.key}`;
+    const help = make("small", typeof f.value === "boolean" ? (INPUT_HELP[f.key] || f.purpose) : `${hasHardBounds(f) ? "Allowed" : "Suggested"}: ${f.min}–${f.max} ${f.unit}. Default: ${f.value}.`); help.id = `fuel-help-${f.key}`;
     if (typeof f.value === "boolean") {
       input.type = "checkbox"; input.checked = f.value; input.className = "form-check-input me-2";
       input.addEventListener("change", () => { draft[f.key] = input.checked; edit(); });
@@ -89,7 +92,7 @@ function initialise() {
       const row = make("div", undefined, "fuel-number");
       const slider = make("input"); slider.type = "range"; slider.min = f.min; slider.max = f.max;
       slider.step = "any"; slider.value = f.value; slider.className = "form-range";
-      const guide = make("details", undefined, "fuel-field-guide"), purpose = make("small", f.purpose);
+      const guide = make("details", undefined, "fuel-field-guide"), purpose = make("small", (INPUT_HELP[f.key] || f.purpose));
       purpose.id = `fuel-purpose-${f.key}`; guide.append(make("summary", `About ${f.label.toLowerCase()}`), purpose);
       slider.setAttribute("aria-label", `${f.label} slider`); slider.setAttribute("aria-describedby", `${help.id} ${purpose.id}`);
       const syncSlider = value => {

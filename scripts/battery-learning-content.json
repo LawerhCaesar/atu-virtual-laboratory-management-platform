@@ -1,0 +1,199 @@
+{
+  "help": {
+    "controls.mode": "Charge puts energy into the battery. Supply load takes energy out. Rest requests no current. The profile switches between two signed current requests at the selected time.",
+    "controls.magnitudeA": "The current you ask for in Charge or Supply mode. The model may allow less because of temperature, voltage, SOC or pack ratings. Charge uses a negative signed current in the results.",
+    "controls.ambientC": "The temperature of the air around the pack. It affects how quickly the average battery temperature cools or warms.",
+    "controls.beforeA": "The requested current before the profile changes. Negative means charging; positive means supplying the load.",
+    "controls.afterA": "The requested current after the profile-change time. For example, +100.8 A asks the battery to supply the load.",
+    "durationS": "How long the experiment lasts in virtual seconds. 3600 seconds is one virtual hour. Changing it starts a fresh run.",
+    "stepTimeS": "WHEN the profile changes current, not the calculation interval. 1800 means the request switches 30 virtual minutes after the run starts.",
+    "parameters.initial_soc_pct": "How full the battery is at the beginning. 50% means half of its modelled charge capacity. Changing this starts a fresh run.",
+    "parameters.initial_temp_C": "The average pack temperature at the beginning. All visible modules share this one calculated pack temperature; separate cell temperatures are not simulated.",
+    "parameters.ns": "How many cells are connected in series. More series cells raise pack voltage.",
+    "parameters.np": "How many cell strings are connected in parallel. More parallel strings increase pack capacity and share the current.",
+    "parameters.cell_capacity_Ah": "Charge capacity of one cell, in ampere-hours. Parallel strings multiply this to give pack capacity.",
+    "parameters.cell_nominal_V": "A reference voltage for one cell, used for nominal pack energy estimates.",
+    "parameters.cell_resistance_ohm": "Internal resistance of one cell. Resistance causes voltage change under load and heat loss.",
+    "parameters.cell_voltage_limits_V": "Two values: minimum then maximum allowed cell voltage. The equivalent-pack limiter uses these to restrict current.",
+    "parameters.current_ratings_C": "Two values: charge then discharge C-rate ratings. 1C means a current equal to pack capacity in Ah. Actual current can be limited further.",
+    "parameters.soc_levels_pct": "Four values: minimum SOC, end of low-SOC taper, start of high-SOC taper, maximum SOC. Current is reduced near the relevant boundary.",
+    "parameters.charge_temp_limits_C": "Four charge temperatures: blocked low, full-current low, full-current high, blocked high. Charging reduces between the full-current and blocked thresholds.",
+    "parameters.discharge_temp_limits_C": "Four supply temperatures: blocked low, full-current low, full-current high, blocked high. Supply current reduces outside the full-current range.",
+    "parameters.mass_kg": "Pack mass used in the average-temperature calculation.",
+    "parameters.cp_J_kgK": "Heat needed to raise one kilogram of the pack by one degree. A larger value slows temperature change.",
+    "parameters.conductance_W_K": "How readily heat passes between the pack and surrounding air.",
+    "parameters.coulombic_efficiencies": "Two values: charge then discharge coulombic efficiencies from 0 to 1. These affect how current changes stored charge.",
+    "parameters.ocv_soc_pct": "Increasing SOC breakpoints for the open-circuit-voltage lookup. Each needs a matching cell voltage.",
+    "parameters.ocv_cell_V": "Cell open-circuit voltages matching the SOC breakpoints. Open-circuit means without the internal-resistance voltage change."
+  },
+  "channels": {
+    "SOC_pct": "How full the equivalent battery is, percent.",
+    "Temperature_C": "One average pack temperature, °C.",
+    "Requested_A": "Signed current request: negative charges and positive supplies the load, A.",
+    "Actual_A": "Current permitted after all source-model restrictions, A.",
+    "OCV_V": "Pack open-circuit voltage estimated from SOC, V.",
+    "Terminal_V": "Pack voltage while carrying the permitted current, V.",
+    "TerminalPower_W": "Signed terminal power: negative into the pack, positive out, W.",
+    "Loss_W": "Internal resistance heat loss, W.",
+    "EnergyOut_kWh": "Accumulated terminal energy supplied to the load, kWh.",
+    "EnergyIn_kWh": "Accumulated terminal energy received during charging, kWh.",
+    "EnergyLoss_kWh": "Accumulated internal-resistance energy loss, kWh.",
+    "Available_kWh": "Nominal available-energy estimate; not guaranteed deliverable energy.",
+    "Headroom_kWh": "Nominal charging-headroom estimate; not a charger time prediction.",
+    "ChargeLimit_A": "Maximum charge-current magnitude permitted at this sample, A.",
+    "DischargeLimit_A": "Maximum supply-current magnitude permitted at this sample, A.",
+    "DischargeEfficiency": "Source-defined discharge efficiency. Cards show not active when this direction is inactive; exports retain the source value.",
+    "ChargeEfficiency": "Source-defined charge efficiency. Cards show not active when charging is inactive; exports retain the source value.",
+    "Status": "0 Rest; 1 Charging; 2 Supplying load; 3 Charging limited; 4 Supply limited; 5 Charging blocked; 6 Supply blocked.",
+    "Reason": "Primary restriction: 0 none; 1 rated current; 2 SOC; 3 temperature; 4 voltage. Multiple candidate limits can apply.",
+    "PowerBalance_W": "Residual for the source power-balance identity, W. A value close to zero checks internal consistency.",
+    "CellCurrent_A": "Equivalent per-cell current after current sharing, A.",
+    "C_Rate": "Current relative to Ah capacity. Positive supplies; negative charges.",
+    "ChargeIn_Ah": "Accumulated charge received, Ah.",
+    "ChargeOut_Ah": "Accumulated charge supplied, Ah.",
+    "ChargeSOCFactor": "Charge-current multiplier due to SOC, 0 to 1.",
+    "DischargeSOCFactor": "Supply-current multiplier due to SOC, 0 to 1.",
+    "ChargeThermalFactor": "Charge-current multiplier due to average temperature, 0 to 1.",
+    "DischargeThermalFactor": "Supply-current multiplier due to average temperature, 0 to 1.",
+    "Ambient_C": "Surrounding air temperature applied to this sample, °C.",
+    "HeatToAmbient_W": "Signed heat transfer from pack to surrounding air, W.",
+    "ChargePower_W": "Nonnegative magnitude of terminal power going into the pack, W.",
+    "DischargePower_W": "Nonnegative magnitude of terminal power leaving the pack, W."
+  },
+  "lessons": [
+    [
+      "Begin with the organised workspace",
+      "Inputs are on the left and the battery visual, indicators, charts and exports are on the right. The opening reference experiment begins at 50% SOC and 25 °C. Run starts time; Pause holds it; Step advances one virtual second. Reset run starts fresh with the current settings. Restore reference baseline restores the supplied defaults. Export first if you want to keep an experiment."
+    ],
+    [
+      "Normal and fast charging",
+      "Normal requests 0.5C; Fast requests 2C. These are educational constant-current requests scaled to configured pack Ah capacity. At the reference 100.8 Ah capacity they request 50.4 A and 201.6 A. Choosing one switches Operating mode to Charge and queues the request at the next whole-second boundary. Custom current and the charge/supply profile remain available. Actual current is still restricted by temperature, SOC, voltage and the configured charge rating. Fast does not guarantee a shorter run or a particular charging time."
+    ],
+    [
+      "What C-rate means",
+      "1C is a current numerically equal to capacity in Ah: for a 100.8 Ah pack, 1C is 100.8 A. 0.5C is half that current and 2C is twice it. These presets are not verified AC charger or DC fast-charger protocols. The model does not include wall-plug efficiency, a charging standard, cable negotiation, grid power limits or a production CC-CV controller."
+    ],
+    [
+      "Calculation step versus profile-change time",
+      "The model always calculates once per virtual second. Step 1 s advances one calculation. Speed 60× asks playback to advance 60 virtual seconds per wall-clock second; it does not change the equations or skip states. Profile change time is WHEN the requested current switches: 1800 s means 30 virtual minutes after the start. It is different from the fixed 1 s calculation interval."
+    ],
+    [
+      "Read the charging system and gauges",
+      "The stationary vehicle and exposed traction pack show where energy enters and leaves. Choose Traction pack to inspect representative modules, busbars and connector. SOC indicates stored charge, not range. Requested current is what you ask for; allowed current is what the pack accepts or supplies. The charge and discharge indicators use actual current and the applicable limits. One average temperature describes the whole pack: the drawing is not a cell-by-cell thermal simulation."
+    ],
+    [
+      "Interpret direction and restrictions",
+      "Negative current and negative signed terminal power mean charging. Positive means supplying the electrical load. Solid active flow indicates permitted transfer; rejected current is shown separately in the schematic and text. Blocked or resting packs have no permitted flow. The primary status/reason is preserved from the engine even if several restrictions are binding. Pause, history inspection and reduced motion stop moving particles without changing the recorded values."
+    ],
+    [
+      "Use live inputs and new-run settings",
+      "Live current, mode and ambient-temperature changes are queued for the next whole-second boundary. The interval just completed uses the previously applied request; the next sample records the newly applied input. Duration, profile time and initial/calibration settings start a fresh run. Changes are recorded in metadata. A preset also starts fresh. Blank input is invalid and is not silently treated as zero."
+    ],
+    [
+      "Read the graphs",
+      "All eight chart groups share a 0-to-duration time axis. Requested and allowed current can differ. OCV and terminal voltage differ because internal resistance acts under current. Energy received, supplied and lost accumulate independently. Available energy and headroom are nominal estimates. Hover, focus or tap a legend i button for a plain definition. Click a graph or move Recorded time to inspect a saved sample without recalculating."
+    ],
+    [
+      "Verify the supplied reference run",
+      "Restore reference baseline. At 0 s check 50% SOC and -50.4 A. At 1800 s check 75% SOC and the request switching to +100.8 A. At 3600 s expect 25% SOC, about 31.453835 °C and 3601 samples including the starting row. Terminal energy received is about 9.155583 kWh, supplied about 17.415337 kWh and internal loss about 0.406426 kWh. The initial stored energy also contributes to energy supplied."
+    ],
+    [
+      "Verify limits and charging choices",
+      "High-current limit requests -400 A and permits about -201.6 A at the reference start. Thermal derating requests -200 A and permits -100.8 A at 40 °C. Cold pack blocks charging at 0 °C. Fast charge still gives 0 A in that cold condition. At higher SOC, taper may reduce either charging request. Compare normal and fast with the same initial SOC, temperature, duration and pack calibration; compare allowed current, SOC gain, heat and restrictions, not only the preset name."
+    ],
+    [
+      "Advanced pack relationships",
+      "Series cells multiply voltage; parallel strings multiply Ah capacity and share current. Pack resistance scales with series cells divided by parallel strings. The OCV lookup depends on SOC. Terminal voltage includes the signed resistance drop; ohmic loss follows current squared times pack resistance. The engine integrates charge, energy and one lumped temperature at 1 s. Restrictions combine rated-current, SOC taper, thermal and voltage candidates using the original precedence."
+    ],
+    [
+      "Save evidence and understand validation",
+      "CSV contains time plus all 32 model channels at full precision, every recorded second. JSON records initial configuration, model identity, applied input timestamps, pending controls and status events. The supplied engine checks 30 regression scenarios and nine full-channel reference checkpoints across 63,398 rows. Original SLX and the separate MATLAB CSV were not provided, so fresh full-trace MATLAB validation has not been performed. Calibration and geometry are educational, with no prediction of range, individual-cell hotspots, thermal runaway or a manufacturer-specific charge curve."
+    ]
+  ],
+  "defaults": {
+    "schemaVersion": 1,
+    "modelVersion": "1.0.0",
+    "modelHash": "EB530DEEBA66EF27FE20C21EFB7E357D8D61A071467493291E07BCC1AB321931",
+    "durationS": 3600,
+    "stepTimeS": 1800,
+    "parameters": {
+      "initial_soc_pct": 50,
+      "initial_temp_C": 25,
+      "ns": 96,
+      "np": 24,
+      "cell_capacity_Ah": 4.2,
+      "cell_nominal_V": 3.6,
+      "cell_resistance_ohm": 0.016,
+      "cell_voltage_limits_V": [
+        2.5,
+        4.2
+      ],
+      "current_ratings_C": [
+        2,
+        2
+      ],
+      "soc_levels_pct": [
+        5,
+        20,
+        80,
+        95
+      ],
+      "charge_temp_limits_C": [
+        0,
+        10,
+        35,
+        45
+      ],
+      "discharge_temp_limits_C": [
+        -20,
+        0,
+        45,
+        55
+      ],
+      "mass_kg": 200,
+      "cp_J_kgK": 900,
+      "conductance_W_K": 35,
+      "coulombic_efficiencies": [
+        1,
+        1
+      ],
+      "ocv_soc_pct": [
+        0,
+        5,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        95,
+        100
+      ],
+      "ocv_cell_V": [
+        2.5,
+        3.1,
+        3.3,
+        3.45,
+        3.53,
+        3.6,
+        3.67,
+        3.73,
+        3.8,
+        3.9,
+        4.04,
+        4.12,
+        4.2
+      ]
+    },
+    "controls": {
+      "mode": "profile",
+      "magnitudeA": 50.4,
+      "beforeA": -50.4,
+      "afterA": 100.8,
+      "ambientC": 25
+    }
+  }
+}

@@ -5,7 +5,7 @@ from playwright.sync_api import expect
 pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 def open_lab(page,demo_records,live_server):
  page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
- page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click()
+ page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.get_by_text('Simulated test events and original supervisor display',exact=True).click()
 
 def test_start_routes_fault_pause_export(page,demo_records,live_server):
  open_lab(page,demo_records,live_server);page.clock.install()

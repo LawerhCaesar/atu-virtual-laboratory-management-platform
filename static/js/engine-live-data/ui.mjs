@@ -1,7 +1,7 @@
 import { EngineSimulation, STEP, PRESETS } from "./controller.mjs";
 import { SPEC } from "./spec.mjs";
 import { ENGINE_STATE_LABELS, describeCurrentRelationship } from "./model.mjs";
-import { createSchematic } from "./schematic.mjs";
+import { createProcessVisual, attachLearningHelp, createInfo } from "./workspace.mjs";
 import { ectTemperature } from "./reference.mjs";
 
 const root = document.querySelector("#engine-demo");
@@ -9,7 +9,7 @@ if (root) initialise();
 
 function initialise() {
   const simulation = new EngineSimulation();
-  let cutaway = null, pageGone = false, cutawayLoading = false, cutawayClosed = false;
+  let pageGone = false;
   const byId = id => document.getElementById(id);
   const make = (tag, text, className) => {
     const node = document.createElement(tag);
@@ -18,6 +18,7 @@ function initialise() {
     return node;
   };
   const labels = {
+    StartAuthorisation: "Simulated authorisation", StartRequest: "Virtual start request",
     ECT1Voltage: "Virtual ECT1 sensor voltage", ECT2Voltage: "Virtual ECT2 sensor voltage",
     ECT1Temp: "Virtual ECT1 temperature", ECT2Temp: "Virtual ECT2 temperature",
     SensorDifference: "ECT sensor difference", ControlTemperature: "Control temperature",
@@ -83,11 +84,7 @@ function initialise() {
   const metadata = Object.fromEntries([...SPEC.inputs, ...SPEC.outputs].map(signal => [signal.name, signal]));
   metadata.ActualRPM={name:'ActualRPM',unit:'rpm',min:0,max:6500};
   metadata.SafeStartCondition={name:'SafeStartCondition',unit:'state',min:0,max:1};
-  const schematic=createSchematic(byId('engine-schematic'),key=>{
-    const {inputs:i,outputs:o}=simulation.result;
-    const notes={battery:`Battery ${i.BatteryVoltage.toFixed(2)} V; a start requires at least 9.5 V.`,ecu:`Simulated authorisation ${i.StartAuthorisation?'active':'inactive'}; no biometric capture.`,starter:`Starter ${o.StarterState?'ON':'OFF'} only in CRANK; RPM is imposed independently.`,engine:`Imposed ${i.EngineSpeed.toFixed(0)} rpm; illustrative rotation requires CRANK or RUN and positive RPM.`,fuel:`Fuel pump ${o.FuelPumpState?'ON':'OFF'} in PRIME, CRANK and RUN.`,injector:`Injection ${o.InjectionEnable?'enabled':'disabled'}; pulse ${o.InjectorPW.toFixed(3)} ms.`,fan:`Fan command ${o.FanDuty.toFixed(1)}%; temperature and A/C determine duty, with emergency override.`,pump:`Virtual electric pump command ${o.WaterPumpDuty.toFixed(1)}%; the separate physical 1NZ rig has no electric pump.`};
-    byId('engine-component-detail').textContent=notes[key];
-  });
+  const schematic=createProcessVisual(byId("engine-schematic"));
   const categories = { measured: "Imposed virtual input", calculated: "ECU-calculated value",
     commanded: "Commanded output", status: "Operating status" };
   const systems = {
@@ -119,7 +116,7 @@ function initialise() {
       : ["ECT1Temp", "ECT2Temp", "SensorDifference", "ControlTemperature", "FanDuty", "WaterPumpDuty", "STFT", "WarmupEnrichment", "EngineLoad", "IdleControlDuty"].includes(key) ? 1 : 2;
     return `${Number(value).toFixed(places)} ${unit(key)}`;
   }
-  let activeView = Object.hasOwn(systems, root.dataset.initialView) ? root.dataset.initialView : "overview";
+  let activeView = Object.hasOwn(systems, root.dataset.initialView) ? root.dataset.initialView : "fuel";
   let viewAnimation = null;
   let interval = null, wallAnchor = 0, accumulator = 0;
   const inputs = {};
@@ -221,7 +218,7 @@ function initialise() {
     const item = make("li", stateLabel); item.dataset.state = code;
     byId("engine-stepper").append(item);
   }
-  for (const [key, title] of [["overview", "Overview"], ...Object.entries(systems).map(([key, x]) => [key, x.title])]) {
+  for (const [key, title] of Object.entries(systems).map(([key, x]) => [key, x.title])) {
     const button = make("button", title, "btn btn-sm btn-outline-primary");
     button.type = "button"; button.dataset.view = key;
     button.addEventListener("click", () => { activeView = key; renderStructure(); render(); });
@@ -292,6 +289,7 @@ function initialise() {
     }
     byId("engine-overview").replaceChildren();
     const system = systems[activeView];
+    byId("engine-process-title").textContent=system.title+" · process view";
     byId("engine-system-title").textContent = system.title;
     byId("engine-flow").textContent = system.flow;
     const values = byId("engine-values"); values.replaceChildren();
@@ -302,6 +300,9 @@ function initialise() {
       for (const key of system[category]) list.append(metric(key, category));
       values.append(list);
     }
+    const legend=byId('engine-chart-legend');legend.replaceChildren();
+    for(const key of chartGroups[activeView].flat()){const item=make('span',label(key),'engine-legend-item');item.append(createInfo(label(key),meanings[key]||label(key)));legend.append(item);}
+    attachLearningHelp(root,metadata,labels,meanings);
   }
 
   const chartGroups={
@@ -313,6 +314,7 @@ function initialise() {
   const selectable=[...new Set([...SPEC.inputs.map(s=>s.name),...SPEC.outputs.map(s=>s.name),'ActualRPM','SafeStartCondition'])];
   for(const key of selectable){const option=make('option',`${label(key)} (${unit(key)})`);option.value=key;byId('engine-chart-extra').append(option);}
   let inspectIndex=null;
+  byId('engine-chart-live').addEventListener('click',()=>{inspectIndex=null;drawChart();});
   byId('engine-chart-extra').addEventListener('change',drawChart);
   byId('engine-chart-inspect').addEventListener('input',e=>{inspectIndex=Number(e.target.value);drawChart();});
   function drawChart() {
@@ -327,7 +329,9 @@ function initialise() {
     add('title',{id:'engine-chart-title'},`${systems[activeView].title}: model history, simulation time in seconds`);
     const last=data.at(-1)?.SimulationTime??0,begin=Math.max(0,last-60),end=Math.max(begin+STEP,last),colors=['#145ca8','#a34b22','#087e74','#7b3696'];
     const chosen=Math.max(0,Math.min(data.length-1,inspectIndex??data.length-1));
-    const row=data[chosen],slider=byId('engine-chart-inspect');slider.disabled=!data.length;slider.max=Math.max(0,data.length-1);slider.value=chosen;
+    const row=data[chosen],slider=byId('engine-chart-inspect');
+    if(inspectIndex===null)schematic.update(simulation.result,simulation.running,activeView);
+    if(row&&inspectIndex!==null)schematic.update({inputs:row,outputs:row,sampleTime:row.SimulationTime},false,activeView);slider.disabled=!data.length;slider.max=Math.max(0,data.length-1);slider.value=chosen;
     const readings=[];
     let top=15;panels.forEach((keys,index)=>{
       const plotTop=top+35+keys.length*15,bottom=plotTop+65;
@@ -337,7 +341,7 @@ function initialise() {
       const padding=(maximum-minimum)*.08;minimum-=padding;maximum+=padding;
       const x=t=>left+(t-begin)/(end-begin)*(right-left),y=v=>bottom-(v-minimum)/(maximum-minimum)*(bottom-plotTop);
       add('text',{x:5,y:top+13,'font-weight':'bold'},`${label(keys[0])}${keys.length>1?` + ${keys.length-1} signal${keys.length>2?'s':''}`:''} (${unit(keys[0])})`);
-      keys.forEach((key,i)=>{const legend=add('text',{x:8,y:top+30+i*15},`${i===0?'Solid':i===1?'Dashed':i===2?'Dotted':'Dash-dot'}: ${label(key)}`);legend.style.fill=colors[i%colors.length];});
+      keys.forEach((key,i)=>{const legend=add('text',{x:8,y:top+30+i*15},`${i===0?'Solid':i===1?'Dashed':i===2?'Dotted':'Dash-dot'}: ${label(key)}`);legend.style.fill=colors[i%colors.length];legend.setAttribute('tabindex','0');const definition=document.createElementNS(ns,'title');definition.textContent=meanings[key]||label(key);legend.append(definition);});
       for(let n=0;n<=2;n++){const v=minimum+(maximum-minimum)*n/2;add('line',{x1:left,x2:right,y1:y(v),y2:y(v),stroke:'#dce4ed'});add('text',{x:left-5,y:y(v)+4,'text-anchor':'end'},v.toFixed(Math.abs(v)<10?1:0));}
       if(keys.includes('SensorDifference')){add('line',{x1:left,x2:right,y1:y(15),y2:y(15),stroke:'#a43838','stroke-dasharray':'4 4'});add('text',{x:right-10,y:y(15)-4,'text-anchor':'end'},'15 °C threshold');}
       keys.forEach((key,i)=>{
@@ -368,10 +372,12 @@ function initialise() {
     byId("engine-stop").disabled=!simulation.running;
     byId("engine-export").disabled=!simulation.history.length;
     const pending=Object.keys(simulation.rawInputs).some(k=>simulation.rawInputs[k]!==simulation.result.inputs[k]);
-    byId("engine-pending").textContent=pending?"Inputs changed: pending until Step or the next running sample. Readouts show the last sampled values.":simulation.history.length?"Readings, graphics and history show the same recorded sample.":"No samples yet. CSV becomes available after the first step.";
+    byId("engine-pending").textContent=pending?"Inputs changed: pending until Step or the next running sample. Readouts show the last sampled values.":simulation.history.length?"Live cards show the latest sample. The process view follows the inspected graph sample when history is selected.":"No samples yet. CSV becomes available after the first step.";
     byId("engine-clear-emergency").disabled=!simulation.rawInputs.EmergencyStop;
     byId("engine-events").replaceChildren(...(simulation.events.length?simulation.events.slice(-20).map(e=>make("li",`${e.time.toFixed(2)} s · ${e.message}`)):[make("li","No state changes recorded yet.")]));
-    schematic.update(simulation.result,simulation.running);
+    schematic.update(simulation.result,simulation.running,activeView);
+    byId("engine-headline").setAttribute("aria-label","Latest accepted outputs");
+    byId("engine-headline").replaceChildren(...(systems[activeView].commanded.slice(0,2).concat(systems[activeView].status.slice(0,1))).map(key=>{const card=make("div");card.append(make("span",label(key)),make("strong",valueText(key)));return card;}));
     byId("engine-run").disabled = simulation.running;
     byId("engine-pause").disabled = !simulation.running;
     byId("engine-emergency").setAttribute("aria-pressed", String(Boolean(simulation.rawInputs.EmergencyStop)));
@@ -397,10 +403,10 @@ function initialise() {
     root.querySelectorAll("[data-explanation]").forEach(node => { node.textContent = sentences[node.dataset.explanation]; });
     if (activeView !== "overview") byId("engine-explanation").textContent = sentences[activeView];
     drawChart();
-    cutaway?.sync(simulation.result, simulation.running);
+
   }
   function pause(reason) { clearInterval(interval); interval=null; simulation.running=false; wallAnchor=0;accumulator=0;render();if(reason)byId('engine-pending').textContent=reason; }
-  function advanceOne(){simulation.step();cutaway?.advance(simulation.result,STEP);}
+  function advanceOne(){simulation.step();}
   byId("engine-run").addEventListener("click", () => {
     if(interval!==null)return;
     simulation.running=true; wallAnchor=performance.now(); accumulator=0;
@@ -424,12 +430,12 @@ function initialise() {
   byId("engine-pause").addEventListener("click", pause);
   byId("engine-reset").addEventListener("click", () => {
     pause(); simulation.reset();
-    cutaway?.reset();
+
     for (const [name, control] of Object.entries(inputs)) if (control.number) {control.number.value = simulation.rawInputs[name];control.error='';}
     render();
   });
   byId("engine-load-preset").addEventListener("click", () => {
-    pause();simulation.loadPreset(Number(byId("engine-preset").value));cutaway?.reset();
+    pause();simulation.loadPreset(Number(byId("engine-preset").value));
     for (const [name, control] of Object.entries(inputs)) if (control.number) {control.number.value = simulation.rawInputs[name];control.error='';}
     render();
   });
@@ -443,38 +449,7 @@ function initialise() {
     document.body.append(anchor); anchor.click(); anchor.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
-  function closeCutaway(message = "3D view closed. Calculations and graphs are unchanged.") {
-    cutaway?.dispose(); cutaway = null;
-    byId("cutaway-workspace").hidden = true;
-    byId("cutaway-stage").hidden = true;
-    byId("cutaway-unload").hidden = true;
-    byId("cutaway-load").hidden = false;
-    byId("cutaway-load").disabled = false;
-    byId("cutaway-status").textContent = message;
-  }
-  async function loadCutaway() {
-    if (cutaway || cutawayLoading || pageGone) return;
-    cutawayLoading = true; cutawayClosed = false;
-    byId("cutaway-load").disabled = true;
-    byId("cutaway-status").textContent = "Loading the local 3D renderer…";
-    try {
-      const { createCutaway } = await import("./cutaway.bundle.mjs");
-      if (pageGone) return;
-      byId("cutaway-workspace").hidden = false;
-      byId("cutaway-stage").hidden = false;
-      cutaway = createCutaway(root, simulation.result, () => closeCutaway("3D graphics context was lost. You can retry Load 3D engine; calculations and graphs remain available."));
-      cutaway.sync(simulation.result, simulation.running);
-      byId("cutaway-load").hidden = true;
-      byId("cutaway-unload").hidden = false;
-      byId("cutaway-status").textContent = "3D ready · embedded here. Starts paused.";
-    } catch {
-      closeCutaway("3D is unavailable on this device or could not load. Enable WebGL 2 and retry, or continue using all calculations and graphs below.");
-    } finally { cutawayLoading = false; }
-  }
-  byId("cutaway-load").addEventListener("click", loadCutaway);
-  byId("cutaway-unload").addEventListener("click", () => { cutawayClosed = true; closeCutaway(); });
-  window.addEventListener("pagehide", () => { pageGone = true; pause(); closeCutaway(); });
-  window.addEventListener("pageshow", event => { pageGone = false; if (event.persisted && !cutawayClosed) loadCutaway(); });
+  window.addEventListener("pagehide",()=>{pageGone=true;pause();schematic.destroy();});
   renderStructure(); render();
-  loadCutaway();
+  attachLearningHelp(root,metadata,labels,meanings);
 }

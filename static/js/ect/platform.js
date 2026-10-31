@@ -16,6 +16,7 @@
   ui.querySelector('.grid').id = 'ect-readings';
   ui.querySelector('.plots').id = 'ect-plots';
   ui.querySelector('.tag').textContent = 'ECT sensor · supplied reference logic';
+  window.enhanceECT(lab,window.ECTLearningGuide);
   // Preserve state on back-forward cache restoration, pause it on any departure.
   window.addEventListener('pagehide', () => lab.pause());
 })();

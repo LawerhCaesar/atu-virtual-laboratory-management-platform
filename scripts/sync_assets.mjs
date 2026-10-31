@@ -25,3 +25,7 @@ await build({
 console.log('Local fuel-delivery 3D bundle generated.');
 
 await build({entryPoints:[`${root}static/js/bless/engine.ts`], outfile:`${root}static/js/bless/engine.mjs`,format:"esm",target:"es2022"});
+
+await build({entryPoints:[`${root}frontend/edward-drive-3d.mjs`],outfile:`${root}static/js/edward/drive-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+
+await build({entryPoints:[`${root}frontend/battery-charge-3d.mjs`],outfile:`${root}static/js/battery-energy/charge-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});

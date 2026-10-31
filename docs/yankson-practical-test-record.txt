@@ -1,0 +1,32 @@
+Yankson practical laboratory — local review test record
+
+Baseline: d28182833acf9d4d451d01d8205c0a93e3c6e976
+Reference engine unchanged: 7e34037a0d2c797f9594d8a9cca8dcb43ca1e8f60336bac74da27dfdb1360279
+
+Verified commands:
+- node static/js/yankson/engine.js --self-test: passed all 10 supplied checks.
+- pytest tests/test_yankson.py -q: 2 passed (reference hash/self-test and protected route).
+- pytest -m e2e tests/e2e/test_yankson_ui.py -q: 4 passed (original starting routes, deadline, exports and accessibility).
+- python manage.py check --settings=config.build_settings: no issues.
+- python manage.py collectstatic --noinput --settings=config.build_settings: succeeded.
+- node --check for ui.js, practical.js and walkthrough steps: passed.
+- Patch apply check against a fresh baseline checkout: passed.
+
+Practical browser matrix:
+1. Exact full phrase, personalized command, default restore, misleading longer phrase rejection, no permission and 1x pacing.
+2. Cancelled contact, CANL disconnection/restoration, circuit provenance exports, parameter application and invalid relationships.
+3–4. Actual source capability display, permission denial, desktop/mobile overflow and axe accessibility.
+5. Delayed results after command change/reset/expiry/stop and unavailable service.
+6. Pointer hold, one-shot long start, contact provenance and hidden cancellation.
+7–11. No microphone, no speech, network, cancellation and service errors cannot request a start.
+12. Explicit identity, new authorization epoch, repeated final result, fresh request and selected 5-second countdown.
+
+Timing tests freeze the test clock between explicit advances. Visual captures resume it so browser screenshot synchronization can complete. This test-harness adjustment does not change the model or widen numerical tolerances.
+
+Actual local preview observation (not a human recognition trial):
+Browser capability check: recognition API supported; microphone permission prompt; pointer supported; 0 touch points; platform device verification unavailable; external reader not configured.
+Automated real-time keyboard hold: 1.805 s measured, 1.810 s sampled model contact. One direct request; CRANKING then RUNNING; starter released while run supply retained. Foreground browser clock was not mocked for this observation.
+
+Not performed: human microphone accuracy, actual fingerprint reader/contact hardware, original native MATLAB CSV parity, physical ECU/CAN/relay/engine trials. No new bridge, OS auth configuration, external repository push or staging deployment.
+
+Final practical suite: 12 passed in 51.51 s. Together with the 4 original browser tests, 16 browser cases passed. The original controller remains byte-identical.

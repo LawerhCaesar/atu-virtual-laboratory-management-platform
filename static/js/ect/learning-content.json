@@ -1,0 +1,155 @@
+{
+  "title": "Engine Coolant Temperature Sensor — Learning Guide",
+  "subtitle": "David Amachie · ICE laboratory · From first experiment to model interpretation",
+  "fields": {
+    "inputMode": [
+      "How coolant temperature is chosen",
+      "Fixed keeps the requested coolant temperature the same. Step starts at one temperature and changes it once."
+    ],
+    "fixedCoolantC": [
+      "One steady temperature",
+      "Used in Fixed mode. For example, 85 °C means the surrounding coolant is held at 85 °C while the sensor catches up."
+    ],
+    "stepTimeS": [
+      "When the temperature changes",
+      "This is the waiting time before the coolant changes from Before step to After step. With 20 s, the change happens when the simulation clock reaches 20 seconds. It is not the calculation time step."
+    ],
+    "stepBeforeC": [
+      "Temperature before the change",
+      "With default settings, the coolant stays at 20 °C until the clock reaches 20 s."
+    ],
+    "stepAfterC": [
+      "Temperature after the change",
+      "With default settings, the coolant becomes 100 °C at 20 s. The sensor warms gradually instead of jumping instantly."
+    ],
+    "initialSensorC": [
+      "Where the sensor starts",
+      "The sensor's temperature at time zero. It can differ from coolant temperature, so there can be lag from the start."
+    ],
+    "minTempC": [
+      "Lowest applied coolant temperature",
+      "If a request is below this limit, the model uses this limit and marks the input CLAMPED."
+    ],
+    "maxTempC": [
+      "Highest applied coolant temperature",
+      "If a request is above this limit, the model uses this limit and marks the input CLAMPED."
+    ],
+    "tauS": [
+      "How quickly the sensor catches up",
+      "A larger time constant means a slower response. After one time constant under constant coolant temperature, the sensor closes about 63% of the original temperature gap."
+    ],
+    "r0Ohm": [
+      "Resistance at the reference temperature",
+      "The thermistor is 2500 ohm at 25 °C by default. This anchors its resistance curve."
+    ],
+    "betaK": [
+      "How strongly resistance responds to heat",
+      "Beta shapes the thermistor's resistance-versus-temperature curve. Use a traceable component value for research; the supplied value is a teaching calibration."
+    ],
+    "referenceTempC": [
+      "Calibration temperature",
+      "The temperature at which Reference resistance is specified. Default: 25 °C."
+    ],
+    "referenceVoltageV": [
+      "Electrical reference supply",
+      "The divider and ADC use this reference voltage. Default: 5 V. It is a model parameter, not a measured battery voltage."
+    ],
+    "pullupOhm": [
+      "The other resistor in the circuit",
+      "A fixed resistor works with the changing thermistor resistance to create a changing voltage. Default: 2490 ohm."
+    ],
+    "adcMaxCount": [
+      "Largest digital reading",
+      "The ADC turns voltage into a whole-number count. Default maximum 4095 gives 4096 possible counts from 0 through 4095."
+    ],
+    "dtS": [
+      "Tiny calculation interval",
+      "The default 0.01 s means 100 calculation intervals per simulated second. This controls numerical sampling, not when coolant changes. Keep it at or below the time constant divided by 10."
+    ],
+    "stopTimeS": [
+      "How long the experiment lasts",
+      "Default: 120 simulated seconds. Duration must contain a whole number of calculation intervals. Playback speed changes how fast you watch, not these results."
+    ]
+  },
+  "legends": {
+    "Coolant": "Applied coolant temperature: the surroundings that heat or cool the sensor. This is a model input, not a temperature calculated from engine combustion.",
+    "Sensor": "The thermistor's own temperature. It responds gradually because the model includes thermal lag.",
+    "ECU estimate": "Temperature calculated back from the digital ADC count. It can be slightly different from sensor temperature because of rounding.",
+    "NTC": "The model thermistor resistance. NTC means negative temperature coefficient: resistance falls as temperature rises.",
+    "Reconstructed": "Resistance estimated back from the ADC count. It may differ slightly from the original thermistor resistance.",
+    "Analogue": "The continuous divider voltage before the ADC rounds it to a count.",
+    "Quantised": "The voltage represented by the rounded digital count. Small steps are expected.",
+    "Digital count": "The whole-number ADC reading. Counts at either rail (0 or maximum) make temperature reconstruction invalid.",
+    "Estimate minus sensor": "Conversion error = ECU estimate minus sensor temperature. This is different from the temperature gap between coolant and sensor."
+  },
+  "sections": [
+    {
+      "title": "1. Start here: what this laboratory teaches",
+      "paragraphs": [
+        "An engine coolant temperature sensor helps an ECU interpret temperature. Here you change virtual coolant conditions and follow four stages: coolant → sensor temperature → resistance and voltage → digital count and ECU estimate.",
+        "The car and cooling-system graphics are learning aids. Only the sensor, ideal divider and ADC calculations are modelled. There is no simulated coolant-flow rate, thermostat opening, pump speed, fan control, overheating damage or combustion model.",
+        "The front-of-car illustration is generic. It is not a measured Genesis GV70 engine bay or a Toyota component scan. Vehicle mass and dimensions do not enter the sensor equations."
+      ]
+    },
+    {
+      "title": "2. Your first experiment — default heating",
+      "paragraphs": [
+        "Choose Default heating. Open the bonnet, then choose Focus on cooling system. Start plays the recorded experiment; Pause stops the viewing clock. You can also move Simulation time to inspect a sample without waiting.",
+        "Before 20 s, coolant and sensor start near 20 °C. At 20 s, coolant changes to 100 °C. Around 23 s, the sensor is about 70.59 °C: coolant has already changed but the sensor is still catching up. The visual colour and gap indicators use those same calculated readings.",
+        "At 120 s, expect sensor 100 °C, resistance about 174.380 ohm, analogue voltage 0.327243 V, ADC 268 and ECU estimate about 100.001693 °C. Both validity indicators should be valid. These values are checks, not numbers substituted into the simulation."
+      ]
+    },
+    {
+      "title": "3. Change one thing and make a prediction",
+      "paragraphs": [
+        "Expand Experiment settings and calibration. Change Step time from 20 to 10 s, then Apply and reset. Prediction: heating starts earlier. Check the coolant curve at 10 s; the final equilibrium should still be near 100 °C.",
+        "Restore defaults, then change Time constant from 3 to 6 s and apply. Prediction: the sensor warms more slowly. Compare samples the same number of seconds after the temperature change.",
+        "Choose Cooling. Coolant falls from 100 to 20 °C while the sensor cools gradually. Choose Fixed 85 C for a constant surrounding temperature. Reset returns the viewing cursor; Restore defaults also restores all parameters.",
+        "Change one parameter at a time, note the applied configuration and export your results before starting another experiment. Invalid settings leave the last valid experiment intact."
+      ]
+    },
+    {
+      "title": "4. Read the visual and graphs",
+      "paragraphs": [
+        "Blue-to-red colour uses the same temperature scale for coolant and sensor. The sensor catch-up gap shows coolant minus sensor temperature. It is not the ADC conversion-error graph.",
+        "The full engine-bay view locates the learning components. The isolated view highlights coolant, thermistor, signal wiring and ECU. Animated signal dashes indicate information transfer only; they are not coolant velocity or measured electrical packets. Reduced-motion mode removes decorative motion.",
+        "Temperature response compares coolant, sensor and ECU estimate in °C. Resistance compares the thermistor with resistance reconstructed from the digital count in ohm. Voltage compares analogue and quantised voltage in V. ADC shows counts. Conversion error shows estimated temperature minus sensor temperature in °C.",
+        "Legends provide an information button: hover, focus or tap it for a short definition. Matching line colours identify each trace. Read the labelled units; a falling resistance or voltage during heating is expected for this NTC-divider arrangement."
+      ]
+    },
+    {
+      "title": "5. Valid inputs, clamped inputs and invalid conversion",
+      "paragraphs": [
+        "Input VALID means the requested coolant temperature is inside the selected bounds. Input CLAMPED means the applied value was limited to the nearest bound; it does not mean the ADC has failed.",
+        "Try Input above limit. The request is 150 °C, but the default upper bound applies 130 °C. The screen must show both request and applied values.",
+        "Try ADC lower rail and ADC upper rail, then inspect the end of the run. The preset's deliberately coarse ADC can reach a rail. Conversion INVALID and FALLBACK / INVALID must appear. A finite fallback number is kept for numerical protection; it is not a valid temperature measurement.",
+        "Input validity and conversion validity are separate signals. A valid coolant input can still give an invalid ADC conversion. Never report a guarded fallback as a successful measurement."
+      ]
+    },
+    {
+      "title": "6. Advanced model and numerical details",
+      "paragraphs": [
+        "Sensor response follows dTs/dt = (Tc − Ts)/tau. The NTC Beta equation gives R = R0 exp[Beta(1/TsK − 1/T0K)], with kelvin temperatures. Divider voltage is Vref × R/(Rpullup + R). The ADC rounds a bounded fraction of Vref to a count, then the inverse equations reconstruct resistance and temperature.",
+        "The default fixed-step fourth-order Runge–Kutta interval is 0.01 s. Times come from integer sample ticks. The final RK4 stage sees the changed input at an exact step boundary: Ts at 20 s is 20.0444444444 °C in the supplied reference. Do not interpret this small boundary value as a measured physical sensor jump.",
+        "The default trace has 12,001 samples from 0 to 120 s. Plot rendering simplifies data while preserving extrema; CSV keeps every computed sample, both validity flags and auxiliary signals. Playback speed changes presentation only. Hidden pages pause playback.",
+        "Validation requires finite numeric parameters, positive thermal/electrical terms, valid inverse domains and a stable sampling range. Duration must contain whole calculation intervals, with at most 100,000 intervals. These are software limits, not physical sensor specifications."
+      ]
+    },
+    {
+      "title": "7. Save, verify and report",
+      "paragraphs": [
+        "Use Export CSV for the entire computed trace, even if the cursor is at an earlier time. Record the scenario, all changed settings, clock position and expected versus observed response. Explain whether an error concerns thermal lag, digital rounding, input clamping or invalid reconstruction.",
+        "Suggested checks: default final ADC 268; earlier Step time shifts the change; larger tau slows the response; fixed 85 °C approaches 85 °C; clamped input stays within bounds; either ADC rail shows invalid fallback. Confirm both validity flags in the export.",
+        "The supplied engine includes 37 numerical checks. The source guide reports comparison with an independent native Simulink CSV, but that CSV was not supplied here and its full comparison has not been repeated. Other presets have analytical/guard tests rather than complete native-trace parity. This is educational software verification, not real sensor, ECU or hardware validation.",
+        "The on-page learning guide and downloadable PDF use the same learning content. Keep the parameter glossary with your results when sharing a report. Scientific conclusions require traceable component data and independent validation."
+      ]
+    },
+    {
+      "title": "8. CSV column map",
+      "paragraphs": [
+        "timeS: model time in seconds. Coolant_Input_C: applied coolant in °C. Sensor_Temperature_C: sensor temperature in °C. Thermistor_Resistance_Ohm: NTC resistance in ohm. ECT_Voltage_V: analogue voltage in V. ADC_Count: digital count. Reconstructed_Temperature_C: ECU estimate in °C. Conversion_Error_C: estimate minus sensor in °C.",
+        "Input_Valid_Status: 1 for an in-range request, 0 for a clamped request. Conversion_Valid_Status: 1 for a count strictly inside both ADC rails, 0 for an invalid fallback. Requested_Coolant_C preserves the original request. Quantised_Voltage_V is the voltage represented by the count. Reconstructed_Resistance_Ohm is resistance inferred from that count."
+      ]
+    }
+  ]
+}

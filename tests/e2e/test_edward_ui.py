@@ -12,6 +12,7 @@ def open_lab(page,demo_records,live_server):
  page.goto(live_server.url+'/virtual-lab/bev/electric-motor-drive/')
  page.locator('#tour-close').click()
  expect(page.locator('.status')).to_contain_text('Ready',timeout=60000)
+ page.locator('.export-options').evaluate('e=>e.open=true')
 
 def test_edward_scenarios_exports_validation(page,demo_records,live_server):
  open_lab(page,demo_records,live_server)

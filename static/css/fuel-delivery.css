@@ -65,3 +65,7 @@
 @media (max-width: 991px) { .fuel-workbench { grid-template-columns: 1fr; } .fuel-output-area { grid-row: 1; } .fuel-input-panel { position: static; max-height: none; } #fuel-input-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } }
 @media (max-width: 575px) { .fuel-kpis, .fuel-gauges, .fuel-charts, #fuel-input-fields { grid-template-columns: minmax(0, 1fr); } .fuel-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .fuel-visual, .fuel-output-area .content-panel { padding: 1rem; } .fuel-scenario select { width: 100%; } }
 .fuel-delivery-page [hidden] { display: none !important; }
+
+#fuel-learning-content h3{font-size:1.15rem;color:#234e68;margin-top:1.6rem}#fuel-learning-content p,#fuel-learning-content dd{max-width:85ch;line-height:1.7}#fuel-learning-content dt{margin-top:1rem}.fuel-3d-stage{box-shadow:inset 0 0 0 1px #7894aa44,0 16px 32px #132b461a}
+
+.fuel-3d-caption,.fuel-3d-readings{background:#102133e8;border-radius:8px;padding:7px 10px}.fuel-3d-caption{max-width:90%}

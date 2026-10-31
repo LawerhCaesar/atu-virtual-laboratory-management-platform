@@ -108,7 +108,7 @@ def test_engine_views_accessibility_and_visual_evidence(page,demo_records,live_s
     open_engine(page,demo_records,live_server)
     page.get_by_role('button',name='Step 0.05 s',exact=True).click()
     page.add_script_tag(path='node_modules/axe-core/axe.min.js')
-    for view in ['Overview','Fuel and injection','Idle and ignition','Cooling','Start and run']:
+    for view in ['Fuel and injection','Idle and ignition','Cooling','Start and run']:
         page.get_by_role('button',name=view,exact=True).click()
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         report=page.evaluate("async()=>await axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})")

@@ -37,3 +37,13 @@ node static/js/ect/Amachie_ECT_Virtual_Platform.js --verify-csv /path/to/ECT_Val
 ```
 
 The source self-test has 37 checks. Platform browser tests cover heating, cooling, fixed 85 C, clamping, both rails, atomic invalid and valid settings, full-resolution CSV, playback/pause, hidden-page pause, reset, keyboard scrubbing, tutorial shadow targets, reduced motion, mobile overflow and axe WCAG checks. Desktop/mobile screenshots are generated under `test-results/ect/` for initial, warm-up, final and rail-invalid states.
+
+## Visual learning revision — local review
+
+The numerical runtime remains byte-identical. The new `visual-learning.js` presentation adapter adds a front car with opening bonnet, engine-bay context and an isolated cooling-system view. Coolant and sensor colours, ADC/voltage/ECU readings and the thermal-lag/conversion-error distinction consume the selected reference snapshot. No coolant flow, pump/fan/thermostat or combustion model was added. Vehicle/component geometry is generic educational artwork. Bonnet transitions and signal dashes respect reduced-motion preferences; pause stops signal motion.
+
+`learning-content.json` is the shared source for short field definitions, legend explanations and the bottom learning guide. `scripts/build_ect_learning_guide.py` generates `learning-content.js` and `static/guides/ect-learning-guide.pdf` from it. Use the bundled workspace Python with reportlab, or a project environment with reportlab installed. The six PDF pages were rendered and visually inspected. They cover first experiments, parameter changes, all input definitions, graph meanings, validity/fallback cases, equations, numerical conventions and CSV columns.
+
+Information buttons work with hover, focus, click/tap and Escape. Popovers position inside the viewport; narrow illustrations scroll internally to preserve label readability. The underlying simple schematic remains available in a disclosure. The tutorial now begins with the engine-bay view and explains Step time as the waiting time before the coolant changes, separately from the calculation interval.
+
+Review files are isolated under `/private/tmp/atu-ect-review`. No upstream push or Render deployment was performed. Synthetic local preview setup follows the normal `migrate`, `seed_demo_data`, `runserver 127.0.0.1:8878 --noreload` procedure. Numerical and browser checks remain distinct from hardware/native Simulink validation.

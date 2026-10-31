@@ -26,6 +26,10 @@ def test_student_profiles_on_every_module(client):
    elif route == 'core:brakelab':
     assert b'Ebenezer Wilson' in r.content
     assert b'Hajime Shokai' in r.content
+   elif route == 'core:wheel_slip':
+    assert b'Abubakar Sadiq Ibrahim' in r.content
+    assert b'Ghana Standards Authority' in r.content
+    assert b'Meridian Port Services' in r.content
    else:
     assert b'A short student biography' in r.content
  assert b'The student behind this module' not in client.get(reverse('core:laboratory')).content

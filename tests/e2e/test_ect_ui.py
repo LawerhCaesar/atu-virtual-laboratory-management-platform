@@ -6,6 +6,7 @@ pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 DEST=Path('test-results/ect')
 
 def open_lab(page,demo_records,live_server):
+    page.emulate_media(reduced_motion="reduce")
     page.goto(live_server.url+'/accounts/login/')
     page.get_by_label('Email address',exact=True).fill(demo_records['student'].email)
     page.get_by_label('Password',exact=True).fill('DemoPass!742')
@@ -13,7 +14,7 @@ def open_lab(page,demo_records,live_server):
     page.goto(live_server.url+'/virtual-lab/ice/coolant-temperature/')
     expect(page.locator('#tour-title')).to_contain_text('Coolant Temperature')
     page.locator('#tour-next').click();page.locator('#tour-show').click()
-    expect(page.locator('#preset')).to_have_class('tour-target-highlight')
+    expect(page.locator('#ect-engine-explorer')).to_have_class('ect-explorer tour-target-highlight')
     page.get_by_role('button',name='Close module guide',exact=True).click()
 
 def end(page):page.locator('#timeline').fill('12000')
@@ -72,7 +73,7 @@ def test_ect_visual_accessibility(page,demo_records,live_server,width):
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
     page.add_script_tag(path='node_modules/axe-core/axe.min.js')
     violations=page.evaluate("async()=> (await axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})).violations")
-    assert not violations,violations
+    assert not violations,__import__("json").dumps(violations,indent=2)
     page.locator('#preset').select_option('lowRail');end(page)
     page.screenshot(path=str(DEST/f'rail-invalid-{width}.png'),full_page=True)
     expect(page.locator('#estimate-state')).to_have_text('FALLBACK / INVALID')
