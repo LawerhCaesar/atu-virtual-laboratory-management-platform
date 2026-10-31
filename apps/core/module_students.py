@@ -5,7 +5,18 @@ Partial source names remain partial until the student confirms their full name.
 """
 MODULE_STUDENTS = {
     "core:yankson": {"name": "Emmanuel Yankson Sackey", "show_bio": False, "show_portrait": False},
-    "core:ect": {"name": "David Amachie"},
+    "core:ect": {
+        "name": "David Kweku Amachie",
+        "bio": (
+            "David Kweku Amachie is a results-driven Ghanaian Engineer with extensive academic training and multi-sectoral practical experience in Automobile, Mechanical and Materials Engineering.\n\n"
+            "He holds a Master’s Degree in Automobile Engineering, a Bachelor’s Degree in Mechanical Engineering, a Higher National Diploma (HND) in Mechanical Engineering (Plant Option), and Motor Vehicle Engineering (MVM) Part I & II. Complementing his academic background are professional certifications obtained from recognized engineering and technical institutions in automotive diagnostics, plant maintenance, occupational health and safety, and quality assurance, which have broadened his technical competence and professional outlook.\n\n"
+            "Mr. Amachie possesses a diverse professional background. He started his career at Sked Centre One Complex, where he acquired foundational skills in workshop management and vehicle servicing. He further honed his expertise at Superfix Motors, specializing in vehicle troubleshooting, repairs and maintenance operations.\n\n"
+            "He subsequently worked at Advance Auto Company, where he gained valuable exposure to modern vehicle technologies, advanced diagnostic systems and after-sales technical support.\n\n"
+            "Currently, he works as a Scientific Officer at the Ghana Standards Authority (GSA) in the Materials Laboratory. In this capacity, he is responsible for Quality Evaluation and conformity assessment of a wide range of products, with specialized focus on Glass and Metal products. His duties include laboratory testing, quality inspection, analysis of test results, ensuring compliance with Ghanaian Standards, and providing technical support for standards development and product certification.\n\n"
+            "Through his combined experience in the automotive workshop, industry and regulatory laboratory, he has developed strong competencies in automotive engineering, plant maintenance, materials testing, quality evaluation, fault diagnosis, technical documentation and standards compliance.\n\n"
+            "David is passionate about engineering innovation, sustainable automotive technologies, materials quality and industrial advancement. He is committed to continuous learning and aims to leverage his expertise to contribute to quality infrastructure development, automotive engineering excellence and technological innovation in Ghana and beyond."
+        ),
+    },
     "core:edward": {"name": "Edward Selorm"},
     "core:p2_hybrid": {"name": "Lawrence Andoh", "bio": "Lawrence Andoh, Master of Automotive Engineering researcher at Accra Technical University specializing in hybrid electric powertrain modeling and battery energy management. Focuses on optimizing energy consumption, torque-split dynamics, and battery storage efficiency across varying load profiles in full parallel hybrid architectures."},
     "core:micro_hybrid": {"name": "Abass Moro"},

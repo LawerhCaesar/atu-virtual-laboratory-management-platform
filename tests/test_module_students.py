@@ -30,6 +30,10 @@ def test_student_profiles_on_every_module(client):
     assert b'Abubakar Sadiq Ibrahim' in r.content
     assert b'Ghana Standards Authority' in r.content
     assert b'Meridian Port Services' in r.content
+   elif route == 'core:ect':
+    assert b'David Kweku Amachie' in r.content
+    assert b'Scientific Officer' in r.content
+    assert b'Sked Centre One Complex' in r.content
    else:
     assert b'A short student biography' in r.content
  assert b'The student behind this module' not in client.get(reverse('core:laboratory')).content
