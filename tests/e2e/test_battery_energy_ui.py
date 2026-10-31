@@ -26,6 +26,7 @@ def load(page,id):
 
 
 def test_battery_full_reference_exports_and_cursor(page,demo_records,live_server):
+    page.emulate_media(reduced_motion='reduce')
     errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     open_lab(page,demo_records,live_server)
     page.clock.install()

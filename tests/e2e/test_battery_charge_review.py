@@ -14,6 +14,7 @@ def test_battery_charge_visual_and_help(page,demo_records,live_server,width):
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)));open_lab(page,demo_records,live_server)
  expect(page.locator('#battery-title')).to_have_text('BEV Charge and Discharge System')
  expect(page.locator('#battery-real-stage canvas')).to_be_visible(timeout=20000)
+ page.locator('#battery-run').click();expect(page.locator('#battery-real-stage')).to_have_attribute('data-moving','false');page.locator('#battery-pause').click()
  page.get_by_role('button',name='Traction pack',exact=True).click()
  page.locator('#battery-real-stage').evaluate("e=>e.scrollIntoView({block:'center'})")
  out=Path('test-results/battery-charge');out.mkdir(parents=True,exist_ok=True);page.screenshot(path=str(out/f'pack-{width}.png'))
