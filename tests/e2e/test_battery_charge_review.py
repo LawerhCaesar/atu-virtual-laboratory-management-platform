@@ -66,6 +66,6 @@ def test_charge_capacity_scaling_and_export(page,demo_records,live_server):
  expect(page.locator('#battery-charge-rate')).to_have_value('custom')
 
 def test_battery_reference_and_fallback(page,demo_records,live_server):
- no_webgl(page);reference_run(page,demo_records,live_server)
+ page.emulate_media(reduced_motion='reduce');no_webgl(page);reference_run(page,demo_records,live_server)
  expect(page.locator('#battery-scene')).to_be_visible()
  expect(page.locator('#battery-3d-notice')).to_contain_text('3D is unavailable')
