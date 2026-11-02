@@ -5,6 +5,7 @@
   <div class="status-icon" aria-hidden="true">✓</div>
   <h1 class="h2 mt-3">Registration received</h1>
   <p class="text-secondary">The account request for <strong>{{ registered_user.email }}</strong> is pending administrator approval. Sign-in becomes available after the academic setup is completed.</p>
+  {% if registered_user.index_number %}<p>Your username is <strong>{{ registered_user.index_number }}</strong> · {{ registered_user.get_qualification_display }}.</p>{% endif %}
   <a class="btn btn-outline-primary" href="{% url 'core:home' %}">Return home</a>
 </div>
 {% endblock %}

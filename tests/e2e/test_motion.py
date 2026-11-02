@@ -14,7 +14,7 @@ def test_interface_motion_is_progressive_and_respects_preferences(page, live_ser
     assert name == ("none" if preference == "reduce" else "atu-rise")
     page.get_by_role("link", name="Sign in", exact=True).click()
     expect(page.get_by_role("heading", name="Sign in", exact=True)).to_be_visible()
-    email = page.get_by_label("Email address", exact=True)
+    email = page.get_by_label("Email address or index number", exact=True)
     email.fill("motion-test@example.test")
     page.get_by_label("Password", exact=True).focus()
     expect(email).to_have_value("motion-test@example.test")

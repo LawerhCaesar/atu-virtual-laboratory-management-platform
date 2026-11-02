@@ -4,7 +4,7 @@ from playwright.sync_api import expect
 from test_yankson_practical import contact
 pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 def login(page,user,live_server):
- page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address',exact=True).fill(user.email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click();page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();expect(page.locator('#ya-tab-engine')).to_be_visible()
+ page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(user.email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click();page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();expect(page.locator('#ya-tab-engine')).to_be_visible()
 def test_real_webauthn_ceremony_and_fault_recovery(page,demo_records,live_server):
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  cdp=page.context.new_cdp_session(page);cdp.send('WebAuthn.enable');cdp.send('WebAuthn.addVirtualAuthenticator',{'options':{'protocol':'ctap2','transport':'internal','hasResidentKey':True,'hasUserVerification':True,'isUserVerified':True,'automaticPresenceSimulation':True}})

@@ -11,7 +11,7 @@ DEST=Path('test-results/bless');DEST.mkdir(parents=True,exist_ok=True)
 def open_lab(page,demo_records,live_server):
     page.route('**/virtual-lab/fcev/market-prices/',lambda route:route.fulfill(json=seed_book()))
     page.goto(live_server.url+'/accounts/login/')
-    page.get_by_label('Email address',exact=True).fill(demo_records['student'].email)
+    page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email)
     page.get_by_label('Password',exact=True).fill('DemoPass!742')
     page.get_by_role('button',name='Sign in',exact=True).click()
     page.goto(live_server.url+'/virtual-lab/fcev/fuel-cell-battery-diesel/')

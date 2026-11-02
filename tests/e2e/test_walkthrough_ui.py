@@ -10,7 +10,7 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 
 def sign_in(page, demo_records, live_server):
     page.goto(live_server.url + "/accounts/login/")
-    page.get_by_label("Email address", exact=True).fill(demo_records["student"].email)
+    page.get_by_label("Email address or index number", exact=True).fill(demo_records["student"].email)
     page.get_by_label("Password", exact=True).fill("DemoPass!742")
     page.get_by_role("button", name="Sign in", exact=True).click()
 
@@ -92,7 +92,7 @@ def test_seen_status_is_isolated_per_account_on_shared_browser(page, demo_record
     page.get_by_role("button", name="Close module guide").click()
     page.get_by_role("button", name="Sign out", exact=True).click()
     page.goto(live_server.url + "/accounts/login/")
-    page.get_by_label("Email address", exact=True).fill(demo_records["lecturer"].email)
+    page.get_by_label("Email address or index number", exact=True).fill(demo_records["lecturer"].email)
     page.get_by_label("Password", exact=True).fill("DemoPass!742")
     page.get_by_role("button", name="Sign in", exact=True).click()
     page.goto(live_server.url + "/virtual-lab/brakelab/")

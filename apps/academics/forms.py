@@ -13,6 +13,9 @@ class AcademicSetupForm(forms.ModelForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+        if user.index_number:
+            self.initial.setdefault("student_or_staff_id", user.index_number)
+            self.fields["student_or_staff_id"].help_text = "Use the index number supplied at registration: " + user.index_number
         if user.role == user.Role.LECTURER:
             self.fields["programme"].required = False
 
@@ -21,6 +24,12 @@ class AcademicSetupForm(forms.ModelForm):
         faculty = cleaned.get("faculty")
         department = cleaned.get("department")
         programme = cleaned.get("programme")
+        if self.user.index_number:
+            entered = str(cleaned.get("student_or_staff_id") or "").strip().upper()
+            if entered != self.user.index_number:
+                self.add_error("student_or_staff_id", "Use the registered index number: " + self.user.index_number)
+            else:
+                cleaned["student_or_staff_id"] = entered
         if faculty and department and department.faculty_id != faculty.pk:
             self.add_error("department", "Select a department within the chosen faculty.")
         if department and programme and programme.department_id != department.pk:

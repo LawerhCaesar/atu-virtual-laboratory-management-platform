@@ -17,7 +17,7 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
     expect(page.locator(".engineering-fields")).to_contain_text("FCEV")
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
     page.goto(live_server.url + "/accounts/login/")
-    page.get_by_label("Email address", exact=True).fill(demo_records["student"].email)
+    page.get_by_label("Email address or index number", exact=True).fill(demo_records["student"].email)
     page.get_by_label("Password", exact=True).fill("DemoPass!742")
     page.get_by_role("button", name="Sign in", exact=True).click()
     page.get_by_role("link", name="Choose a system", exact=True).click()

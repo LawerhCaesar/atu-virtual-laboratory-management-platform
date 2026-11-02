@@ -7,6 +7,7 @@ This repository implements the approved web-based platform for managing automoti
 The implemented platform slices include:
 
 - public Student and Lecturer registration only;
+- student course selection (HND/BTECH/MTECH) with unique nine-character index usernames and email-or-index sign-in;
 - Pending Approval → Academic Setup → Active account states;
 - administrator-only approval and academic setup;
 - Faculty, Department, Programme and Academic Profile records;
@@ -112,6 +113,11 @@ The application uses SQLite when `POSTGRES_HOST` is unset, which keeps local che
 The Compose command above is the **local development** profile. For staging/production, use the standalone `compose.production.yaml` file and follow [`docs/deployment-and-recovery.md`](docs/deployment-and-recovery.md). Production refuses SQLite fallback and missing/default secrets.
 
 Before registering users, create the Faculty, Department, Programme and Academic Year hierarchy in `/django-admin/`. The platform administrator approval queue is at `/accounts/approvals/`; course and offering management, account recovery, reports and audit review are available from the Administrator dashboard.
+
+Student registrations require a course and a unique index: exactly eight ASCII digits followed by `D` for HND, `B` for BTECH or `M` for MTECH (for example, `01181429M`). Leading zeroes are preserved; lowercase endings are normalised. The browser updates the format and ending when the course changes, and server/model/database checks enforce the saved format. Students sign in with their index or email; approval and academic setup still apply. Academic setup prefills the registered index and rejects a different academic ID. Existing accounts retain email access without an inferred index/course, and lecturer registrations do not require a student index.
+
+Apply account migration `0003_user_index_number_user_qualification_and_more` before running the updated application. It adds nullable unique indexes and a course-format constraint without backfilling existing identities. The existing Render startup applies migrations before serving traffic. Account workflow checks cover each course, malformed/duplicate identifiers, legacy/lecturer access, approval gates, password/index similarity, academic setup and concurrent duplicate handling.
+
 
 ## Signed demonstration-resource return
 

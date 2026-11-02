@@ -77,6 +77,10 @@ class AcademicProfile(models.Model):
             errors["programme"] = "The programme must belong to the selected department."
         if self.user_id and self.user.role == self.user.Role.STUDENT and not self.programme_id:
             errors["programme"] = "A programme is required for student accounts."
+        if self.user_id and self.user.index_number:
+            self.student_or_staff_id = self.student_or_staff_id.strip().upper()
+            if self.student_or_staff_id != self.user.index_number:
+                errors["student_or_staff_id"] = "Use the registered index number: " + self.user.index_number
         if errors:
             raise ValidationError(errors)
 
