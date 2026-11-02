@@ -53,7 +53,7 @@
     {% if module_student %}{% include "includes/module_student.html" %}{% endif %}
     {% if vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
   </main>
-  {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script>{% endif %}
+  {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script><script type="module" src="{% static 'js/lab-learning.mjs' %}"></script>{% endif %}
 
   <footer class="platform-footer border-top py-4 mt-auto{% if walkthrough_module %} walkthrough-footer{% endif %}">
     <div class="container d-flex flex-column flex-md-row justify-content-between gap-3">
