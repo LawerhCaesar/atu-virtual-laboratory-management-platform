@@ -30,6 +30,10 @@ def test_student_profiles_on_every_module(client):
     assert b'Abubakar Sadiq Ibrahim' in r.content
     assert b'Ghana Standards Authority' in r.content
     assert b'Meridian Port Services' in r.content
+   elif route == 'core:fuel_delivery':
+    assert b'Aziz Allotey' in r.content
+    assert b'Japan Motor Trade Co. Limited' in r.content
+    assert b'Cedar Engineering Co. Limited' in r.content
    elif route == 'core:ect':
     assert b'David Kweku Amachie' in r.content
     assert b'Scientific Officer' in r.content

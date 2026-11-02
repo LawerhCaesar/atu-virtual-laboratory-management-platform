@@ -1,3 +1,4 @@
+import {info,SIGNALS} from './learning.mjs';
 const NS='http://www.w3.org/2000/svg';
 const GROUPS=[
  ['Handling Response',[[['yawRateDegPerS','Yaw rate'],'deg/s'],[['sideslipDeg','Sideslip angle'],'deg'],[['lateralAccelerationMps2','Lateral acceleration'],'m/s²']]],
@@ -13,7 +14,7 @@ export function createCharts(container) {
   for(const [primary,unit,secondary] of definitions) {
    const series=secondary?[primary,secondary]:[primary],figure=make('figure'),legend=make('p',undefined,'steering-chart-legend'),svg=document.createElementNS(NS,'svg'),readout=make('p','Use playback position to inspect a recorded sample.','steering-chart-readout');
    const name=secondary?'Front and rear lateral forces':primary[1];figure.append(make('figcaption',`${name} (${unit})`));
-   series.forEach(([,label],i)=>legend.append(make('span',`${i?'Dashed':'Solid'}: ${label}`)));
+   series.forEach(([key,label],i)=>{const item=make('span',`${i?'Dashed':'Solid'}: ${label}`);info(item,label,SIGNALS[key]);legend.append(item);});
    svg.setAttribute('viewBox','0 0 500 245');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${name} (${unit}) versus time (s)`);svg.dataset.steeringChart=primary[0];figure.append(legend,svg,readout);grid.append(figure);charts.push({svg,series,unit,readout,cursor:null});
   }
  }
