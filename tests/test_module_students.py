@@ -40,4 +40,6 @@ def test_student_profiles_on_every_module(client):
     assert b'Sked Centre One Complex' in r.content
    else:
     assert b'A short student biography' in r.content
+   if route == 'core:steering_response':
+    assert b'David Adadzi' in r.content
  assert b'The student behind this module' not in client.get(reverse('core:laboratory')).content

@@ -41,7 +41,7 @@ MODULE_STUDENTS = {
             "He considers postgraduate education an important step towards achieving his long-term professional goals of becoming a highly skilled engineering professional and contributing meaningfully to the development of the automobile engineering sector in Ghana and beyond."
         ),
     },
-    "core:steering_response": {},
+    "core:steering_response": {"name": "David Adadzi"},
     "core:engine_generator": {},
 }
 
