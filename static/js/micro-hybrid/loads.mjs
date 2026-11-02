@@ -1,0 +1,2 @@
+export const LOAD_DEFAULTS=Object.freeze({acEnabled:false,lightsEnabled:true,accessoriesEnabled:true,acW:500,lightsW:100,accessoriesW:300});
+export function componentLoad(settings){let total=0;for(const kind of ['ac','lights','accessories']){if(typeof settings[kind+'Enabled']!=='boolean')throw Error('Choose an on/off state for each electrical consumer.');const watts=settings[kind+'W'];if(!Number.isFinite(watts)||watts<0||watts>100000)throw Error('Consumer power must be between zero and 100000 W.');if(settings[kind+'Enabled'])total+=watts;}return total;}

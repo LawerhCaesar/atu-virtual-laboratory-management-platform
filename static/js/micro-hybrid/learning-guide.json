@@ -1,0 +1,266 @@
+{
+  "title": "12 V Micro-Hybrid Stop-Start",
+  "sections": [
+    [
+      "Start here",
+      [
+        "Set traffic and battery inputs, then read the stop permission before pressing Play. Results recalculate as soon as you edit a number. Use Next stage to inspect one event at a time. Save scenario keeps up to four comparisons in this page; Export JSON saves the inputs and outputs. Reloading clears unsaved comparisons.",
+        "Try the default case first. It allows automatic stopping: approximately 5.82 seconds break-even, 1.46 grams fuel saved, 79.31% final battery charge and 9.76 V predicted crank voltage. Change only one setting at a time so you can explain the difference."
+      ]
+    ],
+    [
+      "Timing in everyday language",
+      [
+        "Stop duration means how many seconds the vehicle waits at each traffic stop. Minimum stop time is the shortest wait the controller will consider. Break-even time is the wait needed for avoided idling fuel to pay back the extra restart and battery-recharge fuel. For example, a three-second wait is too short with the default settings.",
+        "There is no solver step-time setting here. Playback speed only changes how quickly the teaching stages appear on your screen; it never changes a result. Each stage normally appears after 1.5 real seconds. Stop duration is simulated waiting time, not how long you must watch."
+      ]
+    ],
+    [
+      "Read the Genesis-reference cluster",
+      [
+        "The genuine GV70 cluster photograph supplies a visual reference. Its original readings and warning lamps are masked by a teaching overlay. Speed and RPM needles are user-configured display cues: this model contains no vehicle-speed, engine-speed or acceleration equation. They must not be used as predicted performance.",
+        "The five stages are approaching, stopped/checking, engine off or inhibited, restarting or continued idle, and moving away. Starter active means a permitted restart stage; it is not a measured starter waveform. If stopping is inhibited, the engine stays on and the starter stays inactive.",
+        "SOC means state of charge: 80% means roughly four-fifths of the model battery capacity remains. A checkpoint subtracts one stop of accessory energy at the off stage, then one start of electrical energy at restarting. These are event summaries, not a time-resolved sensor trace. Only three stops are illustrated; completion applies the total for all selected stops.",
+        "Voltage is labelled by its source. During starting it is the initial-condition crank estimate; during engine-off it is the complete-scenario terminal-voltage estimate. At other stages it is the entered nominal voltage. The model does not simulate an alternator charging waveform.",
+        "The fuel gauge always shows projected fuel after the entire scenario. It does not animate an invented live fuel-flow trace. An insufficient-fuel warning is an accounting shortfall; this model does not simulate empty-tank shutdown."
+      ]
+    ],
+    [
+      "Electrical consumers and editable calibration",
+      [
+        "Direct total mode uses the Accessory load number. AC, lights and accessory requests are then unspecified because a single total cannot tell us which devices are on. To choose devices, enable Calculate accessory load from selected consumers. Each selected device adds its entered watts to the same accessory-load equation. Turn on AC with the default lights and accessories to make 900 W, exceeding the default 800 W permission limit.",
+        "AC here is a selected electrical demand, not a cabin-temperature or compressor model. Lights and accessories are also load requests. Typing a direct accessory total returns to direct mode. Every advanced calibration value remains editable; Reset to approved defaults restores the original experiment, fuel settings and display cues."
+      ]
+    ],
+    [
+      "12 V model and equation boundaries",
+      [
+        "This is the supplied Abass Moro 12 V stop-start model. Its crank-voltage approximation is 11.8 + 0.012 times initial SOC percent minus cranking current times internal resistance. Entering 48 V nominal voltage changes the energy-to-SOC conversion only; it does not change that fixed 12 V crank equation or establish a valid 48 V architecture. A separate validated crank and battery model is needed for a real 48 V system.",
+        "Permission checks accessory load, useful stop duration, initial SOC and initial crank voltage in that priority. All selected stops use the initial permission decision. The controller does not re-evaluate declining SOC at each later stop. Read all failed conditions as well as the first inhibit reason.",
+        "Accessory energy equals watts times stop seconds times accepted stops. Starting energy equals joules per restart times accepted restarts. SOC drop equals 100 times total energy divided by nominal volts times amp-hours times 3600. This is simplified energy accounting, with SOC clamped to zero through 100%.",
+        "Battery energy is converted to an equivalent recharge fuel penalty through battery, alternator and engine efficiencies and the fuel heating value. Conventional fuel equals moving fuel plus idling fuel at every stop. Stop-start fuel includes the same moving fuel, any inhibited idling, restart fuel and recharge equivalent. Their difference is the calculated saving."
+      ]
+    ],
+    [
+      "Fuel inventory and costs",
+      [
+        "Tank capacity is the tank size. Fuel loaded is how many litres are currently in it. Neither changes the established stop-start fuel-mass calculation. Litres used equals grams used divided by 1000 times density in kg/L. Projected remaining fuel is loaded litres minus scenario litres used, limited to zero. Any amount below zero is reported separately as the fuel-budget shortfall.",
+        "With the default 0.74 kg/L density, 103.9393 g becomes approximately 0.140459 L. Starting with 20 L leaves approximately 19.859541 L. The gauge compares that remaining fuel with the 55 L tank capacity. Multiply litres by price per litre for costs; no exchange rate or currency is assumed."
+      ]
+    ],
+    [
+      "Experiments and verification",
+      [
+        "Test 1: reset and record the baseline. Set stop duration to 3 s: code 4 should keep the engine on with no restart and zero fuel saving. Reset, set accessory load to 1000 W: code 7 should inhibit stopping. Reset, set initial SOC to 50%: code 5 should inhibit it.",
+        "Test 2: reset, set initial SOC to 60% and cranking current to 300 A: code 6 should report low crank voltage. Reset and choose zero stops: no stop-start events or savings should occur. These checks verify the simplified logic, not a physical vehicle.",
+        "Test 3: change only tank capacity or fuel loaded. Fuel saved in grams and battery SOC must remain unchanged; the inventory gauge should change. Change density: grams stay unchanged while litres change. Change playback speed or display-only RPM: every calculated result must remain unchanged.",
+        "For a lecturer exercise, save one good case and one deliberately inhibited case, ask students to identify all failed conditions, change one cause and explain the result. Export the input values with the answer. Avoid claiming an OEM calibration, real-time speed prediction, detailed battery dynamics or experimentally validated fuel economy."
+      ]
+    ],
+    [
+      "Reference evidence",
+      [
+        "The equations and original defaults come from the supplied 12 V Microhybrid programmer guide and implementation task. The new fuel inventory is a transparent unit conversion added to that fuel-mass result. The cluster photograph is a visual reference, not an engineering parameter source. Photograph: Genesis GV70 JK1 SDS I Slate Gray Velvet Burgundy Two Tone (6), Damian B Oh, Wikimedia Commons, CC BY-SA 4.0."
+      ]
+    ]
+  ],
+  "parameters": [
+    {
+      "key": "stopDurationS",
+      "title": "Stop duration",
+      "unit": "s",
+      "default": 10,
+      "help": "Stationary time per traffic stop."
+    },
+    {
+      "key": "numberOfStops",
+      "title": "Number of stops",
+      "unit": "count",
+      "default": 3,
+      "help": "Number of stops in the same route."
+    },
+    {
+      "key": "initialSocPct",
+      "title": "Initial battery SOC",
+      "unit": "%",
+      "default": 80,
+      "help": "Battery charge before the scenario."
+    },
+    {
+      "key": "accessoryLoadW",
+      "title": "Accessory load",
+      "unit": "W",
+      "default": 400,
+      "help": "Electrical demand supported during an accepted stop."
+    },
+    {
+      "key": "minimumStopTimeS",
+      "title": "Minimum stop time",
+      "unit": "s",
+      "default": 5,
+      "help": "Controller minimum duration for considering engine shutdown."
+    },
+    {
+      "key": "movingFuelG",
+      "title": "Moving fuel",
+      "unit": "g",
+      "default": 100,
+      "help": "Fuel used while moving; identical in both cases."
+    },
+    {
+      "key": "idleFuelRateGps",
+      "title": "Idle fuel rate",
+      "unit": "g/s",
+      "default": 0.18,
+      "help": "Conventional fuel consumed per second of idling."
+    },
+    {
+      "key": "restartFuelPerStartG",
+      "title": "Restart fuel",
+      "unit": "g/start",
+      "default": 0.2,
+      "help": "Additional fuel for each restart."
+    },
+    {
+      "key": "batteryNominalVoltageV",
+      "title": "Battery nominal voltage",
+      "unit": "V",
+      "default": 12,
+      "help": "Nominal voltage used to convert energy to SOC change."
+    },
+    {
+      "key": "batteryCapacityAh",
+      "title": "Battery capacity",
+      "unit": "Ah",
+      "default": 70,
+      "help": "Battery capacity used for the SOC estimate."
+    },
+    {
+      "key": "batteryInternalResistanceOhm",
+      "title": "Battery internal resistance",
+      "unit": "Ω",
+      "default": 0.012,
+      "help": "Resistance used in crank and accessory voltage estimates."
+    },
+    {
+      "key": "crankingCurrentA",
+      "title": "Cranking current",
+      "unit": "A",
+      "default": 250,
+      "help": "Current used to estimate the restart voltage drop."
+    },
+    {
+      "key": "minimumCrankVoltageV",
+      "title": "Minimum crank voltage",
+      "unit": "V",
+      "default": 9.5,
+      "help": "Lowest predicted cranking voltage for an accepted stop."
+    },
+    {
+      "key": "minimumSocPct",
+      "title": "Minimum SOC",
+      "unit": "%",
+      "default": 60,
+      "help": "Minimum initial battery charge for an accepted stop."
+    },
+    {
+      "key": "maximumAccessoryLoadW",
+      "title": "Maximum accessory load",
+      "unit": "W",
+      "default": 800,
+      "help": "Maximum accessory load permitted during engine-off operation."
+    },
+    {
+      "key": "startEnergyJPerRestart",
+      "title": "Start energy",
+      "unit": "J/restart",
+      "default": 3000,
+      "help": "Electrical starting energy per accepted restart."
+    },
+    {
+      "key": "batteryEfficiency",
+      "title": "Battery efficiency",
+      "unit": "ratio",
+      "default": 0.9,
+      "help": "Efficiency factor for recovering battery energy."
+    },
+    {
+      "key": "alternatorEfficiency",
+      "title": "Alternator efficiency",
+      "unit": "ratio",
+      "default": 0.65,
+      "help": "Efficiency factor for conversion from engine to electricity."
+    },
+    {
+      "key": "engineEfficiency",
+      "title": "Engine efficiency",
+      "unit": "ratio",
+      "default": 0.25,
+      "help": "Efficiency factor for converting fuel energy to mechanical energy."
+    },
+    {
+      "key": "fuelLhvJPerKg",
+      "title": "Fuel lower heating value",
+      "unit": "J/kg",
+      "default": 43000000,
+      "help": "Fuel energy per kilogram used for the recharge fuel equivalent."
+    },
+    {
+      "key": "fuelCapacityL",
+      "title": "Fuel tank capacity",
+      "unit": "L",
+      "default": 55,
+      "help": "The full size of the fuel tank, in litres. This sets the fuel-gauge scale; it does not change engine efficiency."
+    },
+    {
+      "key": "initialFuelL",
+      "title": "Fuel currently in tank",
+      "unit": "L",
+      "default": 20,
+      "help": "Fuel in the tank before this route. It must fit in the tank. The model reports a shortfall if the route needs more."
+    },
+    {
+      "key": "fuelDensityKgPerL",
+      "title": "Fuel density",
+      "unit": "kg/L",
+      "default": 0.74,
+      "help": "How many kilograms one litre of fuel weighs. It converts calculated fuel mass into litres."
+    },
+    {
+      "key": "fuelPricePerL",
+      "title": "Fuel price per litre",
+      "unit": "currency/L",
+      "default": 0,
+      "help": "Price of one litre in your chosen currency. Use the same currency throughout the experiment; zero hides any meaningful cost estimate."
+    }
+  ],
+  "signals": {
+    "stopPermission": "Automatic stop permission. Whether the initial checks allow every selected stop to turn the engine off.",
+    "inhibitCode": "Decision code. Zero permits stopping; 7 means accessory demand too high, 4 means too little useful waiting time, 5 means battery charge too low, and 6 means crank voltage too low.",
+    "fuelReductionPct": "Fuel reduction. Fuel saved divided by conventional scenario fuel, expressed as a percentage.",
+    "fuelSavedG": "Fuel saved. Conventional scenario fuel minus stop-start scenario fuel in grams; this can be negative for an unfavourable case.",
+    "totalEngineOffTimeS": "Engine-off time. Accepted stops multiplied by waiting seconds.",
+    "finalBatterySocPct": "Final battery SOC. Charge remaining after all accepted accessory and starter energy costs.",
+    "restartCount": "Restarts. Number of accepted stop-start events in the complete scenario.",
+    "breakEvenStopTimeS": "Break-even stop. Minimum waiting time for fuel benefit under these settings; no finite point means waiting cannot repay the penalties.",
+    "predictedCrankVoltageV": "Predicted crank voltage. Initial-condition 12 V approximation used for the permission decision.",
+    "engineOffTerminalVoltageV": "Engine-off terminal voltage. Complete-scenario battery voltage approximation under the accessory load.",
+    "conventionalFuelG": "Conventional fuel. Moving fuel plus idling fuel at all stops, in grams.",
+    "microHybridFuelG": "Stop-start fuel. Moving fuel plus any inhibited idling, restart fuel and recharge fuel equivalent, in grams.",
+    "idleFuelAvoidedG": "Idle fuel avoided. Fuel not burned while accepted stops have the engine off.",
+    "restartFuelPenaltyG": "Restart fuel penalty. Extra fuel charged for accepted restarts.",
+    "rechargeFuelPenaltyG": "Recharge fuel penalty. Fuel-equivalent cost of replacing the accessory and starting electrical energy.",
+    "totalElectricalEnergyJ": "Electrical energy. Accessory and starting energy added together, in joules.",
+    "projectedRemainingL": "Projected remaining fuel. Fuel loaded minus whole-scenario fuel use in litres, limited to zero.",
+    "budgetDeficitL": "Fuel budget shortfall. Extra litres needed when projected use exceeds fuel loaded."
+  },
+  "credits": [
+    [
+      "Genesis GV70 12.3-inch cluster",
+      "Damian B Oh",
+      "https://commons.wikimedia.org/wiki/File:Genesis_GV70_JK1_SDS_I_Slate_Gray_Velvet_Burgundy_Two_Tone_(6).jpg",
+      "CC BY-SA 4.0",
+      "https://creativecommons.org/licenses/by-sa/4.0/"
+    ]
+  ]
+}
