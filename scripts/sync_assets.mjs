@@ -33,3 +33,4 @@ await build({entryPoints:[`${root}frontend/battery-charge-3d.mjs`],outfile:`${ro
 await build({entryPoints:[`${root}static/js/yankson/engine-stand.mjs`],outfile:`${root}static/js/yankson/engine-stand.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
 await build({entryPoints:[`${root}frontend/brake-hub-3d.mjs`],outfile:`${root}static/js/brakelab/hub-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
 await build({entryPoints:[`${root}frontend/series-parallel-drive.mjs`],outfile:`${root}static/js/series-parallel/drivetrain.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+await build({entryPoints:[`${root}frontend/p2-drive.mjs`],outfile:`${root}static/js/p2-hybrid/drive.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});

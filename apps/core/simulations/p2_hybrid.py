@@ -63,6 +63,30 @@ INPUT_RULES = [
  ('duration_s','Simulation duration','s',.01,600,.1,30),
  ('time_step_s','Integration time step','s',.001,.1,.001,.01),
 ]
+FUEL_RULES = [
+ ('fuel_capacity_litres','Fuel tank capacity','L',.01,10000,1,55),
+ ('initial_fuel_litres','Fuel currently in tank','L',0,10000,.1,20),
+ ('fuel_density_kg_per_l','Fuel density','kg/L',.1,2,.01,.74),
+ ('fuel_lhv_mj_per_kg','Fuel lower heating value','MJ/kg',1,100,.1,43),
+ ('assumed_engine_efficiency','Assumed engine efficiency','fraction',.01,1,.01,.30),
+ ('fuel_price_per_l','Fuel price per litre','currency/L',0,100000,1,0),
+]
+
+def fuel_settings(request):
+    enabled=request.get('fuel_estimate_enabled',False)
+    source=request.get('fuel_assumptions',{})
+    if type(enabled) is not bool or not isinstance(source,dict):
+        raise ValidationError({'fuel_assumptions':'Use a boolean estimate switch and an object of fuel assumptions.'})
+    errors={k:'Unknown fuel assumption.' for k in source if k not in {r[0] for r in FUEL_RULES}}
+    values={}
+    for k,label,unit,lo,hi,_,default in FUEL_RULES:
+        v=source.get(k,default)
+        if isinstance(v,bool) or not isinstance(v,(float,int)) or not lo<=v<=hi or not math.isfinite(v):errors[k]=f'{label}: use {lo}–{hi} {unit}.'
+        else:values[k]=float(v)
+    if not errors and values['initial_fuel_litres']>values['fuel_capacity_litres']:errors['initial_fuel_litres']='Fuel currently in tank must not exceed tank capacity.'
+    if errors:raise ValidationError(errors)
+    return enabled,values
+
 SIGNALS = [
  ('time_s','Time','s'),('requested_torque_nm','Requested torque','Nm'),
  ('engine_torque_nm','Engine torque','Nm'),('motor_torque_nm','Motor torque','Nm'),
@@ -117,10 +141,11 @@ class ValidationError(ValueError):
 def model_info():
     defaults = asdict(Parameters())
     return {
-        'model_id':'p2-full-parallel-torque-intensity','model_version':'1.0.0',
+        'model_id':'p2-full-parallel-torque-intensity','model_version':'1.1.0',
         'formula_version':'simulink-parity-5.1-to-5.20',
         'inputs':[dict(key=k,label=l,unit=u,min=a,max=b,step=s,default=d) for k,l,u,a,b,s,d in INPUT_RULES],
         'parameters':[dict(key=k,label=l,unit=u,min=a,max=b,step=s,default=defaults[k]) for k,l,u,a,b,s in PARAMETER_RULES],
+        'fuel_inputs':[dict(key=k,label=l,unit=u,min=a,max=b,step=s,default=d) for k,l,u,a,b,s,d in FUEL_RULES],
         'signals':[dict(key=k,label=l,unit=u) for k,l,u in SIGNALS],
         'scope_groups':SCOPE_GROUPS,'compatibility_order':COMPATIBILITY,
         'limitations':LIMITATIONS,'equations':EQUATIONS,'max_samples':60001,
@@ -130,7 +155,7 @@ def model_info():
 def validate_inputs(request):
     if not isinstance(request, dict):
         raise ValidationError({'request':'Expected a JSON object.'})
-    allowed = {r[0] for r in INPUT_RULES} | {'parameter_overrides','case_name'}
+    allowed = {r[0] for r in INPUT_RULES} | {'parameter_overrides','case_name','fuel_assumptions','fuel_estimate_enabled'}
     errors = {k:'Unknown input.' for k in request if k not in allowed}
     overrides = request.get('parameter_overrides', {})
     if not isinstance(overrides, dict):
@@ -156,6 +181,7 @@ def validate_inputs(request):
         errors['time_step_s']='Use at most 60,001 samples per run; increase the time step or reduce duration.'
     if errors:
         raise ValidationError(errors)
+    fuel_settings(request)
     inputs = {r[0]:values[r[0]] for r in INPUT_RULES}
     return inputs, Parameters(**{k:values[k] for k in defaults}), name.strip()
 
@@ -204,13 +230,14 @@ def calculate_state(inputs, p, soc):
 
 def simulate(request):
     inputs,p,name = validate_inputs(request)
-    identity = json.dumps({'inputs':inputs,'parameters':asdict(p),'version':'1.0.0'},sort_keys=True,separators=(',',':'))
+    fuel_enabled,fuel=fuel_settings(request)
+    identity = json.dumps({'inputs':inputs,'parameters':asdict(p),'fuel_estimate_enabled':fuel_enabled,'fuel_assumptions':fuel,'version':'1.1.0'},sort_keys=True,separators=(',',':'))
     run_id = hashlib.sha256(identity.encode()).hexdigest()[:16]
     duration,step = inputs['duration_s'],inputs['time_step_s']
     count = math.ceil(duration/step)
     soc=inputs['initial_soc']; eb=el=i2=e2=0.0
     capacity=(p.battery_nominal_energy_wh/p.battery_open_circuit_voltage_v)*3600  # 5.14
-    rows=[]; seen=set()
+    rows=[]; seen=set(); fuel_rows=[]; fuel_used=0.0
     for n in range(count+1):
         time = min(n*step,duration)
         row,limits=calculate_state(inputs,p,soc)
@@ -222,22 +249,33 @@ def simulate(request):
         if not all(math.isfinite(v) for v in row.values()):
             raise ValidationError({'calculation':'Non-finite calculation; choose less extreme parameters.'})
         rows.append(row)
+        shaft_kw=row['engine_torque_nm']*row['clutch_state']*row['motor_speed_rad_s']/1000
+        flow_gps=shaft_kw/fuel['assumed_engine_efficiency']/fuel['fuel_lhv_mj_per_kg'] if fuel_enabled else None
+        used_litres=fuel_used/(1000*fuel['fuel_density_kg_per_l']) if fuel_enabled else None
+        fuel_rows.append({'time_s':time,'engine_shaft_power_kw':shaft_kw,'estimated_fuel_flow_gps':flow_gps,'estimated_fuel_used_litres':used_litres,
+                          'estimated_fuel_remaining_litres':max(0,fuel['initial_fuel_litres']-used_litres) if fuel_enabled else None,
+                          'fuel_budget_deficit_litres':max(0,used_litres-fuel['initial_fuel_litres']) if fuel_enabled else None,
+                          'estimated_fuel_cost':used_litres*fuel['fuel_price_per_l'] if fuel_enabled else None})
         if n == count: break
         dt=min(step,duration-time)
+        if fuel_enabled:fuel_used+=flow_gps*dt
         soc=max(0,min(1,soc-row['battery_current_a']/capacity*dt))  # 5.13
         eb+=row['battery_terminal_power_w']*dt/3600
         el+=row['battery_internal_loss_power_w']*dt/3600
         i2+=row['battery_current_a']**2*dt
         e2+=row['wheel_torque_error_nm']**2*dt
     warnings = sorted(seen)
+    if fuel_enabled:warnings.append('Fuel use is a separate constant-efficiency estimate; no idle fuel, engine map or empty-tank shutdown is modeled.')
+    if fuel_enabled and fuel_rows[-1]['fuel_budget_deficit_litres']>1e-9:warnings.append('Estimated fuel consumption exceeds the fuel loaded. The original torque/battery model continues; no fuel cutoff is imposed.')
     if not 500 <= inputs['motor_speed_rpm'] <= 6000: warnings.append('Motor speed is outside the recommended 500–6,000 rpm research range.')
     if not .3 <= inputs['initial_soc'] <= .8: warnings.append('Initial SOC is outside the recommended 0.30–0.80 research range.')
     return {
-        'metadata':{'model_id':'p2-full-parallel-torque-intensity','model_version':'1.0.0',
+        'metadata':{'model_id':'p2-full-parallel-torque-intensity','model_version':'1.1.0',
                     'formula_version':'simulink-parity-5.1-to-5.20','run_id':run_id,'case_name':name,
                     'integration':'Forward interval integration; final partial interval included',
                     'verification':'Supplied written equations and reference cases; source SLX unavailable'},
         'inputs':inputs,'parameters':asdict(p),'summary':rows[-1],
+        'fuel_inventory':{'enabled':fuel_enabled,'assumptions':fuel,'method':'Optional constant engine efficiency, connected engine torque × imposed shaft speed; forward interval integration. No idle, map, startup or fuel cutoff.','summary':fuel_rows[-1],'time_series':fuel_rows},
         'active_limits':sorted(seen),'warnings':warnings,'assumptions':LIMITATIONS,
         'time_series':rows,'scope_groups':SCOPE_GROUPS,
     }
