@@ -19,7 +19,7 @@ def test_motor_workspace_help_and_guidance(page,demo_records,live_server,width):
   a=page.locator('.input-workspace').bounding_box();b=page.locator('.output-workspace').bounding_box();assert b['x']>=a['x']+a['width']
  page.locator('.drive-3d-stage').evaluate("e=>e.scrollIntoView({block:'center'})")
  out=Path('test-results/motor-review');out.mkdir(parents=True,exist_ok=True);page.screenshot(path=str(out/f'motor-{width}.png'))
- page.locator('#motor-learning-guide summary').click()
+ page.locator('#motor-learning-guide > summary').click()
  expect(page.locator('#motor-learning-content')).to_contain_text('50,000 steps cover one virtual second')
  with page.expect_download() as dl:page.get_by_role('link',name='Download complete learning guide (PDF)').click()
  assert Path(dl.value.path()).read_bytes().startswith(b'%PDF')

@@ -7,6 +7,7 @@ from . import views, p2_views
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/fcev/market-prices/", views.fcev_market_prices, name="fcev_market_prices"),
     path("virtual-lab/ice/starting/device/<str:operation>/options/", starting_lab.device_options, name="starting_device_options"),
     path("virtual-lab/ice/starting/device/<str:operation>/complete/", starting_lab.device_complete, name="starting_device_complete"),
     path("virtual-lab/ice/starting/exercises/", starting_lab.exercises, name="starting_exercises"),

@@ -283,7 +283,8 @@ def support_review(request, ticket_id):
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def bless(request):
-    return render(request, "core/bless.html")
+    from .fcev_market import seed_book
+    return render(request, "core/bless.html", {"fcev_market_seed": seed_book()})
 
 
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
@@ -314,3 +315,13 @@ def series_parallel(request):
 @roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
 def yankson(request):
     return render(request, "core/yankson.html")
+
+
+@roles_required(User.Role.ADMINISTRATOR, User.Role.LECTURER, User.Role.STUDENT)
+def fcev_market_prices(request):
+    from .fcev_market import market_book
+    if request.method != "GET":
+        return JsonResponse({"error": "Use GET"}, status=405)
+    response = JsonResponse(market_book())
+    response["Cache-Control"] = "private, no-store"
+    return response

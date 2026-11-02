@@ -51,7 +51,7 @@
     {% if walkthrough_module %}<div class="content-panel py-3 mb-3 d-flex flex-wrap align-items-center gap-3"><button id="lab-master-reset" type="button" class="btn btn-outline-secondary">Master reset to defaults</button><span class="small text-secondary">Restore this module’s inputs and calibration defaults and clear its current run. Export results first.</span></div><script src="{% static 'js/lab-defaults.js' %}" defer></script>{% endif %}
     {% block content %}{% endblock %}
     {% if module_student %}{% include "includes/module_student.html" %}{% endif %}
-    {% if vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
+    {% if walkthrough_module.route == "core:bless" %}{% include "includes/hiace_reference.html" %}{% elif vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
   </main>
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script><script type="module" src="{% static 'js/lab-learning.mjs' %}"></script>{% endif %}
 

@@ -72,7 +72,7 @@ def test_system_catalogues_are_scoped_to_system(client, role):
             assert reverse("core:fuel_delivery").encode() not in environment.content
         elif system["slug"] == "fcev":
             assert reverse("core:bless").encode() in environment.content
-            assert b"Fuel-Cell / Battery and Diesel Comparison" in environment.content
+            assert b"FCEV Range Extended System" in environment.content
         else:
             assert b"No simulations added yet" in environment.content
             assert b"Scope for future models" not in environment.content

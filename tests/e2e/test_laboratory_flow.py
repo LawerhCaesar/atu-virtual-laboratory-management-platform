@@ -60,7 +60,7 @@ def test_system_selection_branding_catalogues_and_launch(page, demo_records, liv
             expect(page.get_by_role("heading", name="12 V Micro-Hybrid Stop-Start", exact=True)).to_be_visible()
         elif system["slug"] == "fcev":
             expect(page.locator(".lab-model-grid article")).to_have_count(1)
-            expect(page.get_by_role("link", name="Open Fuel-Cell / Battery and Diesel Comparison", exact=True)).to_be_visible()
+            expect(page.get_by_role("link", name="Open FCEV Range Extended System", exact=True)).to_be_visible()
         else:
             expect(page.locator(".lab-model-grid article")).to_have_count(2)
             expect(page.get_by_role("heading", name="Wheel-Slip Control Using ABS and TCS", exact=True)).to_be_visible()

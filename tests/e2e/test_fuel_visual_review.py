@@ -18,7 +18,7 @@ def test_fuel_revision_guidance_and_3d(page,demo_records,live_server,width):
  page.screenshot(path=str(out/f'vehicle-{width}.png'))
  page.get_by_role('button',name='Injector',exact=True).click()
  page.screenshot(path=str(out/f'injector-focus-{width}.png'))
- page.locator('#fuel-learning-guide summary').click()
+ page.locator('#fuel-learning-guide > summary').click()
  expect(page.locator('#fuel-learning-content')).to_contain_text('ten calculations cover one virtual second')
  expect(page.locator('#fuel-learning-content dt')).to_have_count(44)
  with page.expect_download() as download:page.get_by_role('link',name='Download complete learning guide (PDF)').click()

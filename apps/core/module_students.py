@@ -22,7 +22,7 @@ MODULE_STUDENTS = {
     "core:edward": {"name": "Edward Selorm"},
     "core:p2_hybrid": {"name": "Lawrence Andoh", "bio": "Lawrence Andoh, Master of Automotive Engineering researcher at Accra Technical University specializing in hybrid electric powertrain modeling and battery energy management. Focuses on optimizing energy consumption, torque-split dynamics, and battery storage efficiency across varying load profiles in full parallel hybrid architectures."},
     "core:micro_hybrid": {"name": "Abass Moro"},
-    "core:bless": {"name": "Bless", "name_note": "Full name to be confirmed"},
+    "core:bless": {"name": "Bless Atisu"},
     "core:battery_energy": {"name": "Bernard", "name_note": "Full name to be confirmed"},
     "core:series_parallel": {"name": "Desmond", "name_note": "Full name to be confirmed"},
     "core:engine_live_data": {"name": "Kofi Frempong"},
