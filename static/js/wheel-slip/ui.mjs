@@ -1,9 +1,13 @@
+import {createVisual} from "./visual.mjs";
+import {HELP,SIGNALS,info,fillGuide} from "./learning.mjs";
+import {MODES} from "./visual-state.mjs";
 import {FIELDS,DEFAULTS,PRESETS,validateConfig} from "./model.mjs";
 
 const root=document.getElementById("wheel-slip");
 if(root) initialise();
 function initialise(){
   const $=id=>document.getElementById(id), make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
+  const visual=createVisual($("ws-scene"));fillGuide($("ws-learning-content"),FIELDS);info($("ws-input-title"),"Integration time step","The computer updates the reference equations every 0.001 simulated second, 1,000 times per second. This fixed calculation step is different from Brake step time, which schedules when the pedal request changes.");
   const controls={}, errorFields={}, preset=$("ws-preset");
   let draft={...DEFAULTS}, result=null, worker=null, playing=false, playbackS=0, lastFrame=0, zoomStart=0, zoomEnd=1;
   const media=matchMedia("(prefers-reduced-motion: reduce)");
@@ -13,8 +17,8 @@ function initialise(){
   for(const [index,[key,label,unit,value,min,max,step,purpose]] of FIELDS.entries()){
     if(groups[index]){fieldset=make("fieldset");fieldset.append(make("legend",groups[index]));$("ws-fields").append(fieldset);}
     const box=make("div",undefined,"fuel-input"), title=make("label",`${label} (${unit})`), input=make("input"), range=make("input"), row=make("div",undefined,"fuel-number");
-    input.id=`ws-input-${key}`;input.type="number";input.step="any";input.className="form-control";input.value=value;title.htmlFor=input.id;
-    const help=make("small",`Allowed: ${min}–${max} ${unit}. Default: ${value}. ${purpose}`);help.id=`ws-help-${key}`;
+    input.id=`ws-input-${key}`;input.type="number";input.step="any";input.className="form-control";input.value=value;title.htmlFor=input.id;input.setAttribute("aria-label",`${label} (${unit})`);info(title,label,HELP[key]);
+    const help=make("small",`Allowed: ${min}–${max} ${unit}. Default: ${value}. ${HELP[key]}`);help.id=`ws-help-${key}`;
     const error=make("small","","fuel-field-error");error.id=`ws-error-${key}`;errorFields[key]=error;
     input.setAttribute("aria-describedby",`${help.id} ${error.id}`);
     range.type="range";range.min=min;range.max=max;range.step=step;range.value=value;range.className="form-range";range.setAttribute("aria-label",`${label} slider`);range.setAttribute("aria-describedby",help.id);
@@ -25,13 +29,13 @@ function initialise(){
     box.append(title,row,range,help,error);fieldset.append(box);controls[key]={input,range};
   }
   fieldset=make("fieldset");fieldset.append(make("legend","Controllers"));$("ws-fields").append(fieldset);
-  for(const [key,label] of [["absEnabled","ABS enabled"],["tcsEnabled","TCS enabled"]]){const box=make("div",undefined,"fuel-input"),input=make("input"),labelEl=make("label",label);input.type="checkbox";input.id=`ws-input-${key}`;input.className="form-check-input me-2";input.checked=true;labelEl.htmlFor=input.id;input.addEventListener("change",()=>{draft[key]=input.checked;changed();});box.append(input,labelEl,make("small",key==="absEnabled"?"Controls brake torque when braking above 1 m/s.":"Controls drive torque when accelerating without braking."));fieldset.append(box);controls[key]={input};}
+  for(const [key,label] of [["absEnabled","ABS enabled"],["tcsEnabled","TCS enabled"]]){const box=make("div",undefined,"fuel-input"),input=make("input"),labelEl=make("label",label);input.type="checkbox";input.id=`ws-input-${key}`;input.className="form-check-input me-2";input.checked=true;labelEl.htmlFor=input.id;input.setAttribute("aria-label",label);info(labelEl,label,HELP[key]);input.addEventListener("change",()=>{draft[key]=input.checked;changed();});box.append(input,labelEl,make("small",key==="absEnabled"?"Controls brake torque when braking above 1 m/s.":"Controls drive torque when accelerating without braking."));fieldset.append(box);controls[key]={input};}
   const kpis=[
     ["finalDistanceM","Distance travelled","m",2],["stoppingTimeS","Stopping time","s",2],["stoppingDistanceM","Stopping distance","m",2],
     ["peakBrakeSlip","Peak brake slip","ratio",3],["peakDriveSlip","Peak drive slip","ratio",3],["peakAbsTyreForceN","Peak absolute tyre force","N",1],
     ["absActiveTimeS","ABS active time","s",2],["tcsActiveTimeS","TCS active time","s",2],["finalVehicleSpeedKph","Final vehicle speed","km/h",2],["finalWheelSpeedKph","Final wheel peripheral speed","km/h",2]
   ];
-  const cards={}; for(const [key,label,unit] of kpis){const box=make("div"),value=make("dd","—");value.dataset.wsMetric=key;box.append(make("dt",`${label} (${unit})`),value);$("ws-kpis").append(box);cards[key]=value;}
+  const cards={}; for(const [key,label,unit] of kpis){const box=make("div"),value=make("dd","—");value.dataset.wsMetric=key;const dt=make("dt",`${label} (${unit})`);info(dt,label,SIGNALS[key]);box.append(dt,value);$("ws-kpis").append(box);cards[key]=value;}
   const chartDefs=[
     ["Vehicle and wheel speed","km/h",[["vehicleSpeedKph","Vehicle speed"],["wheelPeripheralSpeedKph","Wheel peripheral speed"]]],
     ["Wheel slip","ratio",[["brakeSlip","Brake slip"],["driveSlip","Drive slip"]],[.10,.12,.18,.20]],
@@ -43,7 +47,7 @@ function initialise(){
   const ns="http://www.w3.org/2000/svg", colours=["#2857b5","#a44319","#126445"],charts=[];
   for(const [index,[title,unit,series]] of chartDefs.entries()){
     const figure=make("figure"), caption=make("figcaption",`${title} (${unit})`),legend=make("p",undefined,"ws-legend"),svg=document.createElementNS(ns,"svg"),readout=make("p","Move the pointer over the chart to inspect values.","ws-chart-readout");
-    series.forEach(([,label],i)=>{const item=make("span",label);item.style.setProperty("--series-color",colours[i]);legend.append(item);});
+    series.forEach(([key,label],i)=>{const item=make("span",label);info(item,label,SIGNALS[key]);item.style.setProperty("--series-color",colours[i]);legend.append(item);});
     if(index===1)legend.append(make("span","Dashed: TCS 0.10 / 0.18; ABS 0.12 / 0.20"));
     svg.setAttribute("viewBox","0 0 500 240");svg.setAttribute("role","img");svg.setAttribute("aria-label",`${title} (${unit}) versus time (s)`);svg.id=`ws-chart-${index}`;
     svg.addEventListener("pointermove",event=>{if(!result)return;const rect=svg.getBoundingClientRect(),fraction=Math.max(0,Math.min(1,((event.clientX-rect.left)/rect.width*500-65)/415)),row=result.samples[Math.min(result.samples.length-1,Math.round((zoomStart+fraction*(zoomEnd-zoomStart))/.001))];readout.textContent=`${row.timeS.toFixed(3)} s · `+series.map(([key,label])=>`${label}: ${Number(row[key]).toFixed(3)} ${unit}`).join(" · ");});
@@ -71,19 +75,16 @@ function initialise(){
   function cancel(){if(worker){worker.terminate();worker=null;}playing=false;lastFrame=0;}
   function validate(){const errors=validateConfig(draft);for(const [key,node] of Object.entries(errorFields)){node.textContent=errors[key]||"";controls[key].input.setAttribute("aria-invalid",String(Boolean(errors[key])));}$("ws-error").hidden=!Object.keys(errors).length;$("ws-error").textContent=Object.values(errors).join(" ");return !Object.keys(errors).length;}
   function changed(){cancel();result=null;playbackS=0;validate();$("ws-status").textContent="Inputs changed · run a new simulation.";$("ws-result-note").textContent="Run a scenario to calculate results.";$("ws-warnings").replaceChildren();for(const cell of Object.values(cards))cell.textContent="—";drawCharts();renderFrame();buttons();}
-  function buttons(){const valid=!Object.keys(validateConfig(draft)).length;$("ws-run").disabled=!valid||!!worker;$("ws-cancel").disabled=!worker;for(const id of ["ws-json","ws-csv","ws-scrub","ws-restart"])$(id).disabled=!result;$("ws-play").disabled=!result||playing||playbackS>=result.config.durationS;$("ws-pause").disabled=!playing;}
+  function buttons(){$("ws-scene").dataset.playing=String(playing);const valid=!Object.keys(validateConfig(draft)).length;$("ws-run").disabled=!valid||!!worker;$("ws-cancel").disabled=!worker;for(const id of ["ws-json","ws-csv","ws-scrub","ws-restart"])$(id).disabled=!result;$("ws-play").disabled=!result||playing||playbackS>=result.config.durationS;$("ws-pause").disabled=!playing;}
   function surface(mu){return mu<.3?"low grip":mu<.6?"reduced grip":"higher grip";}
-  const modes={0:"No active intervention",1:"ABS APPLY",2:"ABS HOLD",3:"ABS RELEASE", "-1":"TCS RESTORE", "-2":"TCS HOLD", "-3":"TCS REDUCE"};
   function renderFrame(){
     $("ws-road").textContent=`Road μ ${Number(draft.roadMu).toFixed(2)} · ${surface(draft.roadMu)}`;
-    if(!result){$("ws-controller").textContent="Awaiting simulation";$("ws-speed").textContent="Vehicle — km/h · Wheel — km/h";$("ws-visual-cue").textContent="Run a simulation to view the response";$("ws-time").textContent="0.00";$("ws-scrub").value=0;$("ws-car").setAttribute("transform","translate(0 0)");$("ws-wheel-a").removeAttribute("transform");$("ws-wheel-b").removeAttribute("transform");$("ws-slip-marks").setAttribute("opacity","0");return;}
-    const row=result.samples[Math.min(result.samples.length-1,Math.round(playbackS/.001))], total=Math.max(result.metrics.finalDistanceM,.001),progress=Math.min(1,row.distanceM/total);
-    $("ws-controller").textContent=`${modes[row.controllerMode]} · ABS ${row.absActive?"active":"inactive"} · TCS ${row.tcsActive?"active":"inactive"}`;
+    if(!result){$("ws-controller").textContent="Awaiting simulation";$("ws-speed").textContent="Vehicle — km/h · Wheel — km/h";$("ws-visual-cue").textContent="Run a simulation to view the response";$("ws-time").textContent="0.00";$("ws-scrub").value=0;visual.update(null,0,media.matches);return;}
+    const index=Math.min(result.samples.length-1,Math.round(playbackS/.001)),row=result.samples[index];
+    $("ws-controller").textContent=`${MODES[row.controllerMode]} · ABS ${row.absActive?"active":"inactive"} · TCS ${row.tcsActive?"active":"inactive"}`;
     $("ws-speed").textContent=`Vehicle ${row.vehicleSpeedKph.toFixed(1)} km/h · Wheel ${row.wheelPeripheralSpeedKph.toFixed(1)} km/h`;
-    const cue=row.brakeSlip>.2?"Wheel-lock tendency":row.driveSlip>.18?"Wheel-spin tendency":"Wheel grip illustration";$("ws-visual-cue").textContent=`${cue} · ${modes[row.controllerMode]}`;$("ws-slip-marks").setAttribute("opacity",row.brakeSlip>.2||row.driveSlip>.18?"1":"0");
-    $("ws-car").setAttribute("transform",`translate(${Math.min(245,progress*245)} 0)`);const degrees=(row.wheelAngleRad*180/Math.PI)%360;
-    $("ws-wheel-a").setAttribute("transform",`rotate(${degrees} 135 231)`);$("ws-wheel-b").setAttribute("transform",`rotate(${degrees} 407 231)`);
-    $("ws-road-marks").setAttribute("stroke-dashoffset",String(-row.distanceM*4%60));$("ws-time").textContent=playbackS.toFixed(2);$("ws-scrub").value=playbackS;
+    $("ws-visual-cue").textContent=`${row.brakeSlip>.2?"Wheel-lock tendency":row.driveSlip>.18?"Wheel-spin tendency":"Below upper slip thresholds"} · ${MODES[row.controllerMode]}`;
+    visual.update(result,index,media.matches);$("ws-time").textContent=playbackS.toFixed(3);$("ws-scrub").value=playbackS;
   }
   function showResult(data){result=data;playbackS=0;$("ws-scrub").max=data.config.durationS;$("ws-warnings").replaceChildren(...data.warnings.map(w=>make("li",w)));$("ws-result-note").textContent=`${data.samples.length.toLocaleString()} full-resolution samples. Controller time counts each enabled control mode, including apply/hold.`;
     for(const [key,,,digits] of kpis)cards[key].textContent=data.metrics[key]===null?"Not reached within simulation time":data.metrics[key].toFixed(digits);
@@ -95,9 +96,10 @@ function initialise(){
   $("ws-play").addEventListener("click",()=>{playing=true;lastFrame=0;buttons();});$("ws-pause").addEventListener("click",()=>{playing=false;buttons();});
   $("ws-restart").addEventListener("click",()=>{playing=false;playbackS=0;lastFrame=0;renderFrame();drawCharts();buttons();});$("ws-scrub").addEventListener("input",event=>{playing=false;playbackS=Number(event.target.value);renderFrame();drawCharts();buttons();});$("ws-zoom").addEventListener("change",drawCharts);
   function animate(now){if(playing&&result&&!document.hidden){if(lastFrame)playbackS=Math.min(result.config.durationS,playbackS+(now-lastFrame)/1000*Number($("ws-playback-speed").value));if(playbackS>=result.config.durationS)playing=false;renderFrame();buttons();}lastFrame=now;requestAnimationFrame(animate);}
-  document.addEventListener("visibilitychange",()=>{if(document.hidden){playing=false;buttons();}lastFrame=0;});media.addEventListener("change",()=>{if(media.matches){playing=false;buttons();}});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden){playing=false;buttons();}lastFrame=0;});media.addEventListener("change",()=>{if(media.matches){playing=false;buttons();}renderFrame();});
   const download=(text,type,name)=>{const url=URL.createObjectURL(new Blob([text],{type})),a=make("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
   $("ws-json").addEventListener("click",()=>{if(result)download(JSON.stringify(result,null,2),"application/json","wheel-slip-results.json");});
   $("ws-csv").addEventListener("click",()=>{if(!result)return;const keys=Object.keys(result.samples[0]),meta=[`# modelVersion,${result.modelVersion}`,...Object.entries(result.config).map(([k,v])=>`# config.${k},${v}`)];download([...meta,keys.join(","),...result.samples.map(row=>keys.map(k=>row[k]).join(","))].join("\n"),"text/csv","wheel-slip-results.csv");});
+  window.WheelSlipLab={get result(){return result;},get draft(){return {...draft};}};window.addEventListener("pagehide",()=>{cancel();visual.destroy();},{once:true});
   validate();drawCharts();renderFrame();buttons();requestAnimationFrame(animate);
 }
