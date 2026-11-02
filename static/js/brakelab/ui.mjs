@@ -1,4 +1,4 @@
-import {FIELDS,OUTPUTS,DEFAULT_BRAKE_INPUTS,DEFAULT_BRAKE_CALIBRATION,validateInputs} from "./model.mjs";
+import {FIELDS,OUTPUTS,DEFAULT_BRAKE_INPUTS,DEFAULT_BRAKE_CALIBRATION,validateInputs,calculateBrakeAllocation} from "./model.mjs";
 import {BrakeSimulation} from "./controller.mjs";
 import {nudgeValue,sliderBounds} from "../fuel-delivery/controls.mjs";
 
@@ -8,7 +8,7 @@ function initialise() {
   const byId=id=>document.getElementById(id);
   const make=(tag,text,css)=>{ const e=document.createElement(tag); if(text!==undefined)e.textContent=text; if(css)e.className=css; return e; };
   const sim=new BrakeSimulation(), controls={}, cells={};
-  let draft={...DEFAULT_BRAKE_INPUTS}, valid=true, dirty=false, frameId, lastNow=0, stopped=false;
+  let calibration={...DEFAULT_BRAKE_CALIBRATION},draft={...DEFAULT_BRAKE_INPUTS}, valid=true, dirty=false, frameId, lastNow=0, stopped=false;
   const media=matchMedia("(prefers-reduced-motion: reduce)"), motion=byId("brake-motion"), live=byId("brake-live");
   motion.checked=!media.matches;
   let groupName="", group;
@@ -58,22 +58,24 @@ function initialise() {
     drivetrainEfficiency:"Drivetrain efficiency",regenEfficiency:"Regenerative efficiency",speedCutoffMps:"Speed cut-off (m/s)",fullRegenSpeedMps:"Full regeneration speed (m/s)",
     socDeratePct:"SOC derating (%)",socStopPct:"SOC stop (%)",coldCutoffC:"Cold cut-off (°C)",coldFullC:"Cold full acceptance (°C)",
     hotFullC:"Hot full acceptance (°C)",hotCutoffC:"Hot cut-off (°C)",minimumSpeedMps:"Minimum calculation speed (m/s)",forceEpsilonN:"Force epsilon (N)"};
-  for(const [key,value] of Object.entries(DEFAULT_BRAKE_CALIBRATION)) byId("brake-calibration").append(make("dt",calibrationLabels[key]),make("dd",String(value)));
+  const calibrationControls={};for(const [key,value]of Object.entries(calibration)){const field=make('div',undefined,'fuel-input'),label=make('label',calibrationLabels[key]),input=make('input');input.id='brake-cal-'+key;input.type='number';input.step='any';input.value=value;input.className='form-control';label.htmlFor=input.id;field.append(label,input);byId('brake-calibration').append(field);calibrationControls[key]=input;input.oninput=()=>{calibration[key]=input.value.trim()===''?NaN:Number(input.value);changed();};}
+ byId('brake-calibration-reset').onclick=()=>{calibration={...DEFAULT_BRAKE_CALIBRATION};for(const key in calibrationControls)calibrationControls[key].value=calibration[key];changed();};
+ byId('brake-direct-hub').onclick=()=>{calibration.gearRatio=1;calibrationControls.gearRatio.value=1;changed();};
   function syncInputs() { for(const f of FIELDS) { const c=controls[f.key]; if(typeof f.value==="boolean")c.input.checked=draft[f.key]; else {c.input.value=draft[f.key];c.syncSlider(draft[f.key]);} } }
   function fail(error) { sim.fail(error); valid=false; byId("brake-validation").hidden=false; byId("brake-validation").textContent=`${error.message} Last-valid readings are shown; correct inputs or Reset. Exports are blocked.`; render(); }
   function guarded(action) { try { action(); } catch(error) { fail(error); } }
   function changed() {
-    sim.pause(); dirty=true; const status=validateInputs(draft); valid=status.valid;
+    sim.pause(); dirty=true; const status=validateInputs(draft); valid=status.valid;let calibrationError="";try{calculateBrakeAllocation(draft,calibration);}catch(error){calibrationError=error.message;valid=false;}
     for(const f of FIELDS) { byId(`brake-error-${f.key}`).textContent=status.errors[f.key]||""; controls[f.key].input.setAttribute("aria-invalid",String(Boolean(status.errors[f.key]))); }
     byId("brake-validation").hidden=valid;
-    byId("brake-validation").textContent=valid ? "" : "Correct the marked inputs. Last-valid readings are shown; Run and export are blocked.";
+    byId("brake-validation").textContent=valid ? "" : calibrationError||"Correct the marked inputs. Last-valid readings are shown; Run and export are blocked.";
     if(valid && live.checked) {
-      try { sim.calculate(draft); dirty=false; } catch(error) { fail(error); }
+      try { sim.calculate(draft,calibration); dirty=false; } catch(error) { fail(error); }
     }
     render();
   }
-  byId("brake-run").addEventListener("click",()=>{ if(valid)guarded(()=>{sim.run(draft,motion.checked);dirty=false;lastNow=0;render();}); });
-  byId("brake-reset").addEventListener("click",()=>{draft={...DEFAULT_BRAKE_INPUTS};sim.reset();syncInputs();changed();dirty=false;render();});
+  byId("brake-run").addEventListener("click",()=>{ if(valid)guarded(()=>{sim.run(draft,motion.checked,calibration);dirty=false;lastNow=0;render();}); });
+  byId("brake-reset").addEventListener("click",()=>{calibration={...DEFAULT_BRAKE_CALIBRATION};for(const key in calibrationControls)calibrationControls[key].value=calibration[key];draft={...DEFAULT_BRAKE_INPUTS};sim.reset();syncInputs();changed();dirty=false;render();});
   byId("brake-pause").addEventListener("click",()=>{sim.pause();render();});
   byId("brake-resume").addEventListener("click",()=>{if(valid&&!dirty&&motion.checked){sim.resume();lastNow=0;render();}});
   live.addEventListener("change",changed);
@@ -105,14 +107,14 @@ function initialise() {
     byId("brake-resume").disabled=!valid||dirty||sim.running||!motion.checked||!sim.hasRun||sim.elapsedS>=r.visual.animationDurationS;
     byId("brake-result-note").textContent=!valid||dirty ? "Last calculated operating point; it does not represent the changed draft." : "Values describe the selected operating point and stay fixed during the illustrative playback.";
     for(const [key,, ,precision] of OUTPUTS) if(cells[key])cells[key].textContent=r[key].toFixed(precision);
-    byId("brake-limit").textContent=`Active limit: ${r.activeLimitLabel}${r.requestedForceN>0 && r.requestedForceN<=DEFAULT_BRAKE_CALIBRATION.forceEpsilonN ? " · demand at or below the 1 N diagnostic threshold" : ""}`;
+    byId("brake-limit").textContent=`Active limit: ${r.activeLimitLabel}${r.requestedForceN>0 && r.requestedForceN<=sim.calibration.forceEpsilonN ? ` · demand at or below the ${sim.calibration.forceEpsilonN} N diagnostic threshold` : ""}`;
     byId("brake-limit").dataset.code=r.activeLimitCode;
     const balanced=Math.abs(r.forceBalanceResidualN)<.001;
     byId("brake-balance").textContent=`Force-balance residual: ${r.forceBalanceResidualN.toExponential(3)} N · ${balanced ? "Verified (<0.001 N)" : "Outside tolerance"}`;
     byId("brake-balance").dataset.valid=String(balanced);
     byId("brake-warnings").replaceChildren(...r.warnings.map(w=>make("li",w)));
-    const tiny=r.requestedForceN>0&&r.requestedForceN<DEFAULT_BRAKE_CALIBRATION.forceEpsilonN;
-    byId("brake-share-note").textContent=tiny ? "Below 1 N: protected percentages use a 1 N denominator, so they need not total 100%. No renormalisation is applied." : r.requestedForceN===0 ? "No braking demand; both allocation shares are zero." : "Solid green = regeneration; striped amber = friction.";
+    const tiny=r.requestedForceN>0&&r.requestedForceN<sim.calibration.forceEpsilonN;
+    byId("brake-share-note").textContent=tiny ? `Below ${sim.calibration.forceEpsilonN} N: protected percentages use that denominator, so they need not total 100%. No renormalisation is applied.` : r.requestedForceN===0 ? "No braking demand; both allocation shares are zero." : "Solid green = regeneration; striped amber = friction.";
     byId("brake-share-label").textContent=`Regenerative ${r.regenerativePercent.toFixed(1)}% · Friction ${r.frictionPercent.toFixed(1)}%`;
     byId("brake-allocation").setAttribute("aria-label",byId("brake-share-label").textContent);
     byId("brake-regen-share").style.width=`${r.regenerativePercent}%`; byId("brake-friction-share").style.width=`${r.frictionPercent}%`;
@@ -128,12 +130,12 @@ function initialise() {
     drawFrame();
   }
   function drawFrame() {
-    const f=sim.frame();
+    const f=sim.frame();window.dispatchEvent(new CustomEvent("brake:frame",{detail:{frame:f,result:sim.result,calibration:sim.calibration,moving:sim.running&&motion.checked}}));
     byId("brake-speed").textContent=f.speedKph.toFixed(1); byId("brake-playback-time").textContent=sim.elapsedS.toFixed(2); byId("brake-playback-duration").textContent=sim.result.visual.animationDurationS.toFixed(2);
     byId("brake-scene").dataset.progress=f.progress.toFixed(5);
-    byId("brake-car").setAttribute("transform",`translate(${30+110*f.progress*(2-f.progress)} 0)`);
-    byId("brake-wheel-left").setAttribute("transform",`rotate(${f.wheelAngleDeg} 170 245)`);
-    byId("brake-wheel-right").setAttribute("transform",`rotate(${f.wheelAngleDeg} 455 245)`);
+    byId("brake-car").setAttribute("transform","translate(0 0)");
+    byId("brake-wheel-left").setAttribute("transform",`rotate(${f.wheelAngleRad*180/Math.PI} 170 245)`);
+    byId("brake-wheel-right").setAttribute("transform",`rotate(${f.motorAngleRad*180/Math.PI} 455 245)`);
     byId("brake-friction-glow").setAttribute("opacity",String(f.frictionIntensity*.7));
     byId("brake-wheel-flow").setAttribute("opacity",String(f.regenIntensity)); byId("brake-wheel-flow").setAttribute("stroke-dashoffset",String(-sim.elapsedS*15));
     byId("brake-charge-flow").setAttribute("opacity",String(f.chargeIntensity)); byId("brake-charge-flow").setAttribute("stroke-dashoffset",String(-sim.elapsedS*12));
@@ -148,5 +150,5 @@ function initialise() {
   document.addEventListener("visibilitychange",()=>{if(document.hidden){sim.pause();render();}});
   window.addEventListener("pagehide",()=>{stopped=true;sim.pause();cancelAnimationFrame(frameId);});
   window.addEventListener("pageshow",event=>{if(event.persisted&&stopped){stopped=false;lastNow=0;render();frameId=requestAnimationFrame(animate);}});
-  render();frameId=requestAnimationFrame(animate);
+  render();frameId=requestAnimationFrame(animate);window.BrakeLab={get snapshot(){return{frame:sim.frame(),result:sim.result,calibration:sim.calibration,moving:sim.running&&motion.checked};}};
 }

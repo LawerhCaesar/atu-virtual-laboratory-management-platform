@@ -3,3 +3,6 @@
 .motor-info:before,.motor-tip:before{display:none!important}
 
 .input-pending{font-size:13px;color:#78430d;background:#fff4dd;border-radius:8px}.input-pending:not(:empty){padding:10px}
+
+.drive-3d-stage{height:480px;background:#18222b}.drive-view-controls button{min-height:44px}.drive-view-controls button:focus-visible{outline:3px solid #b58d37;outline-offset:3px}@media(max-width:800px){.drive-3d-stage{height:360px}}@media(max-width:450px){.drive-3d-stage{height:320px}}
+.drive-view-controls button[aria-pressed=true]{background:#204e68;color:#fff;border-color:#204e68}

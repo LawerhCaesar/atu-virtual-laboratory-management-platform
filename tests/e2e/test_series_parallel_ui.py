@@ -9,7 +9,7 @@ def test_series_parallel(page,demo_records,live_server,width):
  page.goto(live_server.url+'/virtual-lab/hev/series-parallel-hybrid/');page.locator('#tour-close').click()
  expect(page.locator('#sp-charts > section')).to_have_count(6)
  Path('test-results/series-parallel').mkdir(parents=True,exist_ok=True)
- for tick,name,mode in [('80','combined','COMBINED_DRIVE'),('190','regeneration','REGENERATIVE'),('240','charging','ENGINE_CHARGING')]:
+ for tick,name,mode in [('80','combined','Combined drive'),('190','regeneration','Regenerative braking'),('240','charging','Engine charging')]:
   page.locator('#sp-cursor').fill(tick);expect(page.locator('#sp-mode')).to_contain_text(mode);page.screenshot(path=f'test-results/series-parallel/{name}-{width}.png',full_page=True)
  with page.expect_download() as dl:page.locator('#sp-csv').click()
  assert len(Path(dl.value.path()).read_text().splitlines())==302

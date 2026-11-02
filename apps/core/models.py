@@ -104,3 +104,23 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} → {self.recipient}"
+
+
+class LabDeviceCredential(models.Model):
+    """Public-key credential for laboratory device verification, not account login."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="lab_device_credentials")
+    credential_id = models.CharField(max_length=1400, unique=True)
+    public_key = models.BinaryField()
+    sign_count = models.PositiveBigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class StartingExercise(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="starting_exercises")
+    title = models.CharField(max_length=120)
+    instructions = models.TextField(max_length=3000, blank=True)
+    configuration = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']

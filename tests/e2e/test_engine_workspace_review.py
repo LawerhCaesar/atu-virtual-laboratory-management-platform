@@ -9,6 +9,7 @@ def test_workspace_sections_help_and_layout(page,demo_records,live_server,width)
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  open_engine(page,demo_records,live_server)
  expect(page.locator('#engine-tabs button')).to_have_count(4)
+ expect(page.locator('#module-student-heading')).to_have_text('Kofi Frempong')
  expect(page.locator('#engine-cutaway')).to_have_count(0)
  for name,meaning in [('Fuel and injection','Fuel delivery'),('Idle and ignition','Idle target'),('Cooling','Cooling demand'),('Start and run','Start/run permission')]:
   page.get_by_role('button',name=name,exact=True).click()
@@ -26,7 +27,8 @@ def test_workspace_sections_help_and_layout(page,demo_records,live_server,width)
  if width==1440:
   left=page.locator('.engine-input-panel').bounding_box();right=page.locator('.engine-results').bounding_box()
   assert right['x']>left['x']+left['width']
-  a=page.locator('.engine-process-panel').bounding_box();b=page.locator('.engine-graph-panel').bounding_box();assert b['x']>a['x']+a['width']
+  a=page.locator('.engine-process-panel').bounding_box();b=page.locator('.engine-graph-panel').bounding_box();assert b['y']>=a['y']+a['height'];assert abs(a['width']-b['width'])<2
+  assert page.locator('#engine-chart').bounding_box()['width']>b['width']*.9
  page.add_script_tag(path='node_modules/axe-core/axe.min.js')
  findings=page.evaluate("async()=> (await axe.run('#engine-demo',{runOnly:{type:'tag',values:['wcag2a','wcag2aa']}})).violations")
  assert not findings,[(x['id'],x['nodes'][0]['html']) for x in findings]
@@ -34,6 +36,7 @@ def test_workspace_sections_help_and_layout(page,demo_records,live_server,width)
  page.locator('#engine-system').evaluate("el=>el.scrollIntoView({block:'start'})")
  out=Path('test-results/engine-workspace');out.mkdir(parents=True,exist_ok=True)
  page.screenshot(path=str(out/f'workspace-{width}.png'),full_page=False)
+ page.locator('.engine-graph-panel').screenshot(path=str(out/f'graphs-stacked-{width}.png'))
  assert not errors
 
 def test_process_follows_history_and_latest(page,demo_records,live_server):
@@ -51,3 +54,4 @@ def test_process_follows_history_and_latest(page,demo_records,live_server):
  page.set_viewport_size({'width':1440,'height':1050})
  page.locator('#engine-system').evaluate("el=>el.scrollIntoView({block:'start'})")
  page.screenshot(path='test-results/engine-workspace/warm-run-workspace.png',full_page=False)
+ page.locator('.engine-graph-panel').screenshot(path='test-results/engine-workspace/graphs-with-data.png')

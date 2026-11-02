@@ -11,7 +11,7 @@ def test_brakelab_numerical_contract():
     node = shutil.which("node")
     if not node:
         pytest.skip("Node is required to check the browser calculation contract")
-    result = subprocess.run([node, "--test", "tests/brakelab/model.test.mjs"], capture_output=True, text=True)
+    result = subprocess.run([node, "--test", "tests/brakelab/model.test.mjs", "tests/brakelab/calibration.test.mjs"], capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
 
 

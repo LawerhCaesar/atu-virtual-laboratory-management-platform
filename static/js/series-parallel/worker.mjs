@@ -1,0 +1,1 @@
+import {runScenario} from './engine.mjs';import {analyse} from './analysis.mjs';self.onmessage=e=>{try{self.postMessage({run:analyse(runScenario(e.data))});}catch(error){self.postMessage({error:error.message});}};

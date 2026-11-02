@@ -9,7 +9,7 @@ export function playbackFrame(result, elapsedS, calibration=DEFAULT_BRAKE_CALIBR
   const distanceM=result.visual.stopDistanceEstimateM*(progress*(2-progress));
   const available=clamp((speedMps-calibration.speedCutoffMps)/(calibration.fullRegenSpeedMps-calibration.speedCutoffMps),0,1);
   const fade=result.speedFactor>0 ? clamp(available/result.speedFactor,0,1) : 0;
-  return {progress,physicalTimeS,speedKph:speedMps*3.6,distanceM,
+  return {progress,physicalTimeS,speedKph:speedMps*3.6,distanceM,wheelAngleRad:distanceM/calibration.wheelRadiusM,motorAngleRad:distanceM/calibration.wheelRadiusM*calibration.gearRatio,
     wheelAngleDeg:(distanceM%(2*Math.PI*calibration.wheelRadiusM/.08))/(2*Math.PI*calibration.wheelRadiusM/.08)*360,
     regenIntensity:result.visual.regenIntensity01*fade,
     chargeIntensity:result.visual.regenIntensity01*result.visual.batteryChargeIntensity01*fade,
@@ -18,15 +18,15 @@ export function playbackFrame(result, elapsedS, calibration=DEFAULT_BRAKE_CALIBR
 
 export class BrakeSimulation {
   constructor() { this.reset(); }
-  reset() { this.calculate(DEFAULT_BRAKE_INPUTS); }
-  calculate(inputs) {
-    const result=calculateBrakeAllocation(inputs);
-    this.inputs={...inputs}; this.result=result; this.error=null;
+  reset() { this.calculate(DEFAULT_BRAKE_INPUTS,DEFAULT_BRAKE_CALIBRATION); }
+  calculate(inputs, calibration=this.calibration||DEFAULT_BRAKE_CALIBRATION) {
+    const result=calculateBrakeAllocation(inputs,calibration);
+    this.calibration={...calibration};this.inputs={...inputs}; this.result=result; this.error=null;
     this.elapsedS=0; this.running=false; this.hasRun=false; this.mode="Preview";
   }
   fail(error) { this.error=error.message; this.running=false; this.mode="Calculation error"; }
-  run(inputs, motion=true) {
-    this.calculate(inputs); this.hasRun=true;
+  run(inputs, motion=true, calibration=this.calibration) {
+    this.calculate(inputs,calibration); this.hasRun=true;
     this.running=motion && this.result.visual.animationDurationS>0;
     this.mode=this.running ? "Playing" : !motion ? "Static result · motion off" : this.result.vehicleSpeedMps===0 ? "Stationary" : "No braking · no stopping estimate";
   }
@@ -38,11 +38,11 @@ export class BrakeSimulation {
     this.elapsedS=Math.min(this.result.visual.animationDurationS,this.elapsedS+dt);
     if (this.elapsedS>=this.result.visual.animationDurationS) { this.running=false; this.mode="Illustration complete"; }
   }
-  frame() { return playbackFrame(this.result,this.elapsedS); }
+  frame() { return playbackFrame(this.result,this.elapsedS,this.calibration); }
   payload() {
     if (this.error) throw new Error(`Cannot export last-valid results: ${this.error}`);
     return {moduleId:MODULE_ID,moduleVersion:MODULE_VERSION,sourceBasis:"Programmer guide and supplied prompt; no SLX or MATLAB runtime verification",
-      inputs:{...this.inputs},calibration:{...DEFAULT_BRAKE_CALIBRATION},
+      inputs:{...this.inputs},calibration:{...this.calibration},
       result:{...this.result,warnings:[...this.result.warnings],visual:{...this.result.visual}},
       status:{valid:true,forceBalanceValid:Math.abs(this.result.forceBalanceResidualN)<.001},
       playback:{illustrative:true,elapsedS:this.elapsedS,mode:this.mode}};
