@@ -3,7 +3,7 @@
 Add approved biography text and a local static portrait path when supplied.
 Partial source names remain partial until the student confirms their full name.
 """
-from .student_biographies import AZIZ_ALLOTEY
+from .student_biographies import ADJEI_DESMOND_USINKOBO_KWASI, AZIZ_ALLOTEY
 
 MODULE_STUDENTS = {
     "core:yankson": {"name": "Emmanuel Yankson Sackey", "show_bio": False, "show_portrait": False},
@@ -24,7 +24,7 @@ MODULE_STUDENTS = {
     "core:micro_hybrid": {"name": "Abass Moro"},
     "core:bless": {"name": "Bless Atisu"},
     "core:battery_energy": {"name": "Bernard", "name_note": "Full name to be confirmed"},
-    "core:series_parallel": {"name": "Desmond", "name_note": "Full name to be confirmed"},
+    "core:series_parallel": ADJEI_DESMOND_USINKOBO_KWASI,
     "core:engine_live_data": {"name": "Kofi Frempong"},
     "core:fuel_delivery": AZIZ_ALLOTEY,
     "core:brakelab": {"name": "Ebenezer Wilson", "bio": 'Ebenezer Wilson is a versatile automotive and mechanical engineering professional with a diverse background in vehicle maintenance, plant operation, driving, data entry, real estate, military intelligence, and military service. He began his career as a mechanic with Hajime Shokai before progressing into plant operation. He subsequently gained experience with Najafs Rentals and Adom Estate, as well as working as a Data Entry Clerk with JH Micro Finance. He later joined the Ghana Armed Forces as an Infantry Soldier, choosing vehicle maintenance and driving as his trades while also developing expertise in military intelligence.\n\nHis diverse professional experience has equipped him with practical technical skills, operational competence, analytical thinking, discipline, adaptability, and a strong sense of responsibility.\n\nHis professional interests include automotive and mechanical engineering, vehicle maintenance and diagnostics, fleet management, plant operations, military intelligence, and engineering innovation. He is committed to continuous professional development, effective leadership, problem-solving, and applying his technical and analytical expertise to improve operational efficiency and organisational performance.'},

@@ -38,6 +38,10 @@ def test_student_profiles_on_every_module(client):
     assert b'David Kweku Amachie' in r.content
     assert b'Scientific Officer' in r.content
     assert b'Sked Centre One Complex' in r.content
+   elif route == 'core:series_parallel':
+    assert b'Adjei Desmond Usinkobo Kwasi' in r.content
+    assert b'Ghana Immigration Service' in r.content
+    assert b'Full name to be confirmed' not in r.content
    else:
     assert b'A short student biography' in r.content
    if route == 'core:steering_response':

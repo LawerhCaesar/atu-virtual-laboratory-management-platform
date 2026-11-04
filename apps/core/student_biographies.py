@@ -1,5 +1,17 @@
 """User-supplied biographies, kept verbatim and assigned only to confirmed modules."""
 
+ADJEI_DESMOND_USINKOBO_KWASI = {
+    "name": "Adjei Desmond Usinkobo Kwasi",
+    "bio": "\n\n".join((
+        "Adjei Desmond Usinkobo Kwasi is a dedicated Transport Officer serving with the Ghana Immigration Service at its National Headquarters.",
+        "In his capacity as Transport Officer, his core mandate is to manage, control, and facilitate the smooth and efficient running of all transport and logistical assets of the Ghana Immigration Service across the country. This is a critical operational role that ensures mobility, operational readiness, and logistical support for the Service's mandate of border security and migration management. His work involves fleet management, vehicle maintenance planning, asset deployment, and ensuring compliance with safety and operational standards; ensuring that officers and resources are where they need to be, when they need to be there.",
+        "Mr. Kwasi is based at East Legon, Accra. He is a trained Mechanical Engineer by profession, holding a Bachelor of Technology Degree in Mechanical Engineering with an Automobile Option. Driven by a passion for automotive technology and engineering excellence, he is currently advancing his expertise by pursuing a Master of Technology in Automobile Engineering at the Accra Technical University.",
+        "His personal background is rooted in discipline and service. He grew up in the military barracks at Burma Camp in Accra, an environment that instilled in him from an early age the values of discipline, integrity, hard work, and national service — values that continue to define his professional approach today.",
+        "Combining technical engineering knowledge with practical logistical management and a strong service ethic, Desmond brings a unique blend of technical competence and operational leadership to the Ghana Immigration Service. He is committed to continuous professional development and to leveraging modern automobile engineering principles to improve efficiency, reduce operational costs, and enhance the sustainability of public sector transport systems in Ghana.",
+        "Full Name: Adjei Desmond Usinkobo Kwasi\nJob Title: Transport Officer, Ghana Immigration Service - Headquarters\nBased: East Legon, Accra\nEducation: BTech Mechanical Engineering (Automobile), MTech Automobile Engineering (in view) - Accra Technical University",
+    )),
+}
+
 AZIZ_ALLOTEY = {
     "name": "Aziz Allotey",
     "bio": "\n\n".join((
