@@ -7,12 +7,12 @@ from .models import User
 @admin.register(User)
 class PlatformUserAdmin(UserAdmin):
     ordering = ("email",)
-    list_display = ("email", "full_name", "role", "approval_status", "is_active")
+    list_display = ("email", "full_name", "index_number", "qualification", "role", "approval_status", "is_active")
     list_filter = ("role", "approval_status", "is_active")
-    search_fields = ("email", "full_name")
+    search_fields = ("email", "full_name", "index_number")
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Identity", {"fields": ("full_name", "role", "approval_status")}),
+        ("Identity", {"fields": ("full_name", "index_number", "qualification", "role", "approval_status")}),
         ("Review", {"fields": ("reviewed_by", "reviewed_at", "must_change_password")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         ("Dates", {"fields": ("last_login", "date_joined")}),

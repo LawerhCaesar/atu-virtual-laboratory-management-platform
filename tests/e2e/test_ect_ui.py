@@ -8,7 +8,7 @@ DEST=Path('test-results/ect')
 def open_lab(page,demo_records,live_server):
     page.emulate_media(reduced_motion="reduce")
     page.goto(live_server.url+'/accounts/login/')
-    page.get_by_label('Email address',exact=True).fill(demo_records['student'].email)
+    page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email)
     page.get_by_label('Password',exact=True).fill('DemoPass!742')
     page.get_by_role('button',name='Sign in',exact=True).click()
     page.goto(live_server.url+'/virtual-lab/ice/coolant-temperature/')

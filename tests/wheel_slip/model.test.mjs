@@ -38,3 +38,14 @@ test("brake priority, validation and finite boundary results",()=>{
     {...DEFAULTS,durationS:2,initialSpeedKph:160,roadMu:1.2,vehicleMassKg:3500,wheelRadiusM:.5,wheelInertiaKgm2:5,maxDriveTorqueNm:5000},
   ])for(const row of simulate(config).samples)for(const value of Object.values(row))if(typeof value==="number")assert.ok(Number.isFinite(value));
 });
+
+import {visualState} from '../../static/js/wheel-slip/visual-state.mjs';
+test('visual feedback uses the preceding 1 ms state and recorded wheel motion',()=>{
+ const r=simulate(DEFAULTS),index=r.samples.findIndex(s=>s.controllerMode===3),v=visualState(r,index);
+ assert.ok(index>0);assert.equal(v.feedback,r.samples[index-1]);assert.equal(v.row,r.samples[index]);assert.ok(Math.abs(v.outputTimeS-v.feedbackTimeS-.001)<1e-12);assert.ok(v.feedback.brakeSlip>.20);assert.equal(v.pumpIllustration,true);assert.equal(v.wheelAngleRad,r.samples[index].wheelAngleRad);assert.equal(v.sensorOmegaRadS,v.feedback.wheelPeripheralSpeedKph/3.6/DEFAULTS.wheelRadiusM);assert.equal(v.requestedBrakeNm,1800);
+ for(const mode of [0,1,2]){const i=r.samples.findIndex(s=>s.controllerMode===mode);assert.equal(visualState(r,i).pumpIllustration,false);}
+});
+test('TCS reductions and controller-disabled braking never claim a hydraulic pump output',()=>{
+ for(const name of ['TCS low-friction launch','Launch without TCS','Braking without ABS']){const r=simulate(PRESETS[name]);assert.ok(r.samples.every((_,i)=>!visualState(r,i).pumpIllustration));if(name==='TCS low-friction launch'){const index=r.samples.findIndex(s=>s.controllerMode===-3),v=visualState(r,index);assert.ok(v.feedback.driveSlip>.18);assert.equal(v.driveCue,'Reduce drive torque');assert.equal(v.requestedDriveNm,1200);assert.equal(v.row.brakeTorqueNm,0);}}
+});
+test('presentation leaves original simulation samples and exports unchanged',()=>{const r=simulate(DEFAULTS),copy=JSON.stringify(r);for(const i of [0,1,1000,1500,12000])visualState(r,i);assert.equal(JSON.stringify(r),copy);const zero=visualState(r,0);assert.equal(zero.feedbackTimeS,0);assert.equal(zero.outputTimeS,0);});

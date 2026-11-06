@@ -21,7 +21,7 @@ def test_battery_charge_visual_and_help(page,demo_records,live_server,width):
  page.get_by_role('button',name='Vehicle context',exact=True).click();page.screenshot(path=str(out/f'vehicle-{width}.png'))
  page.get_by_role('button',name='Explain Profile change time (s)',exact=True).click()
  expect(page.locator('.battery-tip').filter(has_text='WHEN the profile changes current')).to_be_visible();page.keyboard.press('Escape')
- page.locator('#battery-learning summary').click()
+ page.locator('#battery-learning > summary').click()
  expect(page.locator('#battery-learning-content')).to_contain_text('The model always calculates once per virtual second')
  with page.expect_download() as dl:page.get_by_role('link',name='Download complete learning guide (PDF)').click()
  assert Path(dl.value.path()).read_bytes().startswith(b'%PDF')
@@ -70,3 +70,13 @@ def test_battery_reference_and_fallback(page,demo_records,live_server):
  page.emulate_media(reduced_motion='reduce');no_webgl(page);reference_run(page,demo_records,live_server)
  expect(page.locator('#battery-scene')).to_be_visible()
  expect(page.locator('#battery-3d-notice')).to_contain_text('3D is unavailable')
+
+def test_detailed_views_follow_accepted_flow_and_soc(page,demo_records,live_server):
+ errors=[];page.on('pageerror',lambda e:errors.append(str(e)));open_lab(page,demo_records,live_server);stage=page.locator('#battery-real-stage');expect(stage.locator('canvas')).to_be_visible(timeout=20000)
+ page.locator('#battery-charge-rate').select_option('fast');page.locator('#battery-step').click();expect(stage).to_have_attribute('data-render-flow','charge');assert float(stage.get_attribute('data-render-current'))==pytest.approx(-201.6);assert float(stage.get_attribute('data-render-soc'))==pytest.approx(float(page.locator('#battery-gauge-soc').get_attribute('value')))
+ dest=Path('test-results/battery-realistic');dest.mkdir(parents=True,exist_ok=True)
+ for button,mode in [('Vehicle context','vehicle'),('Traction pack','pack'),('Charge connection','connection')]:
+  page.get_by_role('button',name=button,exact=True).click();expect(stage).to_have_attribute('data-render-mode',mode);stage.screenshot(path=str(dest/f'{mode}.png'))
+ page.locator('#battery-mode').select_option('supply');page.locator('#battery-step').click();expect(stage).to_have_attribute('data-render-flow','supply');assert float(stage.get_attribute('data-render-current'))>0
+ load(page,'cold');page.locator('#battery-charge-rate').select_option('fast');page.locator('#battery-step').click();expect(stage).to_have_attribute('data-render-flow','blocked');expect(stage).to_have_attribute('data-render-current','0');expect(stage).to_have_attribute('data-render-animation','false')
+ page.locator('#battery-baseline').click();page.locator('#battery-run').click();expect(stage).to_have_attribute('data-moving','true');page.locator('#battery-pause').click();expect(stage).to_have_attribute('data-render-animation','false');assert not errors,errors

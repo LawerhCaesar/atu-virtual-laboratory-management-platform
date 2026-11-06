@@ -1,0 +1,852 @@
+{
+  "title": "Series–Parallel Hybrid: experiments and learning guide",
+  "sections": [
+    [
+      "Start with one clear question",
+      [
+        "Choose Highway acceleration and braking to study ordinary demand-driven switching. Keep default inputs, select Run / apply inputs, then Play. The engine, MG1 generator, clutch, MG2 traction machine and wheels show the selected calculated state. Use the slider to inspect a particular time.",
+        "Ask: does demand require electric drive, series conversion, a direct engine path, or both engine and motor? Read the sentence below the mode name before interpreting the coloured power paths. The clutch is the key distinction: open disconnects direct engine drive; locked connects it.",
+        "All-mode verification is a diagnostic profile. Between 23 and 29 seconds it injects an artificial low-SOC control stimulus without replacing displayed actual SOC. It is useful for checking all branches, but is not a natural fuel-economy cycle."
+      ]
+    ],
+    [
+      "Follow the actual drivetrain paths",
+      [
+        "Electric drive: battery to inverter/DC bus to MG2 to final drive and wheels. The engine-to-wheel clutch stays open.",
+        "Series drive: engine drives MG1; MG1 produces electrical power; MG2 uses DC power to drive the wheels. The mechanical clutch remains open. The battery can balance a generator surplus or deficit. Series operation is an electrical route, not engine-to-wheel mechanical drive.",
+        "Parallel mechanical drive: clutch locked, engine to mechanical path to final drive and wheels. MG2 delivers no traction power in this source branch. In combined drive the clutch remains locked and MG2 adds an electrical wheel contribution alongside the engine.",
+        "Engine charging: MG1 generates from engine shaft power, with permitted electric traction and remaining power charging the battery. Regeneration: wheels drive MG2 as a generator and accepted electrical power charges the battery. Engine-powered charging and braking recovery must be distinguished.",
+        "The geometry is a generic educational drivetrain, not manufacturer CAD. Wheel/locked-shaft rotation follows the calculated road speed and drive ratio. Free-running engine/MG1 movement indicates activity; engine RPM, detailed gear dynamics, clutch slip and actuator transients are not calculated."
+      ]
+    ],
+    [
+      "Step time and calculation interval, simply",
+      [
+        "Demand step time means WHEN a manual input changes. If it is 10 s, the initial wheel-power request is used for ten virtual seconds and then changes to the second request. Enable the demand step and choose the manual-power scenario to use it. Negative wheel power requests braking.",
+        "Calculation interval means HOW OFTEN the equations update. At 0.1 s there are ten calculations per virtual second; at 0.05 s there are twenty. This is not the delay before a demand step and not the playback speed.",
+        "Run duration determines how much virtual time is calculated. Playback speed only changes how quickly you watch recorded data. Moving the recorded-time slider inspects existing samples; it does not create new calculations.",
+        "Use a duration containing a whole number of calculation intervals. The editor permits at most 30,000 steps. Try a smaller interval to check sensitivity, but report the chosen interval because mode-switch timing and numerical integration can change. The original reference uses 30 s and 0.1 s."
+      ]
+    ],
+    [
+      "Design a more rigorous experiment",
+      [
+        "Basic inputs cover the scenario, starting speed/SOC, slope, demand multiplier, timing and fuel inventory. Manual demand has its own region. Advanced inputs are grouped into vehicle, battery, ratings, supervisory control, driver control, conversion and fuel assumptions. Every displayed model setting is editable.",
+        "Change one group at a time. Ratings limit component power. Supervisory thresholds decide preferred routes. Driver gains change speed-error response. Efficiencies affect conversion power and SOC. Mass and road loads change the power needed for the target profile.",
+        "A source-limit guard caps engine-charging traction to available generator power after auxiliaries. It preserves the original default result and prevents a low generator rating from being shown as supplying unsupported traction. Turning the guard off restores the original branch assumption; very low charging-source settings then lie outside that assumption. Edits are drafts until Run / apply inputs. A previous completed result remains inspectable after an invalid edit, but exports and playback are blocked until a valid current run is produced. Invalid efficiencies, threshold ordering, SOC bounds, fuel inventory or excessive sample counts are rejected.",
+        "The reference regenerative formula divides by final-drive efficiency. For the expanded calibration domain, the editor requires motor efficiency times inverter efficiency times charging efficiency not to exceed final-drive efficiency. This prevents that approximate source relationship from creating recovered power above its wheel input.",
+        "Master reset to defaults restores this module from a fresh starting state. Reset defaults restores its controls and calculates the reference run. Neither action deletes saved external records. Export your current experiment before resetting."
+      ]
+    ],
+    [
+      "Why does it change between series and parallel?",
+      [
+        "The mechanical region is defined by editable minimum and maximum road speeds. Within it, demand above the combined-drive threshold can select combined engine/motor drive; demand in the parallel range can select direct mechanical drive when SOC permits.",
+        "Outside that direct-drive selection, the controller may choose electric drive if demand, speed and SOC meet its electric preferences. Otherwise a nonnegative request can use the series path. Low SOC and low demand can request engine charging. Negative demand gives regenerative braking priority.",
+        "Minimum mode dwell stops ordinary modes from changing too quickly. Regenerative braking has priority. Transition duration marks that a change is underway; it is an indicator, not a simulated clutch slip time or a validated torque-blending response.",
+        "The high-SOC threshold is used when the optional charging-hysteresis experiment is enabled. After engine charging begins, low-demand charging can continue up to the high threshold. With hysteresis off, the original source branch uses its low threshold. Explain which option you used."
+      ]
+    ],
+    [
+      "Fuel capacity, fuel used and what is currently available",
+      [
+        "Fuel tank capacity is the maximum volume. Fuel currently in the tank is the amount loaded for this run and must not exceed that capacity. Fuel used comes from integrated engine fuel mass, divided by the chosen fuel density. Remaining fuel is initial fuel minus consumed fuel, bounded at zero for display.",
+        "Changing capacity alone does not change engine efficiency or fuel consumption. Changing initial fuel matters physically when empty-tank shutdown is enabled. Fuel price per litre calculates cost in your chosen currency units; no market price is assumed.",
+        "Empty-tank shutdown is an optional research extension. With it off, the original fuel-unlimited controller is retained and the page warns if consumption exceeds loaded fuel. With it on, fuel use is capped to the available amount; engine-dependent operation falls back to electrical traction while usable battery reserve remains. With neither fuel nor reserve, positive traction demand is not met.",
+        "Partial-step fuel depletion uses a time-averaged reduction in the affected source power paths, not detailed combustion shutdown dynamics. The electric fallback is bounded by MG2 power and remaining usable SOC. These extensions are labelled in the exported configuration.",
+        "Fuel density and heating value affect volume and chemical-energy calculations. They do not provide a measured map for a new engine/fuel combination. Vehicle mass is fixed: include the desired fuel mass yourself when setting vehicle mass. The inventory does not automatically change it."
+      ]
+    ],
+    [
+      "Read the detailed analysis",
+      [
+        "The reference solver advances a calculation at time zero as well as later ticks. Cumulative fuel and charging counters include that initial update; energy analysis follows the same updates for consistency. This convention is retained for agreement with the supplied baseline.",
+        "Demand and delivery: compare requested wheel power, delivered power and unmet positive demand. If a rating prevents delivery, do not interpret the run as successful target-speed tracking. RMS speed error is a tracking measure, not an efficiency.",
+        "Power paths: engine shaft, MG1 electrical, MG2 mechanical and battery power belong to different locations in the conversion chain. Mechanical and electric wheel contributions show how parallel/combined drive share delivery. Positive battery power means discharge; negative means charging.",
+        "Road load: rolling resistance, slope and aerodynamic drag are separate forces used in the update. Equivalent wheel torque is derived from delivered power and displayed speed with a protected low-speed denominator. Drive-shaft RPM is derived from wheel speed and the selected ratio; it is not engine RPM.",
+        "Energy interpretation separates braking recovery from fuelled charging. The original recovered-energy counter includes all charging, so it must not be called braking recovery by itself. Fuel chemical energy and engine shaft energy also differ because of engine conversion efficiency.",
+        "Power-path efficiency differs from the reference instantaneous source-energy ratio. The simple loss counters and SOC clamps do not constitute a complete measured vehicle energy audit. Baseline battery availability is control-oriented, not a detailed cell/power-limit model. Fuel-use-per-distance from a short profile is a study statistic, not a certified road consumption or range prediction.",
+        "The comparison button keeps the same driving/manual demand, timing, starting state and fuel inventory while restoring advanced assumptions. Compare fuel, SOC, tracking and unmet demand together. A lower fuel number can reflect greater battery depletion or a failure to meet demand, rather than an improvement."
+      ]
+    ],
+    [
+      "Worked verification tests",
+      [
+        "Reference check: use All-mode verification at defaults, 30 s and 0.1 s. Expected final speed is about 69.60 km/h, SOC about 60.279%, fuel about 0.07706 L and all charging energy about 0.08269 kWh. These are source-model checks, not physical-road validation.",
+        "Demand-driven clutch test: choose Manual wheel-power demand, starting speed 70 km/h, initial demand 25 kW. With default thresholds the direct path is eligible. Enable a step at 10 s and set the second demand to 65 kW. Inspect the clutch and both wheel-power contributions before and after the step, remembering road speed can also change.",
+        "Series route test: choose a starting speed below the direct-drive minimum and a manual positive demand above the electric-preference ceiling, such as 35 kW. Inspect the open clutch, engine/MG1 generation and MG2 traction. Compare with a higher-speed run rather than forcing a mode code.",
+        "Fuel constraint test: use manual demand 25 kW at starting speed 70 km/h, initial fuel 0 L, and enable empty-tank shutdown. Engine power and fuel use must be zero. Electrical traction can remain available while SOC is above its lower bound. Try starting SOC at the lower bound to test lack of usable reserve.",
+        "Inventory arithmetic test: set price to 10 currency units/L. Fuel cost must equal consumed litres times 10. Increase tank capacity without changing loaded fuel or other inputs: consumption should not change.",
+        "Calibration test: lower engine or MG2 rating and look for unmet demand or changed SOC. Adjust the combined-demand threshold and repeat the same manual step. Use Compare with reference calibration to quantify the changed result.",
+        "Convergence test: compare 0.1 s with 0.05 s while keeping duration and all other settings equal. Examine timing, speed, SOC and fuel changes rather than assuming a smoother animation proves more accurate physics."
+      ]
+    ],
+    [
+      "Keep a reproducible test report",
+      [
+        "Record your question, expected cause, scenario, demand shape, all edited assumptions and optional extension settings. State calculation interval and duration separately from playback speed.",
+        "Export CSV or full JSON for the complete applied configuration, samples, transition records and internal diagnostics. These machine-level records are retained for evidence while the page presents human engineering explanations.",
+        "The project source is the supplied Series–Parallel Hybrid programmer handover/specification and the ported reference controller. Default golden-transition tests verify the original numerical baseline. The added calibration surface, fuel constraint, hysteresis option and 3D presentation are documented extensions; no new OEM, MATLAB-runtime or physical-vehicle validation is claimed."
+      ]
+    ]
+  ],
+  "signals": {
+    "targetSpeedKmh": "Requested profile speed, not a promise that available power can achieve it.",
+    "actualSpeedKmh": "Calculated longitudinal vehicle speed after the update.",
+    "speedErrorKmh": "Target speed minus actual speed.",
+    "requestedWheelPowerKw": "Wheel demand from the speed controller/road load or the chosen manual request.",
+    "deliveredWheelPowerKw": "Power the selected source branch supplies to or removes from the wheels.",
+    "unmetPowerKw": "Unserved positive wheel demand. This does not measure braking shortfall.",
+    "engineShaftPowerKw": "Mechanical power leaving the engine before generator or direct-drive conversion.",
+    "mg1DcPowerKw": "Generator DC output from engine shaft power after the source conversion factors.",
+    "mg2MechanicalPowerKw": "MG2 shaft power: positive motoring, negative regenerative operation.",
+    "batteryPowerKw": "Positive discharges the battery; negative charges it.",
+    "mechanicalWheelKw": "Engine direct-path contribution at the wheels when the clutch is locked.",
+    "electricWheelKw": "MG2 contribution at the wheels, including negative regenerative power.",
+    "rollingResistanceN": "Rolling-resistance force used by the vehicle update.",
+    "gradeForceN": "Slope-resistance force used by the update; downhill can be negative.",
+    "aerodynamicForceN": "Air-resistance force used by the update.",
+    "wheelTorqueNm": "Delivered wheel power divided by displayed angular speed, with a protected low-speed denominator. Derived, not measured.",
+    "driveShaftRpm": "Wheel speed times the selected drive ratio. This power-only plant has no engine-speed map.",
+    "socPercent": "Actual calculated SOC state, not the artificial verification control stimulus.",
+    "fuelUsedLitres": "Integrated fuel mass converted to litres with the selected density.",
+    "fuelRemainingLitres": "Loaded fuel minus consumption, shown no lower than zero. Enable the fuel constraint to enforce physical inventory.",
+    "recoveredEnergyKWh": "All battery charging, including engine generation. The analysis separates braking recovery from fuelled charging.",
+    "pathEfficiencyPercent": "Useful power divided by the source path powers, distinct from fuel chemical-energy efficiency.",
+    "overallEfficiencyPercent": "Source instantaneous useful/source-energy ratio. Its interpretation changes during charging and regeneration.",
+    "mechanicalLossKw": "Simplified direct mechanical-path loss from the source allocation.",
+    "electricalLossKw": "Simplified electrical-path loss from the source allocation; not a complete vehicle heat model."
+  },
+  "parameters": [
+    {
+      "key": "initialSoc",
+      "title": "Initial battery SOC",
+      "unit": "fraction",
+      "min": 0.3,
+      "max": 0.8,
+      "group": "Battery",
+      "help": "0.60 means 60% state of charge.",
+      "default": 0.6
+    },
+    {
+      "key": "demandScale",
+      "title": "Demand multiplier",
+      "unit": "ratio",
+      "min": 0,
+      "max": 3,
+      "group": "Experiment",
+      "help": "Multiplies the wheel request; a value of 1 keeps the selected profile unchanged.",
+      "default": 1
+    },
+    {
+      "key": "roadGradePercent",
+      "title": "Road slope",
+      "unit": "%",
+      "min": -30,
+      "max": 30,
+      "group": "Vehicle",
+      "help": "Positive climbs uphill; negative is downhill.",
+      "default": 0
+    },
+    {
+      "key": "manualWheelPowerKw",
+      "title": "Initial manual wheel demand",
+      "unit": "kW",
+      "min": -80,
+      "max": 120,
+      "group": "Experiment",
+      "help": "Used only in the manual-power scenario.",
+      "default": 25
+    },
+    {
+      "key": "massKg",
+      "title": "Vehicle mass",
+      "unit": "kg",
+      "min": 500,
+      "max": 20000,
+      "group": "Vehicle",
+      "help": "Total fixed experiment mass, including occupants and fuel if required. Fuel inventory does not automatically change this mass.",
+      "default": 1500
+    },
+    {
+      "key": "dragCoefficient",
+      "title": "Aerodynamic drag coefficient",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 2,
+      "group": "Vehicle",
+      "help": "Higher values increase air-resistance force.",
+      "default": 0.29
+    },
+    {
+      "key": "frontalAreaM2",
+      "title": "Frontal area",
+      "unit": "m²",
+      "min": 1,
+      "max": 20,
+      "group": "Vehicle",
+      "help": "Area facing airflow.",
+      "default": 2.2
+    },
+    {
+      "key": "rollingResistanceCoefficient",
+      "title": "Rolling resistance coefficient",
+      "unit": "ratio",
+      "min": 0.005,
+      "max": 0.1,
+      "group": "Vehicle",
+      "help": "Tyre/road rolling-loss assumption.",
+      "default": 0.012
+    },
+    {
+      "key": "wheelRadiusM",
+      "title": "Wheel radius",
+      "unit": "m",
+      "min": 0.15,
+      "max": 2,
+      "group": "Vehicle",
+      "help": "Converts vehicle travel to wheel rotation.",
+      "default": 0.31
+    },
+    {
+      "key": "batteryCapacityKWh",
+      "title": "Battery capacity",
+      "unit": "kWh",
+      "min": 0.5,
+      "max": 500,
+      "group": "Battery",
+      "help": "Electrical energy capacity used in the SOC calculation.",
+      "default": 2
+    },
+    {
+      "key": "engineMaxKw",
+      "title": "Engine rating",
+      "unit": "kW",
+      "min": 20,
+      "max": 1000,
+      "group": "Ratings",
+      "help": "Maximum engine shaft power.",
+      "default": 75
+    },
+    {
+      "key": "mg1MaxKw",
+      "title": "MG1 rating",
+      "unit": "kW",
+      "min": 10,
+      "max": 1000,
+      "group": "Ratings",
+      "help": "Generator electrical capability used by the source engine-power cap.",
+      "default": 55
+    },
+    {
+      "key": "mg2MaxKw",
+      "title": "MG2 rating",
+      "unit": "kW",
+      "min": 10,
+      "max": 1000,
+      "group": "Ratings",
+      "help": "Maximum traction motor shaft power.",
+      "default": 60
+    },
+    {
+      "key": "socLow",
+      "title": "Low-SOC threshold",
+      "unit": "fraction",
+      "min": 0,
+      "max": 1,
+      "group": "Battery",
+      "help": "Below this threshold, low-demand engine charging is eligible.",
+      "default": 0.45
+    },
+    {
+      "key": "socHigh",
+      "title": "High-SOC threshold",
+      "unit": "fraction",
+      "min": 0,
+      "max": 1,
+      "group": "Battery",
+      "help": "Charging exit threshold when charging hysteresis is enabled.",
+      "default": 0.65
+    },
+    {
+      "key": "chargingSourceGuard",
+      "title": "Limit charging-mode traction to generation",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Research guard: in engine-charging mode, limit MG2 traction to generator DC power left after auxiliaries. Default reference results are unchanged. Off retains the original branch assumption that generation covers its capped traction load.",
+      "default": 1
+    },
+    {
+      "key": "combinedEngineShare",
+      "title": "Engine share in combined drive",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1,
+      "group": "Supervisory control",
+      "help": "Fraction of combined wheel demand initially assigned to the engine mechanical path. MG2 supplies the remaining permitted share.",
+      "default": 0.7
+    },
+    {
+      "key": "combinedEngineMinKw",
+      "title": "Combined engine minimum request",
+      "unit": "kW",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Source engine-power floor in combined drive, bounded by the engine rating.",
+      "default": 15
+    },
+    {
+      "key": "chargingTractionMaxKw",
+      "title": "Traction limit while engine charging",
+      "unit": "kW",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "MG2 shaft-power ceiling in engine-charging mode.",
+      "default": 12
+    },
+    {
+      "key": "driveRatio",
+      "title": "Shaft-to-wheel speed ratio",
+      "unit": "ratio",
+      "min": 1,
+      "max": 30,
+      "group": "Vehicle",
+      "help": "Changes derived drive-shaft speed/torque and the wheel-linked animation. This power-based plant does not contain an engine-speed map.",
+      "default": 8
+    },
+    {
+      "key": "durationS",
+      "title": "Run duration",
+      "unit": "s",
+      "min": 1,
+      "max": 300,
+      "group": "Experiment",
+      "help": "Length of the calculated run. Built-in profiles last 30 s; enable repeat to cycle them.",
+      "default": 30
+    },
+    {
+      "key": "stepS",
+      "title": "Calculation interval",
+      "unit": "s",
+      "min": 0.001,
+      "max": 1,
+      "group": "Experiment",
+      "help": "Time between equation updates. 0.1 s means ten calculations per virtual second. At most 30,000 steps.",
+      "default": 0.1
+    },
+    {
+      "key": "repeatCycle",
+      "title": "Repeat 30-second profile",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "group": "Experiment",
+      "help": "Repeat the selected built-in target-speed profile. Manual demand is controlled separately.",
+      "default": 0
+    },
+    {
+      "key": "initialSpeedKmh",
+      "title": "Starting vehicle speed",
+      "unit": "km/h",
+      "min": 0,
+      "max": 200,
+      "group": "Experiment",
+      "help": "Initial actual speed. Useful for comparing series/parallel choices at the same road speed.",
+      "default": 0
+    },
+    {
+      "key": "manualTargetSpeedKmh",
+      "title": "Manual target speed",
+      "unit": "km/h",
+      "min": 0,
+      "max": 200,
+      "group": "Experiment",
+      "help": "Reference line for manual-power experiments; manual wheel power drives the plant rather than the speed controller.",
+      "default": 60
+    },
+    {
+      "key": "manualStepEnabled",
+      "title": "Enable demand step",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "group": "Experiment",
+      "help": "In the manual scenario, switch to the second power request at the chosen time.",
+      "default": 0
+    },
+    {
+      "key": "manualPowerAfterKw",
+      "title": "Power after the step",
+      "unit": "kW",
+      "min": -80,
+      "max": 120,
+      "group": "Experiment",
+      "help": "Manual wheel demand after the step. Negative values request braking.",
+      "default": 25
+    },
+    {
+      "key": "manualPowerStepTimeS",
+      "title": "Demand step time",
+      "unit": "s",
+      "min": 0,
+      "max": 300,
+      "group": "Experiment",
+      "help": "Wait this many virtual seconds, then change manual demand. A step time of 10 s means the change happens ten seconds after the run begins.",
+      "default": 10
+    },
+    {
+      "key": "fuelCapacityLitres",
+      "title": "Fuel tank capacity",
+      "unit": "L",
+      "min": 0,
+      "max": 200,
+      "group": "Fuel",
+      "help": "Maximum tank volume; does not by itself change fuel consumption.",
+      "default": 55
+    },
+    {
+      "key": "initialFuelLitres",
+      "title": "Fuel currently in the tank",
+      "unit": "L",
+      "min": 0,
+      "max": 200,
+      "group": "Fuel",
+      "help": "Fuel available at the start. Must not exceed tank capacity.",
+      "default": 20
+    },
+    {
+      "key": "fuelPricePerL",
+      "title": "Fuel price per litre",
+      "unit": "currency/L",
+      "min": 0,
+      "max": 10000,
+      "group": "Fuel",
+      "help": "Your chosen price. Zero leaves calculated fuel cost at zero; no current market price is assumed.",
+      "default": 0
+    },
+    {
+      "key": "fuelDensityKgPerL",
+      "title": "Fuel density",
+      "unit": "kg/L",
+      "min": 0.5,
+      "max": 1.2,
+      "group": "Fuel",
+      "help": "Converts consumed fuel mass to litres. Reference value 0.74 kg/L.",
+      "default": 0.74
+    },
+    {
+      "key": "fuelLhvMJPerKg",
+      "title": "Fuel heating value",
+      "unit": "MJ/kg",
+      "min": 10,
+      "max": 60,
+      "group": "Fuel",
+      "help": "Chemical energy per kilogram used by the fuel-rate calculation.",
+      "default": 44
+    },
+    {
+      "key": "enforceFuelLimit",
+      "title": "Enforce empty-tank shutdown",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "group": "Fuel",
+      "help": "Optional extension: cap fuel use to available fuel and fall back to electric traction when the engine loses fuel. Off preserves original fuel-unlimited control.",
+      "default": 0
+    },
+    {
+      "key": "socMin",
+      "title": "Minimum model SOC",
+      "unit": "fraction",
+      "min": 0,
+      "max": 0.95,
+      "group": "Battery",
+      "help": "Lower SOC state bound. 0.30 means 30%.",
+      "default": 0.3
+    },
+    {
+      "key": "socMax",
+      "title": "Maximum model SOC",
+      "unit": "fraction",
+      "min": 0.05,
+      "max": 1,
+      "group": "Battery",
+      "help": "Upper SOC state bound. Must exceed the high threshold and initial SOC.",
+      "default": 0.8
+    },
+    {
+      "key": "chargeHysteresisEnabled",
+      "title": "Enable charging hysteresis",
+      "unit": "",
+      "min": 0,
+      "max": 1,
+      "group": "Supervisory control",
+      "help": "Optional extension: once engine charging starts, retain it up to the high-SOC threshold while demand remains low.",
+      "default": 0
+    },
+    {
+      "key": "electricSocMargin",
+      "title": "Electric-mode SOC margin",
+      "unit": "fraction",
+      "min": 0,
+      "max": 0.2,
+      "group": "Supervisory control",
+      "help": "Extra SOC above the low threshold needed for electric-only selection.",
+      "default": 0.015
+    },
+    {
+      "key": "evMaxSpeedKmh",
+      "title": "Electric-preference speed ceiling",
+      "unit": "km/h",
+      "min": 1,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Electric-only preference below this speed; this is a control threshold, not a motor hardware-speed rating.",
+      "default": 58
+    },
+    {
+      "key": "evPowerMaxKw",
+      "title": "Electric-preference demand ceiling",
+      "unit": "kW",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Maximum requested power for preferred electric-only selection.",
+      "default": 28
+    },
+    {
+      "key": "directMinSpeedKmh",
+      "title": "Direct-drive minimum speed",
+      "unit": "km/h",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Lower road-speed boundary for closing the engine-to-wheel clutch.",
+      "default": 52
+    },
+    {
+      "key": "directMaxSpeedKmh",
+      "title": "Direct-drive maximum speed",
+      "unit": "km/h",
+      "min": 1,
+      "max": 250,
+      "group": "Supervisory control",
+      "help": "Upper boundary of the direct mechanical region.",
+      "default": 135
+    },
+    {
+      "key": "parallelPowerMinKw",
+      "title": "Parallel demand minimum",
+      "unit": "kW",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Lower wheel-demand threshold for mechanical engine drive.",
+      "default": 8
+    },
+    {
+      "key": "parallelPowerMaxKw",
+      "title": "Parallel demand maximum",
+      "unit": "kW",
+      "min": 1,
+      "max": 300,
+      "group": "Supervisory control",
+      "help": "Upper demand threshold for engine-only mechanical drive.",
+      "default": 47
+    },
+    {
+      "key": "combinedPowerThresholdKw",
+      "title": "Combined-drive threshold",
+      "unit": "kW",
+      "min": 0,
+      "max": 300,
+      "group": "Supervisory control",
+      "help": "Above this demand in the direct-drive region, engine and MG2 can drive together.",
+      "default": 47
+    },
+    {
+      "key": "engineChargeDemandMaxKw",
+      "title": "Charging-mode demand ceiling",
+      "unit": "kW",
+      "min": 0,
+      "max": 200,
+      "group": "Supervisory control",
+      "help": "Engine charging is eligible below this wheel demand when SOC is low.",
+      "default": 16
+    },
+    {
+      "key": "engineChargeTargetKw",
+      "title": "Engine charging power target",
+      "unit": "kW",
+      "min": 0,
+      "max": 300,
+      "group": "Supervisory control",
+      "help": "Engine shaft-power target for the charging mode, still subject to engine/MG1 ratings.",
+      "default": 30
+    },
+    {
+      "key": "modeDwellS",
+      "title": "Minimum mode dwell",
+      "unit": "s",
+      "min": 0,
+      "max": 10,
+      "group": "Supervisory control",
+      "help": "Minimum time before a non-regenerative mode change. Braking has priority.",
+      "default": 0.45
+    },
+    {
+      "key": "transitionS",
+      "title": "Transition indication duration",
+      "unit": "s",
+      "min": 0,
+      "max": 10,
+      "group": "Supervisory control",
+      "help": "How long the controller flags a change. It does not simulate detailed clutch slip or an actuator response.",
+      "default": 0.35
+    },
+    {
+      "key": "speedKp",
+      "title": "Speed-controller proportional gain",
+      "unit": "1/s",
+      "min": 0,
+      "max": 10,
+      "group": "Driver control",
+      "help": "More gain reacts more strongly to current speed error.",
+      "default": 0.75
+    },
+    {
+      "key": "speedKi",
+      "title": "Speed-controller integral gain",
+      "unit": "1/s²",
+      "min": 0,
+      "max": 5,
+      "group": "Driver control",
+      "help": "Adds response to accumulated speed error.",
+      "default": 0.05
+    },
+    {
+      "key": "speedIntegralLimit",
+      "title": "Integral error limit",
+      "unit": "m",
+      "min": 0,
+      "max": 500,
+      "group": "Driver control",
+      "help": "Caps the accumulated speed-controller error.",
+      "default": 20
+    },
+    {
+      "key": "requestAccelMax",
+      "title": "Requested acceleration ceiling",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 10,
+      "group": "Driver control",
+      "help": "Caps the positive acceleration request used to calculate wheel demand.",
+      "default": 2.6
+    },
+    {
+      "key": "requestDecelMax",
+      "title": "Requested deceleration ceiling",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 15,
+      "group": "Driver control",
+      "help": "Caps the negative speed-controller acceleration request.",
+      "default": 3.5
+    },
+    {
+      "key": "vehicleAccelMax",
+      "title": "Plant acceleration ceiling",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 10,
+      "group": "Vehicle",
+      "help": "Caps calculated positive acceleration of the longitudinal plant.",
+      "default": 3
+    },
+    {
+      "key": "vehicleDecelMax",
+      "title": "Plant deceleration ceiling",
+      "unit": "m/s²",
+      "min": 0.1,
+      "max": 15,
+      "group": "Vehicle",
+      "help": "Caps calculated negative plant acceleration.",
+      "default": 5
+    },
+    {
+      "key": "airDensityKgM3",
+      "title": "Air density",
+      "unit": "kg/m³",
+      "min": 0.5,
+      "max": 2,
+      "group": "Vehicle",
+      "help": "Used by aerodynamic road-load force.",
+      "default": 1.225
+    },
+    {
+      "key": "finalDriveEfficiency",
+      "title": "Final-drive efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Fraction retained between the traction shaft and wheels.",
+      "default": 0.95
+    },
+    {
+      "key": "motorEfficiency",
+      "title": "MG2 conversion efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Fixed-efficiency representation of the traction motor/generator conversion.",
+      "default": 0.91
+    },
+    {
+      "key": "inverterEfficiency",
+      "title": "Inverter efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Electrical conversion efficiency used in the motor and generator paths.",
+      "default": 0.96
+    },
+    {
+      "key": "mg1Efficiency",
+      "title": "MG1 efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Engine shaft to generator-DC conversion factor, combined with inverter efficiency.",
+      "default": 0.9
+    },
+    {
+      "key": "directPathEfficiency",
+      "title": "Direct mechanical-path efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Fraction retained through the engine/clutch mechanical path before final drive.",
+      "default": 0.92
+    },
+    {
+      "key": "batteryDischargeEfficiency",
+      "title": "Battery discharge efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "Battery-to-DC power conversion factor.",
+      "default": 0.95
+    },
+    {
+      "key": "batteryChargeEfficiency",
+      "title": "Battery charging efficiency",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Conversion",
+      "help": "DC-to-stored charging power conversion factor.",
+      "default": 0.94
+    },
+    {
+      "key": "auxiliaryPowerKw",
+      "title": "DC auxiliary load",
+      "unit": "kW",
+      "min": 0,
+      "max": 20,
+      "group": "Conversion",
+      "help": "Electrical support load in electric/series/charging allocations.",
+      "default": 1
+    },
+    {
+      "key": "seriesOverheadKw",
+      "title": "Series engine headroom",
+      "unit": "kW",
+      "min": 0,
+      "max": 50,
+      "group": "Conversion",
+      "help": "Extra shaft-power allowance in the source series-mode engine request.",
+      "default": 4
+    },
+    {
+      "key": "regenMechanicalMaxKw",
+      "title": "Regenerative wheel-power ceiling",
+      "unit": "kW",
+      "min": 0,
+      "max": 300,
+      "group": "Conversion",
+      "help": "Maximum negative wheel power handled by the regenerative allocation.",
+      "default": 55
+    },
+    {
+      "key": "regenBatteryMaxKw",
+      "title": "Regenerative charging ceiling",
+      "unit": "kW",
+      "min": 0,
+      "max": 300,
+      "group": "Conversion",
+      "help": "Upper magnitude of battery charging power during regenerative mode.",
+      "default": 35
+    },
+    {
+      "key": "engineEfficiencyBase",
+      "title": "Engine efficiency base",
+      "unit": "ratio",
+      "min": 0.05,
+      "max": 0.6,
+      "group": "Fuel",
+      "help": "Base of the reference engine-load efficiency curve.",
+      "default": 0.24
+    },
+    {
+      "key": "engineEfficiencySpan",
+      "title": "Engine efficiency gain",
+      "unit": "ratio",
+      "min": 0,
+      "max": 0.5,
+      "group": "Fuel",
+      "help": "Efficiency rise toward the selected optimal engine load.",
+      "default": 0.14
+    },
+    {
+      "key": "engineOptimalLoad",
+      "title": "Optimal engine load fraction",
+      "unit": "ratio",
+      "min": 0.1,
+      "max": 1,
+      "group": "Fuel",
+      "help": "Engine power divided by engine rating at the best point of the source efficiency curve.",
+      "default": 0.65
+    },
+    {
+      "key": "engineEfficiencyMin",
+      "title": "Minimum engine efficiency",
+      "unit": "ratio",
+      "min": 0.01,
+      "max": 0.8,
+      "group": "Fuel",
+      "help": "Lower clamp for the simplified fuel-conversion efficiency.",
+      "default": 0.22
+    },
+    {
+      "key": "engineEfficiencyMax",
+      "title": "Maximum engine efficiency",
+      "unit": "ratio",
+      "min": 0.02,
+      "max": 0.9,
+      "group": "Fuel",
+      "help": "Upper clamp for the simplified fuel-conversion efficiency.",
+      "default": 0.38
+    }
+  ]
+}

@@ -19,7 +19,7 @@ def test_motor_workspace_help_and_guidance(page,demo_records,live_server,width):
   a=page.locator('.input-workspace').bounding_box();b=page.locator('.output-workspace').bounding_box();assert b['x']>=a['x']+a['width']
  page.locator('.drive-3d-stage').evaluate("e=>e.scrollIntoView({block:'center'})")
  out=Path('test-results/motor-review');out.mkdir(parents=True,exist_ok=True);page.screenshot(path=str(out/f'motor-{width}.png'))
- page.locator('#motor-learning-guide summary').click()
+ page.locator('#motor-learning-guide > summary').click()
  expect(page.locator('#motor-learning-content')).to_contain_text('50,000 steps cover one virtual second')
  with page.expect_download() as dl:page.get_by_role('link',name='Download complete learning guide (PDF)').click()
  assert Path(dl.value.path()).read_bytes().startswith(b'%PDF')
@@ -42,3 +42,14 @@ def test_motor_fallback(page,demo_records,live_server):
  expect(page.locator('.drive-3d-stage')).to_contain_text('3D is unavailable')
  expect(page.locator('[data-rotor]')).to_be_visible()
  page.locator('[data-time]').fill('4');expect(page.locator('[data-value=speed]')).to_have_text('1,500.0')
+
+def test_realistic_assembly_modes_and_rendered_kinematics(page,demo_records,live_server):
+ import math
+ open_lab(page,demo_records,live_server);stage=page.locator('.drive-3d-stage');expect(stage.locator('canvas')).to_be_visible(timeout=20000)
+ page.locator('[data-time]').fill('3');expect(page.locator('.drive-readings')).to_contain_text('Selected 3.000 s');assert math.isclose(float(stage.get_attribute('data-sample-time')),3)
+ theta=float(stage.get_attribute('data-shaft-angle'));expect(stage).to_have_attribute('data-render-motor-angle',str(theta))
+ ratio=float(page.locator('[data-field=gear]').input_value());assert math.isclose(float(stage.get_attribute('data-render-wheel-angle')),theta/ratio,rel_tol=1e-10)
+ out=Path('test-results/motor-realistic');out.mkdir(parents=True,exist_ok=True)
+ for label,mode in [('Drivetrain','drive'),('Motor close-up','motor'),('Reduction close-up','reduction')]:
+  page.get_by_role('button',name=label,exact=True).click();expect(stage).to_have_attribute('data-render-mode',mode);stage.screenshot(path=str(out/f'{mode}.png'))
+ page.emulate_media(reduced_motion='reduce');expect(stage).to_have_attribute('data-render-motor-angle','0');expect(stage).to_have_attribute('data-render-wheel-angle','0')

@@ -1,0 +1,267 @@
+{
+  "title": "Engine–Generator Fuel-to-Electric: learning and experiment guide",
+  "sections": [
+    [
+      "Your first experiment",
+      [
+        "Keep Reference gradual demand and choose Run complete scenario. The full 120 seconds is calculated; move Recorded time to inspect any sample. Start live reveals the same equations gradually. Pause freezes time. Step advances by one calculation interval.",
+        "Watch the chain: stored fuel supplies chemical energy; the engine turns the shaft; the generator turns shaft power into electricity. The DC-link photograph identifies receiving hardware, but the calculation ends at generator electrical output. There is no DC-link voltage, current, capacitance or switching solver.",
+        "Choose a component photo to focus on it, or Whole conversion to see all four. Activity arrows follow calculated positive power. Animate energy flow and reduced-motion settings stop decorative movement; the original component photographs do not become mechanical-motion measurements."
+      ]
+    ],
+    [
+      "Understand time in everyday terms",
+      [
+        "Calculation interval means how much virtual time one update covers. At 0.1 s there are ten updates each simulated second. The Step button performs one such update. It does not run one whole second unless you choose a one-second interval.",
+        "Command delay means how long the controller waits before a changed command affects response. A 1 s delay is ten 0.1 s intervals. Ramp up and down then limit how quickly power changes. Pacing changes viewing speed, not equations or interval.",
+        "There is no separate editable demand-step-time input in this module. Gradual demand follows a 60 s sine period. Pulsed demand switches between high and low every 10 s in a 20 s cycle. Change profiles to compare continuous and abrupt requests.",
+        "Run duration is virtual time. A 120 s run at 0.1 s has 1201 samples including time zero. If duration is not an exact multiple, the final interval is shortened to end at the requested duration."
+      ]
+    ],
+    [
+      "Fuel tank, fuel used and cost",
+      [
+        "Tank capacity is the maximum it holds. Fuel currently in tank is the volume loaded for this experiment. They are different: a 55 L tank can start with only 20 L. Changing capacity changes the level percentage, not fuel efficiency.",
+        "Fuel consumption is first calculated in grams from the BSFC map and shaft power. Litres used = grams used / (1000 × density in kg/L). Remaining litres = max(loaded − used, 0). Cost = used litres × entered price. Density and initial inventory are documented study assumptions, not manufacturer measurements.",
+        "Fuel inventory is an accounting extension. When it reaches zero, a clear fuel-budget deficit is shown and the reference engine equations continue. There is no invented empty-tank shutdown, fuel-pressure model, refuelling or battery fallback in this conversion model.",
+        "LHV changes chemical energy per kilogram; BSFC sets how many grams the engine consumes for shaft output. Density changes litres for the same mass. Compare these separately. A larger tank does not improve efficiency or change a vehicle mass: vehicle dynamics are outside this module."
+      ]
+    ],
+    [
+      "Read standard analytical plots",
+      [
+        "Each plot names its quantity and units, shows regular time and value ticks, light gridlines, and a recorded-time cursor. Line colour and line pattern distinguish channels. Use legend checkboxes to hide a channel; each i button gives a plain-language definition. Different units get separate axes/panels.",
+        "Power compares demand, delayed command, output and shortage. Efficiency is a ratio: 0.3 = 30%; utilisation is a percentage. Engine plots separate speed, torque, shaft power and fuel flow. Loss plots explain the conversion balance. Cumulative charts measure energy and mass over the whole run. Fuel inventory charts add litres and tank percentage.",
+        "Click a plot to select the nearest original calculated sample. Use Chart window to inspect the whole run or 10/30 seconds around the cursor. Graphs are thinned for screen drawing, while CSV/JSON retain every sample. SVG export includes the visible window and series metadata."
+      ]
+    ],
+    [
+      "Worked tests you can verify",
+      [
+        "Baseline: 18 kW gradual load, external SOC 60%, generator rating 30 kW, LHV 43 MJ/kg, 120 s at 0.1 s. Expect 1201 samples, approximately 0.589619 kWh generated, 157.598429 g fuel, 31.32% case fuel-to-electric efficiency and 22.50 kW peak generation. These check the written model, not a measured vehicle.",
+        "At density 0.74 kg/L the baseline uses about 0.212971 L. Starting with 20 L leaves about 19.787029 L. At a price of 10 currency units/L, the cost is about 2.129709. Change density to 0.8: mass and electrical energy stay the same, but consumed litres change.",
+        "Demand exceeds rating: choose that scenario and run. A steady 45 kW demand with a 15 kW rating leaves about 30 kW shortage after settling. The initial delay/ramp can cause a larger initial shortage.",
+        "Low SOC support: external SOC 20%, target 60%, gain 0.15 kW per percentage point gives 6 kW support, capped by Maximum SOC support. SOC is fixed, so the set does not simulate the battery becoming full.",
+        "Delay and ramp: choose steady demand, inspect time zero through the first few seconds. Default command waits 1 s and then rises by at most 8 kW each second. Compare 0.1 s and 0.05 s calculation intervals for time-resolution sensitivity.",
+        "Fuel budget: load 0.1 L and run the baseline. Remaining fuel reaches zero and the deficit becomes positive. Explain why the reference generator still produces output: fuel shutdown is outside this study model."
+      ]
+    ],
+    [
+      "Advanced research and equations",
+      [
+        "Controller order: demand profile and clipping; SOC support; rating and enable; timestamped command delay; ramp limiting; normalized component maps; power conversion; trapezoidal energy and mass integration. Advanced settings and maps remain editable.",
+        "Generator efficiency, engine speed and BSFC use linear interpolation between normalized load breakpoints. Out-of-range lookups use endpoint values. Shaft kW = command kW / protected generator efficiency. Fuel g/s = BSFC (g/kWh) × shaft kW / 3600. Fuel chemical kW = fuel g/s × LHV (MJ/kg).",
+        "Engine efficiency = shaft / fuel power. Complete efficiency = electrical / fuel power. Engine loss = fuel − shaft; generator loss = shaft − electrical. Power balance residual = fuel − engine loss − generator loss − electrical. Whole-run efficiency = electrical kWh / fuel kWh.",
+        "A mathematically balanced run can still use unrealistic component data. The interface warns when BSFC/LHV imply efficiency above 100%. Check source maps, rated operating range, safeguards and low-power behavior before interpreting a custom experiment."
+      ]
+    ],
+    [
+      "Keep and reproduce your evidence",
+      [
+        "Record your research question, scenario, operating inputs, fuel density/inventory, advanced settings and map source/version. Save scenario JSON to reopen it later. Export full JSON or CSV for all original timestamps and values; SVG preserves a plotted window.",
+        "Changing an input starts a fresh run. Reset run retains the selected settings; Restore defaults restores inputs, calibration and demonstration maps. The platform Master reset reloads the module defaults without deleting saved lecturer records. Export before resetting.",
+        "The original SLX and complete native trace were not supplied for this module. Verification is against the written specification, equations and provided summary anchors. No manufacturer CAD, OEM calibration, fresh full-trace Simulink comparison, measured-vehicle validation, battery dynamics, range or emissions claim is made."
+      ]
+    ]
+  ],
+  "parameters": [
+    {
+      "key": "meanLoadKW",
+      "title": "Mean electrical load",
+      "unit": "kW",
+      "help": "How much electrical power the experiment asks for on average. 18 kW means a demand of 18 kilojoules each second. The chosen profile varies this request.",
+      "default": 18
+    },
+    {
+      "key": "batterySocPct",
+      "title": "External battery SOC",
+      "unit": "%",
+      "help": "How full an external battery is assumed to be. 60% means sixty percent full. This value stays fixed; this module does not charge or discharge a battery model.",
+      "default": 60
+    },
+    {
+      "key": "generatorRatingKW",
+      "title": "Generator rating",
+      "unit": "kW",
+      "help": "The greatest electrical power the generator is allowed to supply. If demand is higher, the difference is shown as shortfall.",
+      "default": 30
+    },
+    {
+      "key": "fuelLhvMJPerKg",
+      "title": "Energy in each kilogram of fuel",
+      "unit": "MJ/kg",
+      "help": "Fuel lower heating value: chemical energy stored per kilogram. This changes calculated fuel energy and fuel-to-electric efficiency, while the BSFC map sets fuel mass flow.",
+      "default": 43
+    },
+    {
+      "key": "simulationDurationS",
+      "title": "Simulation duration",
+      "unit": "s",
+      "help": "How many virtual seconds the experiment covers. 120 s is two simulated minutes. This is different from the time your computer takes to calculate it.",
+      "default": 120
+    },
+    {
+      "key": "timeStepS",
+      "title": "Calculation interval",
+      "unit": "s",
+      "help": "How far virtual time moves for one calculation. 0.1 s means ten updates per virtual second. Step performs one update; pacing only changes how quickly you watch.",
+      "default": 0.1
+    },
+    {
+      "key": "fuelCapacityLitres",
+      "title": "Fuel tank capacity",
+      "unit": "L",
+      "help": "Maximum volume the tank can hold. This sets the fuel-level gauge denominator; a larger tank does not automatically contain more fuel or improve efficiency.",
+      "default": 55
+    },
+    {
+      "key": "initialFuelLitres",
+      "title": "Fuel currently in tank",
+      "unit": "L",
+      "help": "Litres available when a fresh run begins. Must not exceed tank capacity. Calculated consumption is subtracted from this amount.",
+      "default": 20
+    },
+    {
+      "key": "fuelPricePerL",
+      "title": "Fuel price per litre",
+      "unit": "currency/L",
+      "help": "Your chosen price per litre. Cost equals consumed litres times this price. Zero means no monetary price has been assigned.",
+      "default": 0
+    },
+    {
+      "key": "demandLimitKW",
+      "title": "Demand limit",
+      "unit": "kW",
+      "help": "Largest electrical demand admitted by the controller. A higher raw request is clipped here before the generator rating is applied.",
+      "default": 45
+    },
+    {
+      "key": "socTargetPct",
+      "title": "SOC target",
+      "unit": "%",
+      "help": "The external battery fullness the support rule aims for. Below this value, the controller asks for extra generator power; SOC itself stays fixed.",
+      "default": 60
+    },
+    {
+      "key": "socSupportGainKWPerPct",
+      "title": "SOC support gain",
+      "unit": "kW/%",
+      "help": "Extra power requested for each percentage point below the target. At 0.15, a 40-point deficit asks for 6 kW, before the support cap.",
+      "default": 0.15
+    },
+    {
+      "key": "maxSocSupportKW",
+      "title": "Maximum SOC support",
+      "unit": "kW",
+      "help": "Upper limit on extra power requested for low external SOC. This is extra generation, not a simulated battery charge rate.",
+      "default": 6
+    },
+    {
+      "key": "commandDelayS",
+      "title": "Command delay",
+      "unit": "s",
+      "help": "How long a new power command waits before it reaches the generator response. 1 s means a one-virtual-second delay. It is not the calculation interval.",
+      "default": 1
+    },
+    {
+      "key": "rampUpKWPerS",
+      "title": "Power rise limit",
+      "unit": "kW/s",
+      "help": "Fastest allowed increase of commanded power. At 8 kW/s, output can rise by up to 0.8 kW during a 0.1 s calculation interval.",
+      "default": 8
+    },
+    {
+      "key": "rampDownKWPerS",
+      "title": "Power fall limit",
+      "unit": "kW/s",
+      "help": "Fastest allowed reduction of commanded power. Disable sends a zero command through the existing delay and ramp; output need not disappear immediately.",
+      "default": 12
+    },
+    {
+      "key": "maxMapLoadFraction",
+      "title": "Map load-fraction cap",
+      "unit": "ratio",
+      "help": "Highest command-to-rating fraction used to look up component maps. 1 is 100% of rating. Values beyond the supplied map ends use the nearest endpoint.",
+      "default": 1.25
+    },
+    {
+      "key": "powerEpsilonKW",
+      "title": "Power division safeguard",
+      "unit": "kW",
+      "help": "Small positive denominator used when dividing by very small power. It prevents undefined ratios; it is not measured energy or an added power source.",
+      "default": 0.001
+    },
+    {
+      "key": "efficiencyEpsilon",
+      "title": "Efficiency division safeguard",
+      "unit": "ratio",
+      "help": "Smallest denominator used for generator efficiency. Very low map values can make delivered power smaller than command. It must be above zero and no greater than 1.",
+      "default": 0.05
+    },
+    {
+      "key": "speedEpsilonRPM",
+      "title": "Speed division safeguard",
+      "unit": "rpm",
+      "help": "Small positive denominator for torque calculation near zero rpm. Near-rest torque is a protected calculation, not a measured stall-torque prediction.",
+      "default": 1
+    },
+    {
+      "key": "fuelDensityKgPerL",
+      "title": "Fuel density",
+      "unit": "kg/L",
+      "help": "Mass of one litre of fuel. At 0.74 kg/L, one litre weighs 740 g. Used litres = fuel mass in grams divided by density × 1000. Use data appropriate to the chosen fuel.",
+      "default": 0.74
+    }
+  ],
+  "signals": {
+    "demandKW": "Electrical demand. Power requested after the demand limit. Compare it with generated power to see whether the set meets the load.",
+    "commandKW": "Delayed and ramped command. The controller request after its waiting time and rate limits. It is a command, not a measurement of output.",
+    "generatorPowerKW": "Generated electrical power. Calculated electrical power leaving the generator conversion. It represents supply to a DC-link boundary; voltage and switching are not simulated.",
+    "demandShortfallKW": "Unmet electrical demand. Requested power minus generated power when positive. A visible gap indicates supply shortage. Extra SOC support can make generation exceed demand.",
+    "engineEfficiencyRatio": "Engine efficiency. Shaft power divided by chemical fuel power. A ratio of 0.3 means 30%. Check BSFC and fuel energy data if the result exceeds one.",
+    "generatorEfficiencyRatio": "Generator efficiency. Electrical output divided by shaft input, from the supplied load-dependent map. A ratio of 0.9 means 90%.",
+    "fuelToElectricEfficiencyRatio": "Fuel-to-electric efficiency. Electrical output divided by chemical fuel power at this instant. For whole-run comparison, use cumulative electrical energy divided by cumulative fuel energy.",
+    "generatorUtilisationPct": "Generator utilisation. Generated electrical power as a percentage of its rating. 50% of a 30 kW rating means 15 kW output.",
+    "engineSpeedRPM": "Engine speed. Mapped revolutions per minute at the selected load fraction. This is not a crank-angle or individual-cylinder simulation.",
+    "engineTorqueNm": "Engine shaft torque. Turning effort calculated as 9550 × shaft kW / protected rpm. N m is newton metres.",
+    "shaftPowerKW": "Mechanical shaft power. Power the engine must deliver to the generator before generator losses.",
+    "fuelFlowGPS": "Fuel mass flow. Grams of fuel consumed each second. It follows BSFC × shaft kW / 3600.",
+    "engineLossKW": "Engine conversion loss. Chemical fuel power minus engine shaft power. This model does not split that loss into exhaust, coolant and friction.",
+    "generatorLossKW": "Generator conversion loss. Shaft input minus electrical output. It is not a simulated winding temperature.",
+    "totalLossKW": "Total conversion loss. Fuel power minus electrical power; engine and generator losses combined.",
+    "energyResidualKW": "Power-balance residual. Fuel power minus engine loss, generator loss and electrical output. A value close to zero checks arithmetic balance, not physical validation.",
+    "generatedEnergyKWh": "Generated electrical energy. Electrical power accumulated through time with trapezoidal integration. kWh is energy; kW is the instantaneous rate.",
+    "fuelEnergyKWh": "Chemical fuel energy. Accumulated fuel energy entering the conversion. Compare it with electrical energy and accumulated losses.",
+    "lossEnergyKWh": "Conversion loss energy. Accumulated engine and generator loss. It is energy, not a component temperature.",
+    "shortfallEnergyKWh": "Unmet demand energy. Electrical shortage accumulated over time. A short high shortage and a long small shortage can have similar energy totals.",
+    "totalFuelG": "Fuel consumed by mass. Fuel flow accumulated over time, in grams. This is converted to litres using your density.",
+    "fuelUsedLitres": "Fuel consumed by volume. Accumulated mass divided by density × 1000. A density of 0.74 kg/L means 740 g per litre.",
+    "fuelRemainingLitres": "Fuel remaining. Loaded litres minus consumed litres, displayed no lower than zero. The reference calculation continues after this reaches zero.",
+    "fuelLevelPct": "Tank level. Remaining litres divided by tank capacity, times 100. This is an inventory gauge, not a simulated level-sensor voltage.",
+    "fuelDeficitLitres": "Fuel budget deficit. Consumption beyond the initially loaded volume. A positive value means this reference run would need more fuel than was loaded.",
+    "fuelCost": "Consumed-fuel cost. Used litres multiplied by the entered price per litre. Purchase, maintenance and infrastructure costs are excluded."
+  },
+  "credits": [
+    [
+      "Fuel tank cutaway",
+      "Cschirp",
+      "https://commons.wikimedia.org/wiki/File:Automobile_Fuel_tank_cutaway.JPG",
+      "CC BY-SA 3.0",
+      "https://creativecommons.org/licenses/by-sa/3.0/"
+    ],
+    [
+      "Engine and hybrid motor-generator cutaway",
+      "Hatsukari715",
+      "https://commons.wikimedia.org/wiki/File:Toyota_1NZ-FXE_Engine_01.JPG",
+      "Public domain",
+      "https://creativecommons.org/publicdomain/mark/1.0/"
+    ],
+    [
+      "Opened inverter and DC-link capacitors",
+      "ToyotaOpenHSD.jpg, Wikimedia Commons; uploader JMPerez, photographer not identified on file page",
+      "https://commons.wikimedia.org/wiki/File:ToyotaOpenHSD.jpg",
+      "CC BY-SA 3.0",
+      "https://creativecommons.org/licenses/by-sa/3.0/"
+    ]
+  ]
+}

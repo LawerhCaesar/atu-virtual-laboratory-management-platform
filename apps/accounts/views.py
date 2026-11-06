@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, PasswordChangeView
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,10 +21,14 @@ def register(request):
         return redirect("core:dashboard")
     form = RegistrationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        with transaction.atomic():
-            user = form.save()
-            record_event(actor=user, action="ACCOUNT_REGISTERED", target=user, request=request)
-        return render(request, "accounts/registration_complete.html", {"registered_user": user})
+        try:
+            with transaction.atomic():
+                user = form.save()
+                record_event(actor=user, action="ACCOUNT_REGISTERED", target=user, request=request)
+        except IntegrityError:
+            form.add_error(None, "An account already uses that email address or index number. Review your details.")
+        else:
+            return render(request, "accounts/registration_complete.html", {"registered_user": user})
     return render(request, "accounts/register.html", {"form": form})
 
 
@@ -105,7 +109,8 @@ def user_management(request):
         if form.cleaned_data.get("q"):
             query = form.cleaned_data["q"]
             users = users.filter(
-                Q(full_name__icontains=query)
+                Q(index_number__icontains=query)
+                | Q(full_name__icontains=query)
                 | Q(email__icontains=query)
                 | Q(academic_profile__student_or_staff_id__icontains=query)
             )

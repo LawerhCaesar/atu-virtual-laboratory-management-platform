@@ -1,0 +1,341 @@
+{
+  "title": "Authenticated Engine Starting: practical learning guide",
+  "version": "Local review \u2022 1 November 2026",
+  "sections": [
+    [
+      "Start here: two routes to a start",
+      [
+        "First check this device. Register a platform authenticator once for this account and website, then choose Verify device / fingerprint. Your operating system may ask you to touch its fingerprint reader, use face recognition or enter its device PIN. A successful server-verified response supplies identity for 60 seconds. Registration alone never supplies identity.",
+        "The browser cannot read the fingerprint image, choose fingerprint over every other operating-system method, or measure how long you touch its reader. Use the separate contact pad to measure hold duration. An external R503 reader would need its own trusted hardware bridge; none is installed here. Practice identity is explicitly simulated.",
+        "Voice route: use a verified identity, press the contact pad for about 0.3 seconds, then release. Short contacts from 0.15 seconds to less than 1.5 seconds grant a 10-second voice window. Choose Enable microphone / Listen and say the complete active phrase, initially Hey Start. Watch recognized text and the decision.",
+        "Direct route: with identity present, hold the contact pad for at least 1.5 seconds. This produces one start request. Short contacts authorize voice; long contacts request a start directly. Neither route bypasses feedback or electrical checks.",
+        "Keep Simulation pacing at 1 for live input. Keep the tab in front. Leaving the tab, changing parameters, stopping or resetting cancels pending speech or contact. Device permission is cleared on stop/reset."
+      ]
+    ],
+    [
+      "Understand time without confusion",
+      [
+        "Model time is the virtual clock used by the equations. Step 10 ms advances one hundredth of a virtual second: 100 steps span one second. It does not mean microphone delay, fingerprint contact duration or how quickly the screen refreshes.",
+        "Run / resume advances the virtual clock; Pause freezes it. Live contact and speech require normal 1x pacing. A suspended/background tab is unsuitable for measuring a live hold. The controller and torque integration keep the original 0.01-second step.",
+        "The crank deadline is 3 seconds from the original accepted request. Losing CAN during a crank never restarts that timer. Running requires fresh, valid RPM of at least 600 continuously for 0.20 seconds. One high-speed sample is insufficient."
+      ]
+    ],
+    [
+      "From microphone sound to a command",
+      [
+        "Test microphone requests the actual microphone through this browser. Its waveform and 8-bit diagnostic samples show a live input signal. Approximately 128 means zero in this unsigned display. These temporary analyser samples are not a saved audio recording, speech codec, or command.",
+        "Speech recognition is separate: the browser converts sound to text using its own supported service. It may require the internet and send audio to its provider. This lab does not store raw audio. If recognition is unavailable, use a supported full browser; the microphone diagnostic alone cannot recognize words.",
+        "The complete recognized phrase is normalized for case, punctuation and spacing and compared with the saved phrase. The technical view then shows UTF-8 text bytes in hex and binary. These are the encoded transcript, not raw microphone audio. A match requests command ID 1, shown as 00000001.",
+        "A matching phrase still needs current permission, a new sequence, capture after the current authorization epoch and acceptable capture age. Voice recognizes the command, not the identity of the speaker. A wrong phrase, delayed response, changed command, cancelled request or expired permission must never start the engine.",
+        "If the microphone is denied, allow it in this site\u2019s browser settings and retry. If the level is silent, check the selected input device. A network/service failure is reported separately. Automated speech tests use controlled recognition results; they do not prove human accent accuracy."
+      ]
+    ],
+    [
+      "Follow the feedback loop",
+      [
+        "Identity and contact or voice produce a request. The supervisor checks electrical power, stand interlock, valid stopped-speed feedback and authorization before cranking. The starter relay and the separate run-supply relay are distinct outputs.",
+        "The starter produces torque in the original virtual plant. Plant RPM is encoded into a demonstration CAN feedback frame, decoded and checked by the receiver. Qualified running RPM releases the starter while retaining the run-supply relay.",
+        "The supplied demonstration expects CAN ID 0x100, DLC 8, unsigned two-byte little-endian RPM, scale 1 and offset 0 by default. For example, 600 rpm gives raw 600 = 0x0258; the RPM bytes are 58 02. Other payload bytes are not claimed as an OEM DBC. No CAN engine-start command frame is invented: this design uses protected starter/run relay commands and CAN RPM feedback.",
+        "An identifier is a message label. DLC is the declared payload length. A received frame must pass ID, length and decoded range checks. Freshness is how recently a valid frame arrived. The last number can remain on screen after it becomes invalid; always read the validity flag and age alongside RPM."
+      ]
+    ],
+    [
+      "Read the engine and graphs",
+      [
+        "The movable engine stand is based on the documented 1NZ methodology: engine, starter, separate tank, radiator and control panel. Geometry is a generic teaching reconstruction, not manufacturer CAD, exact part dimensions, a photographic engine or proof of a physical installation.",
+        "The pinion engages with the starter command; flywheel motion uses calculated plant RPM. Running confirmation releases the starter. Whole stand and Starter close-up change the camera. Rotate/zoom to inspect the assembly. High-speed motion can strobe; use numerical RPM for measurement. Reduced-motion settings suppress rotation.",
+        "The signal ribbon separates identity, transcript, command, permission, supervisor, relays and CAN feedback. The trace charts share model-time on their horizontal axis. Solid, dashed and dotted lines are named explicitly; use each information icon for the meaning. Codes and 0/1 signals are not physical units.",
+        "The RPM chart compares plant truth with decoded feedback. A disagreement or invalid flag is a useful fault clue. Export run JSON for inputs, all 28 outputs, device/contact source notes, circuit settings and signal events. CSV contains all 28 output columns. Exports do not include private keys or raw microphone audio."
+      ]
+    ],
+    [
+      "Electrical bench: what the numbers do",
+      [
+        "These extra checks are ideal teaching calculations, not calibrated 1NZ specifications. Prospective starter current I = battery voltage / (combined cable resistance + equivalent starter resistance). Cable drop = I x cable resistance. Starter terminal voltage = battery voltage minus cable drop. Relay coil current = battery voltage / coil resistance.",
+        "At defaults: 12.6 V, 0.01 ohm cable and 0.06 ohm starter give 180 A, 1.8 V cable drop and 10.8 V at the starter. An 80-ohm coil draws 0.1575 A. Power passes at battery >=9.6 V, starter terminal >=9 V and coil current 0.04-0.50 A, with an intact fuse. These thresholds are exercise assumptions, not hardware ratings.",
+        "The ideal fuse opens on an attempted crank above its selected current threshold. It remains open after a controller reset. Repair the overload, then choose Replace virtual fuse. Real fuses use time-current curves; this exercise does not. Restore electrical defaults deliberately restores an intact fuse and starts a new experiment.",
+        "CAN differential voltage = CANH minus CANL. The static dominant sample defaults to 3.5 V and 1.5 V: difference 2 V, common-mode 2.5 V. The teaching check accepts differential 0.9-3 V, common-mode 1.5-3.5 V and combined termination 45-75 ohms. Two 120-ohm end resistors in parallel give 60 ohms measured on an unpowered bus.",
+        "Failing a static CAN check suppresses valid feedback. Failing power/coil/drop checks inhibits power. These checks feed the original supervisor; they do not recalculate detailed motor torque with supply voltage or simulate bit timing, arbitration, transmission errors, ringing, EMC, semiconductor behavior or actual CAN measurements. The level display is an entered test sample, not an oscilloscope."
+      ]
+    ],
+    [
+      "A repeatable diagnostic method",
+      [
+        "1. Save or export the initial question settings. Check the live reason and electrical preflight before attempting a start. Record the expected result.",
+        "2. Change one fault at a time. Compare supply, current, drop, CAN differential, termination, frame validity and age with the stated teaching thresholds.",
+        "3. Restore the damaged connection or setting. Replace a latched ideal fuse if needed. Use Controller reset / recover deliberately after a latched fault; restore permit conditions first. A new identity/contact or voice authorization is required when reset removes it.",
+        "4. Repeat the same start route. Verify CRANKING, starter on, increasing plant RPM, accepted/fresh CAN RPM, qualified RUNNING, starter off and run supply on. Check the entire sequence, not just a green indicator.",
+        "5. Export the before/after run and explain the causal chain. A numeric repair alone does not prove speech recognition, a real fingerprint or a physical engine test."
+      ]
+    ],
+    [
+      "Suggested lecturer questions and expected checks",
+      [
+        "CAN termination: set combined termination to 120 ohms. Expect invalid feedback and an inhibited new start. Repair to 60 ohms, check integrity and reauthorize. Explain the parallel resistor calculation.",
+        "Cable corrosion: set combined cable resistance to 0.08 ohm with the other defaults. Prospective current is 90 A, cable drop is 7.2 V and terminal voltage is 5.4 V. Expect power inhibition. Repair the connection resistance and verify terminal voltage.",
+        "Ideal fuse: lower fuse threshold to 100 A with default resistance. Attempt a crank. Expect a latched open fuse after the command sample. Repair fuse selection/overload, replace the virtual fuse and reauthorize; merely changing the threshold does not replace an open fuse.",
+        "CAN timeout: allow a crank with ignition disabled, then drop CAN frames. Observe invalid/stale RPM and the original 3-second crank deadline leading to FAULT. Do not expect a restarted timer or an immediate running confirmation.",
+        "Noisy/malformed feedback: use Wrong CAN ID, Wrong CAN length or Invalid RPM range. Explain why an arriving frame is not necessarily valid feedback. Restore the fault and deliberately recover when needed.",
+        "Brief RPM spike: override RPM above 600 briefly for less than 0.20 seconds. Qualification must not latch running. Monitoring loss is observational only; disconnecting the monitor must not grant permission or extend a crank."
+      ]
+    ],
+    [
+      "Save and share a trial exercise",
+      [
+        "Lecturers and administrators can save a title, student instructions, electrical values, active controller parameters, functional connections and fault switches to their own account. Choose My saved exercises or share the numeric exercise ID with an approved student.",
+        "Loading restores the original question settings and resets authorization. Each student repairs their browser\u2019s local copy. Students cannot save over the lecturer question. The shared ID is for approved laboratory users, not an anonymous public link. Saved questions are not a private examination bank, submission system or automatic grading service.",
+        "Current load torque and RPM override value are also stored with the question. Transient voice/contact events, an already-running engine, device secrets, live audio and a latched fuse are not stored as question state. Use a low fuse setting to make the student reproduce a fuse fault.",
+        "Apply parameters / new experiment resets the experiment. Keep the numerical integration step fixed at 0.01 s. Input ranges and threshold consistency are checked before applying a configuration."
+      ]
+    ],
+    [
+      "Device security, scope and evidence",
+      [
+        "Device registration stores a credential identifier, public key and signature counter against the signed-in account. Authentication uses a fresh, expiring, one-use server challenge and checks signature, website origin, relying-party ID and user verification. A credential registered to another account cannot authorize this account.",
+        "This is device verification for an educational browser simulation. The server does not control an actual engine, and client-side lab inputs remain inspectable by students. It is not a production vehicle immobilizer. No physical R503 reader, CAN transceiver, ECU pinout or starter actuator is connected.",
+        "The original 10 ms controller equations remain unchanged. Static electrical exercises and 3D rendering are added adapters. The referenced methodology was available locally; its unavailable historical chat was not treated as reviewed evidence. Native MATLAB/SLX traces and human microphone/fingerprint trials must be separately validated.",
+        "References: supplied Yankson implementation guide, programmer guide and practical follow-up; W3C Web Authentication specification; py_webauthn registration/authentication documentation. Browser/device capability determines which real-input paths are available."
+      ]
+    ]
+  ],
+  "parameters": [
+    [
+      "Integration step",
+      "0.01 s",
+      "Time between model calculations; fixed."
+    ],
+    [
+      "Short contact minimum",
+      "0.15 s",
+      "Shortest matched release that can grant voice permission."
+    ],
+    [
+      "Long contact minimum",
+      "1.5 s",
+      "A hold this long generates one direct request."
+    ],
+    [
+      "Voice permission",
+      "10 s",
+      "Time allowed to say the accepted phrase after a short contact."
+    ],
+    [
+      "Crank deadline",
+      "3 s",
+      "Maximum time from accepted crank before fault."
+    ],
+    [
+      "Running threshold",
+      "600 rpm",
+      "Minimum speed for the continuous running check."
+    ],
+    [
+      "Running qualification",
+      "0.20 s",
+      "How long valid speed must stay above the threshold."
+    ],
+    [
+      "CAN freshness",
+      "0.10 s",
+      "Maximum permitted time since the last accepted feedback."
+    ],
+    [
+      "CAN period",
+      "0.02 s",
+      "Interval between generated demonstration frames."
+    ],
+    [
+      "RPM scale",
+      "1 rpm/count",
+      "Multiplier from raw CAN count to RPM."
+    ],
+    [
+      "RPM offset",
+      "0 rpm",
+      "Constant added after scaling."
+    ],
+    [
+      "Stopped upper bound",
+      "50 rpm",
+      "Speed must be within the stopped condition before a new crank."
+    ],
+    [
+      "Maximum valid RPM",
+      "8000 rpm",
+      "Upper limit accepted by the feedback decoder."
+    ],
+    [
+      "Rotational inertia",
+      "0.25 kg m\u00b2",
+      "Resistance to angular acceleration in the virtual torque model."
+    ],
+    [
+      "Starter torque",
+      "8 N m",
+      "Virtual torque contribution when the starter is on."
+    ],
+    [
+      "Combustion torque",
+      "25 N m",
+      "Virtual combustion contribution after ignition conditions."
+    ],
+    [
+      "Viscous loss",
+      "0.28 N m s/rad",
+      "Torque loss proportional to angular speed."
+    ],
+    [
+      "Constant loss",
+      "3 N m",
+      "Fixed resisting torque."
+    ],
+    [
+      "Ignition delay",
+      "0.35 s",
+      "Minimum crank duration for virtual combustion eligibility."
+    ],
+    [
+      "Ignition speed",
+      "100 rpm",
+      "Minimum plant speed for combustion eligibility."
+    ],
+    [
+      "Voice maximum age",
+      "0.50 s",
+      "Old captures are rejected even with permission."
+    ],
+    [
+      "Demonstration CAN ID",
+      "256 / 0x100",
+      "Expected RPM feedback label, not an OEM start-message ID."
+    ]
+  ],
+  "outputs": [
+    [
+      "time_s",
+      "Elapsed model time in seconds."
+    ],
+    [
+      "state",
+      "0 locked; 1 authorized; 2 cranking; 3 running; 4 fault."
+    ],
+    [
+      "authorized",
+      "Current voice permission: 1 granted, 0 absent."
+    ],
+    [
+      "starter",
+      "Starter relay command: 1 on."
+    ],
+    [
+      "rpm_CAN",
+      "Last accepted decoded RPM; read validity too."
+    ],
+    [
+      "CAN_valid",
+      "Feedback passes format, range and freshness checks."
+    ],
+    [
+      "event_code",
+      "Controller event code; consult the supplied reference/controller for exact codes."
+    ],
+    [
+      "run_supply",
+      "Separate run/ECU supply relay command."
+    ],
+    [
+      "rpm_plant",
+      "Calculated virtual plant speed in RPM."
+    ],
+    [
+      "short_event",
+      "One-sample pulse from a matched short release."
+    ],
+    [
+      "long_event",
+      "One-sample pulse from a matched long hold."
+    ],
+    [
+      "failed_match",
+      "Failed identity event pulse."
+    ],
+    [
+      "touch_duration_s",
+      "Controller-measured contact duration."
+    ],
+    [
+      "start_request",
+      "Request at the authorization/supervisor boundary."
+    ],
+    [
+      "voice_accepted",
+      "One-sample accepted voice event."
+    ],
+    [
+      "voice_reject_reason",
+      "0 none; 1 no permission; 2 stale capture; 3 wrong command."
+    ],
+    [
+      "running_confirmed",
+      "Continuous valid-speed qualification completed."
+    ],
+    [
+      "qualification_s",
+      "Accumulated continuous qualifying-speed time."
+    ],
+    [
+      "CAN_age_s",
+      "Seconds since the last accepted feedback frame."
+    ],
+    [
+      "CAN_raw",
+      "Last scaled raw RPM payload count."
+    ],
+    [
+      "CAN_frame_accepted",
+      "One-sample accepted incoming frame pulse."
+    ],
+    [
+      "combustion",
+      "Virtual combustion state, distinct from starter command."
+    ],
+    [
+      "monitor_connected",
+      "Observation connection flag; does not grant permission."
+    ],
+    [
+      "crank_start_s",
+      "Original accepted crank time."
+    ],
+    [
+      "authentication_time_s",
+      "Current authorization epoch; invalid when no epoch exists."
+    ],
+    [
+      "voice_sequence",
+      "Sequence of the latest submitted voice event."
+    ],
+    [
+      "voice_timestamp_s",
+      "Model time attributed to the voice capture."
+    ],
+    [
+      "hard_stop",
+      "Emergency/power/interlock stop predicate."
+    ]
+  ],
+  "references": [
+    [
+      "W3C Web Authentication",
+      "https://www.w3.org/TR/webauthn-3/"
+    ],
+    [
+      "py_webauthn registration",
+      "https://duo-labs.github.io/py_webauthn/registration.html"
+    ],
+    [
+      "py_webauthn authentication",
+      "https://duo-labs.github.io/py_webauthn/authentication.html"
+    ]
+  ]
+}

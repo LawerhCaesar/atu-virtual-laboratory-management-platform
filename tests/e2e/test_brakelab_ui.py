@@ -9,7 +9,7 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 
 def open_brake(page, demo_records, live_server):
     page.goto(live_server.url + "/accounts/login/")
-    page.get_by_label("Email address", exact=True).fill(demo_records["student"].email)
+    page.get_by_label("Email address or index number", exact=True).fill(demo_records["student"].email)
     page.get_by_label("Password", exact=True).fill("DemoPass!742")
     page.get_by_role("button", name="Sign in", exact=True).click()
     page.get_by_role("link", name="Virtual laboratory", exact=True).click()
@@ -127,7 +127,7 @@ def test_brake_accessibility_responsiveness_reduced_motion_and_fresh_navigation(
     page.emulate_media(reduced_motion="reduce")
     open_brake(page, demo_records, live_server)
     expect(page.get_by_label("Animate illustrative braking", exact=True)).not_to_be_checked()
-    expect(page.locator("#brake-calibration dd")).to_have_count(15)
+    expect(page.locator("#brake-calibration input[type=number]")).to_have_count(15)
     for field in page.locator("#brake-input-fields input[type=number]").all():
         key = field.get_attribute("id").replace("brake-input-", "")
         assert "brake-purpose-" + key in field.get_attribute("aria-describedby")

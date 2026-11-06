@@ -15,7 +15,7 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 
 def sign_in(page, base_url, email, password="DemoPass!742"):
     page.goto(f"{base_url}/accounts/login/")
-    page.get_by_label("Email address", exact=True).fill(email)
+    page.get_by_label("Email address or index number", exact=True).fill(email)
     page.get_by_label("Password", exact=True).fill(password)
     page.get_by_role("button", name="Sign in", exact=True).click()
     expect(page).to_have_url(f"{base_url}/dashboard/")
@@ -30,6 +30,8 @@ def test_registration_is_pending_and_administrator_is_not_public(page, demo_reco
     page.goto(f"{base}/accounts/register/")
     assert page.get_by_label("Role", exact=True).locator("option").all_text_contents() == ["Student", "Lecturer"]
     page.get_by_label("Full name", exact=True).fill("E2E Pending Student")
+    page.get_by_label("Course", exact=True).select_option("MTECH")
+    page.get_by_label("Username (index number)", exact=True).fill("01181429M")
     page.get_by_label("Email", exact=True).fill("e2e-pending@example.edu")
     page.get_by_label("Password", exact=True).fill("E2EPassword!842")
     page.get_by_label("Password confirmation", exact=True).fill("E2EPassword!842")
@@ -38,7 +40,7 @@ def test_registration_is_pending_and_administrator_is_not_public(page, demo_reco
     assert user.approval_status == User.ApprovalStatus.PENDING
     assert not user.is_staff
     page.goto(f"{base}/accounts/login/")
-    page.get_by_label("Email address").fill(user.email)
+    page.get_by_label("Email address or index number").fill(user.email)
     page.get_by_label("Password", exact=True).fill("E2EPassword!842")
     page.get_by_role("button", name="Sign in", exact=True).click()
     expect(page.get_by_text("Your account is awaiting administrator approval.", exact=True)).to_be_visible()
@@ -97,7 +99,7 @@ def test_admin_reports_and_one_time_password_reset(page, demo_records, live_serv
     assert temporary
     sign_out(page)
     page.goto(f"{base}/accounts/login/")
-    page.get_by_label("Email address").fill(demo_records["student"].email)
+    page.get_by_label("Email address or index number").fill(demo_records["student"].email)
     page.get_by_label("Password", exact=True).fill(temporary)
     page.get_by_role("button", name="Sign in", exact=True).click()
     expect(page).to_have_url(f"{base}/accounts/password/change/")

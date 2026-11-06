@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'css/fuel-delivery.css' %}">
 <nav aria-label="Laboratory navigation"><a href="{% url 'core:laboratory' %}">All systems</a> / <a href="{% url 'core:laboratory_system' 'ice' %}">ICE environment</a> / ECT sensor</nav>
 <div class="page-heading"><div><p class="eyebrow">ICE · SENSOR AND ECU LABORATORY</p><h1 id="ect-title">Engine Coolant Temperature Sensor</h1><p>David Amachie’s ECT laboratory · from thermal response to a digital reading.</p></div><a class="btn btn-outline-secondary" href="{% url 'core:laboratory_system' 'ice' %}">Back to ICE models</a></div>
-<div id="ect-lab"><noscript>Enable JavaScript to operate the ECT laboratory.</noscript></div>
+<div id="ect-lab" data-car-atlas="{% static 'images/ect/frontal-car-bonnet-atlas.png' %}"><noscript>Enable JavaScript to operate the ECT laboratory.</noscript></div>
 <details class="content-panel mt-4" id="ect-learning-guide"><summary>Learning guide and reference evidence</summary><div class="mt-3"><p>Start with the first experiment, then explore the glossary and advanced model notes. The information buttons beside controls and legends give short definitions.</p><a class="btn btn-outline-primary mb-3" href="{% static 'guides/ect-learning-guide.pdf' %}" download>Download complete learning guide (PDF)</a><div id="ect-learning-content"></div></div></details>
 <script src="{% static 'js/ect/Amachie_ECT_Virtual_Platform.js' %}" defer></script><script src="{% static 'js/ect/learning-content.js' %}" defer></script><script src="{% static 'js/ect/visual-learning.js' %}" defer></script><script src="{% static 'js/ect/platform.js' %}" defer></script>
 {% endblock %}

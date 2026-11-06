@@ -22,3 +22,5 @@
 .brake-calibration dd { margin: 0; }
 #brake-input-title, #brake-analysis { scroll-margin-top: 1rem; }
 @media(max-width:575px) { .brake-chart-grid { grid-template-columns: minmax(0,1fr); } }
+.brake-hub-stage{height:440px;border-radius:16px;background:#172633;overflow:hidden}.brake-hub-stage canvas{width:100%;height:100%;display:block;touch-action:none}.brake-calibration{display:grid;gap:12px}.brake-hub-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}.brake-help{display:inline-flex;margin:0 6px}.brake-help button{border:1px solid #7996a8;border-radius:50%;background:#edf6fa;color:#234d68;min-width:27px;min-height:27px;font-weight:bold}.brake-tip{position:fixed;display:none;max-width:280px;background:#15394e;color:white;padding:14px;border-radius:10px;font-size:14px;line-height:1.5;z-index:4000}.brake-learning article{border-bottom:1px solid #d7e3e9;padding:14px 0}.brake-learning h3{font-size:1.1rem;margin-top:18px}@media(max-width:600px){.brake-hub-stage{height:340px}}
+.brake-hub-tools button[aria-pressed=true]{background:#224e67;color:white;border-color:#224e67}

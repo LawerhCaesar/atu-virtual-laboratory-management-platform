@@ -7,7 +7,7 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 
 def open_module(page, demo_records, live_server):
     page.goto(live_server.url + '/accounts/login/')
-    page.get_by_label('Email address', exact=True).fill(demo_records['student'].email)
+    page.get_by_label('Email address or index number', exact=True).fill(demo_records['student'].email)
     page.get_by_label('Password', exact=True).fill('DemoPass!742')
     page.get_by_role('button', name='Sign in', exact=True).click()
     page.get_by_role('link', name='Virtual laboratory', exact=True).click()
@@ -51,3 +51,39 @@ def test_responsive_and_accessible(page,demo_records,live_server,width):
     page.get_by_label('Accessory load (W)',exact=True).fill('1000')
     expect(page.locator('#micro-reason')).to_contain_text('Code 7')
     page.locator('#micro-decision').scroll_into_view_if_needed();page.screenshot(path=str(dest/f'inhibited-{width}.png'))
+
+def test_cluster_controls_inventory_and_help(page,demo_records,live_server):
+    errors=[]
+    page.emulate_media(reduced_motion='reduce')
+    page.on('pageerror',lambda error:errors.append(str(error)))
+    open_module(page,demo_records,live_server)
+    page.get_by_role('button',name='Skip tour',exact=True).click() if page.get_by_role('button',name='Skip tour',exact=True).count() else None
+    cluster=page.locator('.micro-cluster-svg')
+    expect(cluster).to_have_attribute('data-engine','on')
+    expect(cluster).to_have_attribute('data-speed','30')
+    assert page.evaluate("async()=>{const img=new Image();img.src=document.querySelector('.micro-cluster-svg image').getAttribute('href');await img.decode();return img.naturalWidth>1000;}")
+    page.locator('#micro-next').click();page.locator('#micro-next').click()
+    expect(cluster).to_have_attribute('data-engine','off');expect(cluster).to_have_attribute('data-rpm','0')
+    page.locator('#micro-next').click()
+    expect(cluster).to_have_attribute('data-starter','true');expect(page.locator('#micro-engine')).to_have_text('Engine STARTING')
+    page.locator('.micro-scene').screenshot(path='test-results/micro-hybrid/starter-cluster.png')
+    page.locator('#micro-next').click();expect(cluster).to_have_attribute('data-engine','on')
+    baseline=page.evaluate('window.MicroHybridLab.result.fuelSavedG')
+    page.locator('#micro-input-initialFuelL').fill('10')
+    assert page.evaluate('window.MicroHybridLab.result.fuelSavedG')==baseline
+    button=page.get_by_role('button',name='Explain Fuel currently in tank',exact=True)
+    button.click();expect(button).to_have_attribute('aria-expanded','true');button.click();expect(button).to_have_attribute('aria-expanded','false')
+    page.locator('#micro-consumers summary').click();page.locator('#micro-ac').check()
+    expect(page.locator('#micro-input-accessoryLoadW')).to_have_value('900');expect(page.locator('#micro-reason')).to_contain_text('Code 7')
+    page.locator('#micro-input-accessoryLoadW').fill('400');expect(page.locator('#micro-component-mode')).not_to_be_checked()
+    expect(page.locator('#micro-cluster-indicators')).to_contain_text('Unspecified')
+    page.locator('#micro-reset').click()
+    expect(page.locator('#micro-input-initialFuelL')).to_have_value('20')
+    page.locator('#micro-learning-guide > summary').click()
+    link=page.get_by_role('link',name='Download complete learning guide (PDF)')
+    response=page.request.get(live_server.url+link.get_attribute('href'));assert response.status==200;assert response.body().startswith(b'%PDF')
+    with page.expect_download() as dl:page.locator('#micro-export').click()
+    payload=json.loads(Path(dl.value.path()).read_text());assert payload['presentation']['displayCues']['movingSpeedKmh']==30
+    page.locator('#micro-input-initialFuelL').fill('60');expect(cluster).to_have_attribute('data-valid','false')
+    expect(page.locator('#micro-next')).to_be_disabled()
+    assert not errors

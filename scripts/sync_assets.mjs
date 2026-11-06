@@ -29,3 +29,9 @@ await build({entryPoints:[`${root}static/js/bless/engine.ts`], outfile:`${root}s
 await build({entryPoints:[`${root}frontend/edward-drive-3d.mjs`],outfile:`${root}static/js/edward/drive-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
 
 await build({entryPoints:[`${root}frontend/battery-charge-3d.mjs`],outfile:`${root}static/js/battery-energy/charge-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+
+await build({entryPoints:[`${root}static/js/yankson/engine-stand.mjs`],outfile:`${root}static/js/yankson/engine-stand.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+await build({entryPoints:[`${root}frontend/brake-hub-3d.mjs`],outfile:`${root}static/js/brakelab/hub-3d.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+await build({entryPoints:[`${root}frontend/series-parallel-drive.mjs`],outfile:`${root}static/js/series-parallel/drivetrain.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+await build({entryPoints:[`${root}frontend/p2-drive.mjs`],outfile:`${root}static/js/p2-hybrid/drive.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});
+await build({entryPoints:[`${root}frontend/wheel-slip-corner.mjs`],outfile:`${root}static/js/wheel-slip/corner.bundle.mjs`,bundle:true,minify:true,format:'esm',target:'es2022',legalComments:'eof'});

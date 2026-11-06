@@ -13,7 +13,7 @@
     <tbody>
       {% for account in pending_users %}
       <tr>
-        <td><strong>{{ account.full_name }}</strong><br><span class="text-secondary small">{{ account.email }}</span></td>
+        <td><strong>{{ account.full_name }}</strong><br><span class="text-secondary small">{{ account.email }}</span>{% if account.index_number %}<br><span class="small">{{ account.index_number }} · {{ account.get_qualification_display }}</span>{% endif %}</td>
         <td>{{ account.get_role_display }}</td>
         <td>{{ account.date_joined|date:"j M Y, H:i" }}</td>
         <td class="text-end">

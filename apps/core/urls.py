@@ -1,3 +1,4 @@
+from . import starting_lab
 from django.urls import path
 
 from . import views, p2_views
@@ -6,6 +7,12 @@ from . import views, p2_views
 app_name = "core"
 
 urlpatterns = [
+    path("virtual-lab/fcev/market-prices/", views.fcev_market_prices, name="fcev_market_prices"),
+    path("virtual-lab/ice/starting/device/<str:operation>/options/", starting_lab.device_options, name="starting_device_options"),
+    path("virtual-lab/ice/starting/device/<str:operation>/complete/", starting_lab.device_complete, name="starting_device_complete"),
+    path("virtual-lab/ice/starting/exercises/", starting_lab.exercises, name="starting_exercises"),
+    path("virtual-lab/ice/starting/exercises/save/", starting_lab.save_exercise, name="starting_exercise_save"),
+    path("virtual-lab/ice/starting/exercises/<int:pk>/", starting_lab.exercise_detail, name="starting_exercise_detail"),
     path("virtual-lab/ice/authenticated-engine-starting/", views.yankson, name="yankson"),
     path("virtual-lab/hev/series-parallel-hybrid/", views.series_parallel, name="series_parallel"),
     path("virtual-lab/bev/electric-motor-drive/", views.edward, name="edward"),

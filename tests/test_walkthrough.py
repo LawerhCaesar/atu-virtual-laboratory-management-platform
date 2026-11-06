@@ -29,8 +29,8 @@ def test_active_module_renders_reusable_guide(client, route):
     assert f'data-module="{route}"'.encode() in response.content
     assert b'js/walkthrough/ui.mjs' in response.content
     assert b'data-user="' + str(user.pk).encode() + b'"' in response.content
-    assert b'Genesis GV70' in response.content
-    assert b'0.371 m wheel radius' in response.content
+    assert (b'Toyota HiAce' if route == 'core:bless' else b'Genesis GV70') in response.content
+    assert (b'0.35 m loaded wheel radius' if route == 'core:bless' else b'0.371 m wheel radius') in response.content
     if route in ("core:brakelab", "core:wheel_slip"):
         assert b'1,500 kg vehicle mass and 0.31 m wheel radius' in response.content
 

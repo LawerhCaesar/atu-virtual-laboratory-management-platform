@@ -121,3 +121,31 @@ def test_p2_other_active_roles(client,p2_user,role):
     p2_user.role=role;p2_user.save();client.force_login(p2_user)
     assert client.get(reverse('core:p2_hybrid')).status_code==200
     assert client.get(reverse('core:p2_info')).status_code==200
+
+
+def test_optional_fuel_estimate_preserves_original_channels_and_inventory():
+    base=m.simulate({})
+    estimated=m.simulate({'fuel_estimate_enabled':True,'fuel_assumptions':{'initial_fuel_litres':.01,'fuel_price_per_l':10}})
+    assert base['time_series']==estimated['time_series']
+    assert base['summary']==estimated['summary']
+    assert base['fuel_inventory']['summary']['estimated_fuel_used_litres'] is None
+    f=estimated['fuel_inventory']['summary']
+    assert f['engine_shaft_power_kw']==pytest.approx(70*2500*math.pi/30/1000)
+    assert f['estimated_fuel_flow_gps']==pytest.approx(f['engine_shaft_power_kw']/(.3*43))
+    assert f['estimated_fuel_used_litres']==pytest.approx(f['estimated_fuel_flow_gps']*30/740)
+    assert f['estimated_fuel_remaining_litres']==0 and f['fuel_budget_deficit_litres']>0
+    assert f['estimated_fuel_cost']==pytest.approx(f['estimated_fuel_used_litres']*10)
+    assert any('cutoff' in w for w in estimated['warnings'])
+    doubled=m.simulate({'fuel_estimate_enabled':True,'fuel_assumptions':{'assumed_engine_efficiency':.15}})
+    assert doubled['fuel_inventory']['summary']['estimated_fuel_used_litres']==pytest.approx(f['estimated_fuel_used_litres']*2)
+    low=m.simulate({'requested_torque_nm':60,'fuel_estimate_enabled':True})
+    assert low['fuel_inventory']['summary']['estimated_fuel_used_litres']==0
+    partial=m.simulate({'duration_s':.025,'fuel_estimate_enabled':True})
+    assert partial['fuel_inventory']['summary']['estimated_fuel_used_litres']==pytest.approx(partial['fuel_inventory']['summary']['estimated_fuel_flow_gps']*.025/740)
+    assert len(partial['fuel_inventory']['time_series'])==len(partial['time_series'])
+    assert m.simulate({'fuel_assumptions':{'fuel_capacity_litres':100}})['metadata']['run_id']!=base['metadata']['run_id']
+
+
+@pytest.mark.parametrize('change',[{'fuel_estimate_enabled':1},{'fuel_assumptions':[]},{'fuel_assumptions':{'typo':1}}, {'fuel_assumptions':{'initial_fuel_litres':56}}, {'fuel_assumptions':{'fuel_density_kg_per_l':0}}, {'fuel_assumptions':{'assumed_engine_efficiency':0}}, {'fuel_assumptions':{'fuel_capacity_litres':10**400}}])
+def test_invalid_fuel_assumptions_are_rejected(change):
+    with pytest.raises(m.ValidationError):m.simulate(change)

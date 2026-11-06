@@ -1,0 +1,712 @@
+{
+  "title": "FCEV Range Extended System",
+  "sections": [
+    [
+      "What this experiment compares",
+      [
+        "The FCEV range extended system is a plug-in battery electric drivetrain with a hydrogen fuel cell supplying the DC bus when its controller requests support. It is compared with the supplied 2019 Toyota HiAce H300 2.8 D-4D automatic diesel passenger-van reference. A paired battery-only run disables fuel-cell generation on the same converted vehicle, so mass, speed request, payload and route remain equal. It is an isolation experiment, not a separate production BEV calibration.",
+        "Outputs are analytical. The FCEV/battery section appears first, the diesel section below, followed by cost and energy comparisons. No vehicle animation or achieved-speed claim is used. Bless Atisu is the student associated with this module."
+      ]
+    ],
+    [
+      "Start with distance",
+      [
+        "Distance mode asks for a commanded journey length, such as 100 km. The original one-second engine runs until the first recorded distance meeting that target or until the entered time limit. The last interval may overshoot by up to one interval of requested travel. The actual recorded distance, requested distance and stopping reason are shown.",
+        "Both drivetrains use the same commanded route. Unmet energy, motor shortfall and mass excess are reported separately; reaching a commanded distance does not prove a physical vehicle can complete it. Zero requested speed or too short a time limit can leave the distance target unmet.",
+        "Time mode retains the original duration-based study and native reference examples. Loading an example switches to time mode. The original model equations, 17 delayed states, 106 output channels and CSV order are retained."
+      ]
+    ],
+    [
+      "Step time in everyday terms",
+      [
+        "The engine updates once per simulated second. It saves the starting point at 0 s, then 1 s, 2 s and so on. A 600-second run therefore has 601 samples. This fixed one-second step belongs to the validated source model; it is different from the total journey duration.",
+        "Recorded time lets you inspect a saved state. It does not rerun the model. A chart cursor, numerical value and raw table at 200 s all refer to the same saved 200 s sample. The source uses simultaneous delayed-state updates; do not substitute a continuous solver or rescale energies to force an exact distance."
+      ]
+    ],
+    [
+      "Battery-only and fuel-cell range extension",
+      [
+        "The battery initially supplies traction and accessories. Fuel-cell operation uses the entered lower ON and upper OFF SOC thresholds, ramp rate, module rating and hydrogen inventory. Hysteresis means it switches on at a lower threshold and off at a higher one. Fuel-cell support can supply the bus and recharge the battery under the source controller rules.",
+        "Compare final SOC, battery depletion, hydrogen consumed, accepted regeneration and unmet DC energy against the paired battery-only result. The first cumulative DC-unmet-energy event is shown by commanded distance and time. This describes power support within the tested route; it is not a certified maximum driving range.",
+        "Hydrogen empty means no more fuel-cell generation. A battery-only run may still support the demand, or may show a shortfall. DC support, motor limits and mass screening are different checks, so read all of them."
+      ]
+    ],
+    [
+      "Plug-in charging and refill costs",
+      [
+        "Native grid recharge replaces positive battery inventory depletion back to the initial inventory, divided by grid-to-stored charging efficiency. Hydrogen cost uses consumed kilograms, and diesel cost uses consumed litres. Extra final battery energy receives no negative refill credit.",
+        "The separate plug-in planner estimates grid energy and hours needed to reach your chosen SOC using the source OCV inventory calculation and entered grid charging power. Hours equal grid kWh divided by charger input kW. This is a constant-power planning estimate, not a charge-curve, temperature-limited or fast-charge simulation.",
+        "Do not add the charge-to-target planner cost to the native refill-to-initial cost: they are alternative end-charge targets. Cost savings are shown only when the native eligibility rules hold. If fuel-cell generation leaves a battery surplus, a simple cost saving is withheld rather than silently treating the surplus as free energy."
+      ]
+    ],
+    [
+      "Online prices, currency and experimental overrides",
+      [
+        "The page begins with clearly marked source-reference quotes and tries to refresh the fixed official sources. Bank of Ghana USD/GHS and EUR/GHS mid rates have an effective date. GOIL provides the diesel quote and its effective date. The PURC public calculator supplies the SLT EV Chg energy-only tariff; taxes, service charges, operator margin and infrastructure are excluded. This is not every household or public charger tariff.",
+        "There is no universal international hydrogen price. The default is a labelled published German government comparison benchmark in EUR/kg, converted using BoG EUR/GHS and USD/GHS. If direct source access fails, the retained benchmark is marked as such. It is not a Ghana delivered-hydrogen offer. A quotation retrieved today can still have an older effective date.",
+        "Prices use GHS internally. Hydrogen USD/kg equals EUR/kg times BoG EUR/GHS divided by BoG USD/GHS. Hydrogen GHS/kg then equals USD/kg times BoG USD/GHS. The currency selector changes price entry and displayed costs between USD and GHS, without changing physical energy results.",
+        "Change prices for experiment permits your own tariff, diesel price, hydrogen price and USD conversion. Any edit labels the experiment as custom. A background refresh never overwrites a custom price or changes a completed result. Run metadata preserves the applied quote book and assumptions. When a source is missing or stale, use its visible status and effective date; do not describe it as a current global price."
+      ]
+    ],
+    [
+      "HiAce reference and editable advanced inputs",
+      [
+        "The supplied reference is the 2019 HiAce VI H300 Commuter L2H2, 2.8 D-4D six-speed automatic, rear-wheel drive, 1GD-FTV diesel, approximately 120 kW and 420 N m, with a 70 L tank. The full supplied vehicle specification appears in the reference section. It replaces the Genesis reference for this module only.",
+        "The validated source settings remain 2650 kg diesel kerb mass, 3004 kg converted kerb mass, 540 kg shared payload and 0.35 m loaded radius. Descriptive dimensions do not automatically enter every equation. Changing battery or fuel-cell ratings does not automatically revise mass.",
+        "Advanced tabs group battery storage, fuel cell and electric drive, diesel and road load, and time/charging assumptions. Every source parameter remains editable, including all array entries. Reset all restores source component settings, distance-study defaults and the currently available reference prices. Importing a native scenario switches to duration mode; extended scenario files can also preserve study settings."
+      ]
+    ],
+    [
+      "Energy and eligibility equations",
+      [
+        "Electric source energy equals hydrogen consumed times hydrogen lower heating value plus signed battery inventory depletion. Diesel source energy equals litres consumed times diesel lower heating value. These are source inventories, not equal wheel-energy measurements or full upstream life-cycle totals.",
+        "Native model comparison requires commanded distance above 0.0001 km and cumulative electric-DC and diesel unmet energy each below 0.000001 kWh. Motor shortfall and mass excess are separate limitations. Cost validity also requires all three prices positive and battery depletion at least -0.001 kWh. A valid negative saving means the electric refill costs more.",
+        "Per-100-km results divide the actual recorded quantity by actual recorded commanded distance and multiply by 100. At zero distance the analytical interface marks them unavailable instead of presenting the native denominator-guard numbers as meaningful efficiency. Diesel remaining inventory is loaded litres minus used litres, limited to zero; a separate deficit is shown. The source diesel equations do not implement empty-tank shutdown."
+      ]
+    ],
+    [
+      "Experiments and verification",
+      [
+        "Test A: load default cycle in time mode. With native physical defaults, 3600 s produces 3601 points and approximately 66.6667 commanded km, 61.9840% final SOC, 0.251740 kg hydrogen used and 6.908598 L diesel. Changing prices must change costs but not those physical results.",
+        "Test B: run a short distance target. Confirm the run ends at the first one-second sample meeting the target. Increase the target or reduce the time limit and read whether it was reached. Do not multiply a short-run energy result to claim a longer simulated range.",
+        "Test C: compare the FCEV run and paired battery-only run under the same route. Lower initial SOC to make fuel-cell support visible; inspect the ON/OFF thresholds, hydrogen use and final SOC. Empty hydrogen should eliminate new hydrogen generation. Check whether DC unmet energy or motor shortfall appears.",
+        "Test D: change charger power only. Planned charging hours should change inversely while simulated driving results remain unchanged. Change currency only: physical results and canonical GHS costs stay identical, and USD costs equal GHS costs divided by the applied USD/GHS rate.",
+        "Test E: load an overload example. Do not quote an unconditional energy or cost saving when eligibility fails. Export JSON to retain applied settings, complete native streams, study assumptions and paired result; native CSV retains its original no-header numeric order."
+      ]
+    ],
+    [
+      "Evidence and limits",
+      [
+        "The original R2024b graph, source SLX, catalogs and native validation traces are retained in the project reference package. All 106 output channels were ported with 17 delayed states; the native trace checker established conversion agreement. That is software conversion fidelity, not measured road, battery, tank, structural or fuel-cell installation validation.",
+        "The earlier local-thread link was unavailable; the supplied package is self-contained. This revision uses that retained package and the user-supplied HiAce specification rather than inventing details from an inaccessible chat. Current online price sources are separate financial assumptions, not physical model calibration."
+      ]
+    ],
+    [
+      "Complete supplied Toyota HiAce reference",
+      [
+        "Vehicle: Diesel passenger van / commuter minibus; 10–17 seats depending on configuration; 4 doors.",
+        "Engine: 1GD-FTV, 2,755 cc; front-mounted longitudinal inline four; DOHC, four valves per cylinder; common-rail injection; turbocharger and intercooler.",
+        "Rated output: 163 metric hp at 3,600 rpm (approximately 120 kW); 420 N·m at 1,600–2,200 rpm.",
+        "Engine dimensions: 92 × 103.6 mm bore × stroke; 15.6:1 compression ratio.",
+        "Transmission and drive: Six-speed automatic; rear-wheel drive; 70 L diesel tank.",
+        "Dimensions: 5,915 × 1,950 × 2,280 mm; wheelbase 3,860 mm; front/rear overhang 950 / 1,105 mm; front/rear track 1,670–1,675 / 1,670 mm; turning diameter 12.8 m.",
+        "Mass and load: Kerb mass 2,615–2,680 kg; gross mass 3,710–3,720 kg; maximum load 1,040–1,095 kg.",
+        "Suspension: Front independent MacPherson struts, coil springs and anti-roll bar; rear rigid axle with leaf springs.",
+        "Brakes and steering: 296 mm front and 320 mm rear ventilated discs; ABS; rack-and-pinion steering with hydraulic assistance.",
+        "Wheels: 215/70 R16 tyres; 7J × 16 rims.",
+        "Service and additional systems: Engine oil 7.1 L; coolant 9.7 L; start–stop and diesel particulate filter.",
+        "Towing: Braked/unbraked 1,500 / 400 kg; maximum towbar vertical load 150 kg."
+      ]
+    ],
+    [
+      "Online reference sources",
+      [
+        "Bank of Ghana daily interbank mid rates: https://www.bog.gov.gh/treasury-and-the-markets/daily-interbank-fx-rates/",
+        "GOIL published diesel prices: https://www.goil.com.gh/new-fuel-prices/",
+        "PURC official tariff reckoner (SLT EV Chg energy component): https://purcghapp.com/",
+        "German government vehicle energy-cost comparison benchmark: https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Artikel/Energie/2021-08-pkw-energiekostenvergleich.html",
+        "Quotes can be retained references when a source is blocked or unavailable. Read the live page price panel and exported study snapshot for effective dates and retrieval status. Hydrogen retail prices vary by market, station and supply conditions."
+      ]
+    ]
+  ],
+  "parameters": [
+    {
+      "title": "Air density (kg/m³)",
+      "unit": "",
+      "default": 1.18,
+      "help": "Air mass in one cubic metre, used in aerodynamic resistance."
+    },
+    {
+      "title": "Diesel alternator efficiency",
+      "unit": "",
+      "default": 0.65,
+      "help": "Fraction of engine power converted into electricity for accessory demand."
+    },
+    {
+      "title": "Outside temperature (°C)",
+      "unit": "",
+      "default": 30,
+      "help": "Air temperature used by the battery heat-transfer calculation."
+    },
+    {
+      "title": "Accessories demand (kW)",
+      "unit": "",
+      "default": 3,
+      "help": "Electrical demand for vehicle services in addition to propulsion. The model limits it to zero through 20 kW."
+    },
+    {
+      "title": "Battery DC converter efficiency",
+      "unit": "",
+      "default": 0.97,
+      "help": "Fraction of electrical power retained through the battery-to-bus or bus-to-battery converter."
+    },
+    {
+      "title": "Passengers and luggage (kg)",
+      "unit": "",
+      "default": 540,
+      "help": "The same extra load added to both vehicle kerb masses for a fair demand comparison."
+    },
+    {
+      "title": "Converted vehicle kerb mass (kg)",
+      "unit": "",
+      "default": 3004,
+      "help": "Mass of the fuel-cell/battery conversion before passengers and luggage. Component edits do not automatically update this mass."
+    },
+    {
+      "title": "Delivered hydrogen price",
+      "unit": "",
+      "default": 0,
+      "help": "Price for one usable kilogram. The international benchmark is a published reference, not a universal price or a Ghana hydrogen delivery quotation."
+    },
+    {
+      "title": "Diesel price",
+      "unit": "",
+      "default": 0,
+      "help": "Price for one litre. Published GOIL pricing is used as a Ghana reference with its effective date; experiment prices can override it."
+    },
+    {
+      "title": "Diesel energy content (kWh/L)",
+      "unit": "",
+      "default": 9.947693,
+      "help": "Chemical energy in one litre, using lower heating value. This is not mechanical energy delivered at the wheels."
+    },
+    {
+      "title": "Diesel engine efficiency",
+      "unit": "",
+      "default": 0.33,
+      "help": "Fraction of diesel chemical energy converted into engine shaft work in this average-efficiency model."
+    },
+    {
+      "title": "Diesel shaft-power limit (kW)",
+      "unit": "",
+      "default": 120,
+      "help": "Largest shaft power the model diesel engine can provide. Excess requested power is reported as shortfall."
+    },
+    {
+      "title": "Diesel idle use (L/h)",
+      "unit": "",
+      "default": 0.8,
+      "help": "Fuel used per hour when idling, under the supplied model rules."
+    },
+    {
+      "title": "Diesel kerb mass (kg)",
+      "unit": "",
+      "default": 2650,
+      "help": "Mass of the diesel reference before passengers and luggage. The source default is 2650 kg, within the supplied HiAce kerb-mass range."
+    },
+    {
+      "title": "Diesel transmission efficiency",
+      "unit": "",
+      "default": 0.9,
+      "help": "Fraction of engine shaft power retained through the transmission."
+    },
+    {
+      "title": "Aerodynamic drag area CdA (m²)",
+      "unit": "",
+      "default": 1.8,
+      "help": "Drag coefficient multiplied by frontal area. A higher value increases the air-resistance demand."
+    },
+    {
+      "title": "Electric gearbox efficiency",
+      "unit": "",
+      "default": 0.97,
+      "help": "Fraction of motor shaft power retained at the wheels through the gearbox."
+    },
+    {
+      "title": "Electric reduction ratio",
+      "unit": "",
+      "default": 10,
+      "help": "Ratio linking wheel speed and motor speed. It affects motor speed, torque and electrical limits."
+    },
+    {
+      "title": "Electricity price",
+      "unit": "",
+      "default": 0,
+      "help": "Price paid for one kWh drawn from the grid. Canonical engine prices are in GHS; the currency selector converts user entries to and from USD."
+    },
+    {
+      "title": "Fuel cell OFF threshold (%)",
+      "unit": "",
+      "default": 80,
+      "help": "Upper battery SOC threshold for switching generation off. It must exceed the ON threshold, so the controller does not chatter at one boundary."
+    },
+    {
+      "title": "Fuel cell ON threshold (%)",
+      "unit": "",
+      "default": 60,
+      "help": "Lower battery SOC threshold for requesting range-extender generation. Output still depends on hydrogen, power and ramp limits."
+    },
+    {
+      "title": "Fuel-cell boost efficiency",
+      "unit": "",
+      "default": 0.95,
+      "help": "Fraction of module electricity reaching the high-voltage DC bus."
+    },
+    {
+      "title": "Fuel-cell charging allowance (kW)",
+      "unit": "",
+      "default": 10,
+      "help": "Extra generation requested for battery charging under the source controller rules."
+    },
+    {
+      "title": "Fuel-cell range extender",
+      "unit": "",
+      "default": 1,
+      "help": "Enable hydrogen-powered generation, or disable it for battery-only operation. The paired BEV run disables this same switch while keeping the converted vehicle mass unchanged."
+    },
+    {
+      "title": "Fuel-cell ramp rate (kW/s)",
+      "unit": "",
+      "default": 2,
+      "help": "How quickly module output is allowed to change each one-second calculation step."
+    },
+    {
+      "title": "Fuel-cell rated output (kW)",
+      "unit": "",
+      "default": 45,
+      "help": "Maximum electrical module output before boost-converter loss."
+    },
+    {
+      "title": "Fuel-cell efficiency (LHV)",
+      "unit": "",
+      "default": 0.5,
+      "help": "Fraction of consumed hydrogen chemical energy converted into module electricity."
+    },
+    {
+      "title": "Fuel-cell nominal voltage (V)",
+      "unit": "",
+      "default": 300,
+      "help": "Voltage reference used for converter-duty interpretation. It is not an electrochemical stack model."
+    },
+    {
+      "title": "Plug-in charging efficiency",
+      "unit": "",
+      "default": 0.92,
+      "help": "Fraction of grid energy retained as battery inventory. For example, 0.92 stores 0.92 kWh from each 1 kWh drawn."
+    },
+    {
+      "title": "Gross-mass screening limit (kg)",
+      "unit": "",
+      "default": 3710,
+      "help": "Study threshold against which operating mass is checked. Exceeding it is shown separately from power feasibility."
+    },
+    {
+      "title": "Hydrogen energy content (kWh/kg)",
+      "unit": "",
+      "default": 33.3,
+      "help": "Lower-heating-value chemical energy in each kilogram, before fuel-cell losses."
+    },
+    {
+      "title": "Hydrogen loaded (kg)",
+      "unit": "",
+      "default": 2,
+      "help": "Usable hydrogen at the start. The fuel-cell output stops when the inventory is empty; this is not a tank-pressure calculation."
+    },
+    {
+      "title": "Inverter efficiency",
+      "unit": "",
+      "default": 0.97,
+      "help": "Fraction of DC electricity retained as the model AC electrical demand."
+    },
+    {
+      "title": "Loaded wheel radius (m)",
+      "unit": "",
+      "default": 0.35,
+      "help": "Rolling radius used to convert between wheel speed, torque and power. The source study uses 0.35 m."
+    },
+    {
+      "title": "Maximum modulation index",
+      "unit": "",
+      "default": 0.95,
+      "help": "Electrical voltage-utilisation limit used by the inverter/motor voltage screen."
+    },
+    {
+      "title": "Requested acceleration limit (m/s²)",
+      "unit": "",
+      "default": 1,
+      "help": "Maximum rate at which the requested speed rises. This sets demand, not an achieved-speed solution."
+    },
+    {
+      "title": "Requested deceleration limit (m/s²)",
+      "unit": "",
+      "default": 1,
+      "help": "Maximum rate at which requested speed falls, affecting braking and potential regenerative demand."
+    },
+    {
+      "title": "Motor magnet flux (Wb)",
+      "unit": "",
+      "default": 0.08,
+      "help": "Permanent-magnet flux linkage in the model dq motor equations."
+    },
+    {
+      "title": "Motor dq current limit (A)",
+      "unit": "",
+      "default": 625,
+      "help": "Peak current limit in the model rotating-axis electrical calculation."
+    },
+    {
+      "title": "Motor shaft-power limit (kW)",
+      "unit": "",
+      "default": 120,
+      "help": "Peak mechanical motor output limit. Requested power above capability is reported separately."
+    },
+    {
+      "title": "Motor shaft-torque limit (N·m)",
+      "unit": "",
+      "default": 300,
+      "help": "Largest mechanical turning effort the motor model can produce."
+    },
+    {
+      "title": "Motor pole pairs",
+      "unit": "",
+      "default": 4,
+      "help": "Number of magnetic pole pairs connecting mechanical rotation with electrical frequency; a positive integer."
+    },
+    {
+      "title": "Motor viscous damping",
+      "unit": "",
+      "default": 0.001,
+      "help": "Mechanical loss torque that increases with motor rotational speed."
+    },
+    {
+      "title": "Diesel overrun fuel cut",
+      "unit": "",
+      "default": 1,
+      "help": "Allow the source model to stop diesel injection under its overrun conditions."
+    },
+    {
+      "title": "Driving profile",
+      "unit": "",
+      "default": 1,
+      "help": "Use the repeating 600-second stop-start cycle, or a constant target with the model acceleration ramp."
+    },
+    {
+      "title": "Regenerative wheel-power limit (kW)",
+      "unit": "",
+      "default": 60,
+      "help": "Maximum braking power the electric system can request to recover at the wheels. Battery limits may reject some recovery."
+    },
+    {
+      "title": "DC-link voltage reference (V)",
+      "unit": "",
+      "default": 600,
+      "help": "High-voltage bus reference used by the motor/inverter and converter calculations."
+    },
+    {
+      "title": "Road slope (%)",
+      "unit": "",
+      "default": 0,
+      "help": "Road rise per 100 metres along the horizontal. Positive is uphill, negative downhill. The model limits this to -20 through 20%."
+    },
+    {
+      "title": "Rolling-resistance coefficient",
+      "unit": "",
+      "default": 0.012,
+      "help": "Dimensionless tyre rolling-resistance setting; larger means more road-load demand."
+    },
+    {
+      "title": "Motor dq inductance (H)",
+      "unit": "",
+      "default": 0.000064,
+      "help": "Inductance used in the scaled rotating-axis voltage calculation."
+    },
+    {
+      "title": "Motor phase resistance (ohm)",
+      "unit": "",
+      "default": 0.0064,
+      "help": "Resistance used to calculate motor electrical loss and voltage requirement."
+    },
+    {
+      "title": "Requested speed (km/h)",
+      "unit": "",
+      "default": 80,
+      "help": "Speed requested by the selected driving profile. It is not a measured achieved vehicle speed; power shortfalls are reported separately."
+    },
+    {
+      "title": "Initial battery charge (%)",
+      "unit": "",
+      "default": 90,
+      "help": "State of charge before driving. 90% means approximately nine-tenths charged; energy is calculated from the entered voltage-versus-SOC curve."
+    },
+    {
+      "title": "Initial battery temperature (°C)",
+      "unit": "",
+      "default": 25,
+      "help": "Battery temperature at time zero. Current limits can change when the battery becomes too hot or cold."
+    },
+    {
+      "title": "Cells in series",
+      "unit": "",
+      "default": 96,
+      "help": "Series-connected cell count. It mainly sets pack voltage; changing it does not automatically change conversion mass."
+    },
+    {
+      "title": "Parallel cell strings",
+      "unit": "",
+      "default": 41,
+      "help": "Parallel-connected string count. It mainly sets pack capacity and current capability; update mass assumptions separately."
+    },
+    {
+      "title": "Cell capacity (Ah)",
+      "unit": "",
+      "default": 4.2,
+      "help": "Charge capacity of one cell. Pack Ah depends on the parallel count."
+    },
+    {
+      "title": "Cell nominal voltage (V)",
+      "unit": "",
+      "default": 3.6,
+      "help": "Reference cell voltage used for nominal pack kWh, distinct from the SOC-dependent open-circuit voltage."
+    },
+    {
+      "title": "Cell internal resistance (ohm)",
+      "unit": "",
+      "default": 0.016,
+      "help": "Electrical resistance used for pack voltage drop and resistive heat."
+    },
+    {
+      "title": "Cell voltage limits [minimum, maximum] (V)",
+      "unit": "",
+      "default": [
+        2.5,
+        4.2
+      ],
+      "help": "Two increasing values bounding permitted cell voltage and the OCV table."
+    },
+    {
+      "title": "Battery current ratings [charge, discharge] (C)",
+      "unit": "",
+      "default": [
+        2,
+        2
+      ],
+      "help": "Two nonnegative C-rates. A 1C current equals the pack Ah capacity in amperes."
+    },
+    {
+      "title": "Battery SOC limits [minimum, reserve, taper, maximum] (%)",
+      "unit": "",
+      "default": [
+        15,
+        20,
+        80,
+        95
+      ],
+      "help": "Four increasing values. Reserve reduces discharge allowance; taper reduces charging near the upper boundary."
+    },
+    {
+      "title": "Charge-temperature points [T1, T2, T3, T4] (°C)",
+      "unit": "",
+      "default": [
+        0,
+        10,
+        35,
+        45
+      ],
+      "help": "Four increasing temperatures defining cold/hot charge derating. Full allowance is between the middle points; extremes restrict charging."
+    },
+    {
+      "title": "Discharge-temperature points [T1, T2, T3, T4] (°C)",
+      "unit": "",
+      "default": [
+        -20,
+        0,
+        45,
+        55
+      ],
+      "help": "Four increasing temperatures defining cold/hot discharge derating."
+    },
+    {
+      "title": "Battery thermal mass (kg)",
+      "unit": "",
+      "default": 341.6666666667,
+      "help": "Mass in the battery heating calculation. It does not automatically revise the vehicle kerb mass."
+    },
+    {
+      "title": "Battery heat capacity (J/kg/K)",
+      "unit": "",
+      "default": 900,
+      "help": "Heat needed to raise one kilogram by one kelvin. Higher heat capacity slows temperature change."
+    },
+    {
+      "title": "Battery heat conductance (W/K)",
+      "unit": "",
+      "default": 35,
+      "help": "How easily heat passes between battery and surrounding air."
+    },
+    {
+      "title": "Coulombic efficiencies [charge, discharge]",
+      "unit": "",
+      "default": [
+        1,
+        1
+      ],
+      "help": "Fractions used for charge accounting, in that order; each must be above zero and no greater than one."
+    },
+    {
+      "title": "OCV table: SOC points (%)",
+      "unit": "",
+      "default": [
+        0,
+        5,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        95,
+        100
+      ],
+      "help": "Exactly 13 increasing charge levels from 0 to 100, paired with the 13 cell-voltage points."
+    },
+    {
+      "title": "OCV table: cell voltage points (V)",
+      "unit": "",
+      "default": [
+        2.5,
+        3.1,
+        3.3,
+        3.45,
+        3.53,
+        3.6,
+        3.67,
+        3.73,
+        3.8,
+        3.9,
+        4.04,
+        4.12,
+        4.2
+      ],
+      "help": "Exactly 13 nondecreasing voltages paired with the SOC points. The model interpolates between them and integrates inventory energy from that curve."
+    },
+    {
+      "title": "Overall commanded distance",
+      "unit": "km",
+      "default": 100,
+      "help": "Distance-mode target. The calculation stops at the first original one-second sample meeting this distance, or at the time limit."
+    },
+    {
+      "title": "Distance / duration mode",
+      "unit": "mode",
+      "default": "distance",
+      "help": "Distance mode stops by the requested journey length. Duration mode retains the native fixed-time experiment."
+    },
+    {
+      "title": "Time limit / fixed duration",
+      "unit": "s",
+      "default": 14400,
+      "help": "Distance-mode cap or time-mode duration. Browser work is bounded at 14400 seconds (four hours). Native reference examples keep their supplied durations."
+    },
+    {
+      "title": "Grid charging input power",
+      "unit": "kW",
+      "default": 7.2,
+      "help": "Constant grid-side power for the post-run charging-time estimate, not an in-drive power source."
+    },
+    {
+      "title": "Plug-in target SOC",
+      "unit": "%",
+      "default": 90,
+      "help": "Target after-run battery charge; must remain inside the entered operating window."
+    },
+    {
+      "title": "Diesel initially loaded",
+      "unit": "L",
+      "default": 70,
+      "help": "Inventory accounting only; no empty-tank engine cutoff is introduced."
+    },
+    {
+      "title": "USD conversion",
+      "unit": "GHS per USD",
+      "default": "Latest available BoG quote",
+      "help": "Source mid rate with its effective date, or an explicitly edited experiment rate."
+    }
+  ],
+  "signals": {
+    "commanded_speed_kmh": "Commanded speed (km/h). Requested driving speed, not a solved achieved speed.",
+    "commanded_distance_km": "Commanded distance (km). Integral of requested speed. This is commanded distance, not proof the vehicle completed the route.",
+    "battery_soc_pct": "Battery SOC (%). Battery state of charge, in percent.",
+    "battery_temperature_c": "Battery temperature (deg C). Model battery temperature including resistive heating and heat exchange.",
+    "battery_terminal_voltage_v": "Battery terminal voltage (V). Battery terminal voltage after the model resistance effect.",
+    "battery_current_a": "Actual battery current; discharge positive (A). Battery current: positive discharges, negative charges.",
+    "hydrogen_remaining_kg": "Usable hydrogen remaining (kg). Usable hydrogen still available.",
+    "hydrogen_used_kg": "Hydrogen consumed (kg). Hydrogen consumed since the start.",
+    "fuel_cell_module_kw": "Fuel-cell module output (kW). Module electrical output before boost loss.",
+    "fuel_cell_dc_kw": "Fuel-cell output at DC bus (kW). Fuel-cell electricity reaching the DC bus after boost loss.",
+    "battery_dc_kw": "Actual battery DC-bus power (kW). Battery contribution at the DC bus: positive supplies, negative charges.",
+    "accepted_regeneration_kw": "Accepted regenerative DC power (kW). Braking power accepted for recovery after model limits.",
+    "motor_speed_rpm": "Motor speed (rpm). Motor rotational speed derived from requested wheel speed and reduction ratio.",
+    "motor_iq_a": "Motor q-axis current (A). Motor torque-producing dq-axis current.",
+    "motor_voltage_dq_v": "Required dq voltage magnitude (V). Motor dq voltage requirement used in the voltage screen.",
+    "dc_shortfall_kw": "Unserved DC load (kW). Instantaneous electric-bus demand not supported by available sources.",
+    "motor_shortfall_kw": "Wheel demand beyond motor capability (kW). Instantaneous motor demand above electrical/mechanical capability; separate from the native comparison flag.",
+    "diesel_shortfall_kw": "Unserved diesel demand (kW). Instantaneous diesel demand above available engine capability.",
+    "diesel_flow_lph": "Diesel flow (L/h). Diesel use rate in litres per hour.",
+    "diesel_used_l": "Diesel consumed (L). Cumulative diesel consumed.",
+    "diesel_l_per_100km": "Diesel consumption per commanded distance (L/100 km). Diesel used per 100 commanded kilometres; do not interpret at zero distance.",
+    "electric_source_kwh": "Net electric source energy (kWh). Hydrogen chemical energy plus signed battery inventory depletion. This is not grid electricity alone.",
+    "diesel_source_kwh": "Diesel chemical energy (kWh). Chemical energy in consumed diesel before engine losses.",
+    "energy_saving_pct": "Net source-energy saving (%). Native source-energy saving percentage; unavailable when comparison conditions fail.",
+    "comparison_feasible": "Both powertrains support requested operation (0/1). Native eligibility: positive commanded distance and almost-zero cumulative electric-DC and diesel unmet energy. Motor shortfall and mass excess need separate checks.",
+    "grid_recharge_kwh": "Grid recharge equivalent (kWh). Grid energy estimated to replace positive battery inventory depletion back to its initial inventory. Surplus battery energy gets no refill credit.",
+    "electric_refill_ghs": "Hydrogen refill plus recharge cost (GHS). Hydrogen refill plus grid recharge-to-initial cost in canonical GHS. Native sentinel -1 means prices are unavailable.",
+    "diesel_refill_ghs": "Diesel refill cost (GHS). Diesel refill cost in GHS. Native sentinel -1 means prices are unavailable.",
+    "cost_saving_ghs": "Energy refill-cost saving (GHS). Diesel refill minus electric refill, only when native cost-valid conditions hold; a valid saving can be negative.",
+    "cost_valid": "Cost comparison valid (0/1). Requires comparison eligibility, three positive prices, and no battery inventory surplus larger than 0.001 kWh.",
+    "battery_depletion_kwh": "Signed battery inventory depletion (kWh). Initial stored energy minus current stored energy; negative means a surplus, not an error.",
+    "battery_nominal_kwh": "Nominal battery energy (kWh). Nominal pack energy from series cells, parallel strings, Ah and nominal cell voltage.",
+    "mass_over_screen_kg": "Mass above study screen (kg). Operating mass above the study gross-mass screen; not automatically included in native cost eligibility.",
+    "fuel_cell_loss_kw": "Fuel-cell heat and other losses (kW). Hydrogen chemical input minus fuel-cell module electrical output.",
+    "battery_ohmic_loss_w": "Battery ohmic loss (W). Battery resistive heating in watts, distinct from the kW power channels.",
+    "hydrogen_kg_per_100km": "Hydrogen per commanded distance (kg/100 km). Hydrogen consumed per 100 commanded kilometres.",
+    "electric_source_kwh_per_100km": "Net electric source energy per commanded distance (kWh/100 km). Total electric-system source inventory used per 100 commanded kilometres.",
+    "regeneration_energy_kwh": "Accepted regenerative energy (kWh). Integrated accepted braking-energy recovery.",
+    "battery_soc_fraction": "Battery SOC (fraction). Battery state of charge as a fraction: 0.5 means 50%.",
+    "battery_ocv_v": "Battery open-circuit voltage (V). Pack open-circuit voltage from the SOC lookup table.",
+    "battery_resistance_ohm": "Pack resistance (ohm). Pack equivalent electrical resistance.",
+    "maximum_discharge_current_a": "Maximum discharge current (A). Discharge current allowed by temperature, SOC and current ratings.",
+    "maximum_charge_current_a": "Maximum charge current magnitude (A). Charge current allowed by temperature, SOC and current ratings.",
+    "initial_soc_fraction": "Initial SOC (fraction). Initial battery SOC as a fraction.",
+    "battery_capacity_ah": "Pack capacity (Ah). Pack charge capacity in ampere-hours.",
+    "battery_stored_kwh": "Stored battery inventory (kWh). Current battery energy inventory from the supplied model.",
+    "battery_initial_stored_kwh": "Initial stored battery inventory (kWh). Stored battery energy at the initial SOC.",
+    "battery_terminal_power_w": "Signed battery terminal power (W). Battery terminal power in watts.",
+    "battery_discharged_kwh": "Gross discharged battery energy (kWh). Accumulated battery discharge energy.",
+    "battery_charged_kwh": "Gross charged battery energy (kWh). Accumulated battery charge energy.",
+    "battery_loss_energy_kwh": "Cumulative battery loss energy (kWh). Accumulated battery resistive heat energy.",
+    "motor_ac_kw": "Active motor AC power (kW). Motor AC electrical demand, not proof of delivered power during a shortfall.",
+    "motor_shaft_kw": "Active motor shaft power (kW). Model shaft power under the motor equations and limits.",
+    "motor_copper_loss_kw": "Active motor copper loss (kW). Motor electrical resistive loss.",
+    "motor_viscous_loss_kw": "Active motor viscous loss (kW). Motor mechanical rotational-friction loss.",
+    "motor_limited_wheel_kw": "Motor-limited wheel power (kW). Wheel power after motor capability limits.",
+    "inverter_dc_demand_kw": "Inverter DC demand; motoring positive (kW). DC demand of the inverter, not guaranteed delivered power.",
+    "inverter_loss_kw": "Inverter conversion loss (kW). Inverter conversion loss.",
+    "hydrogen_chemical_kw": "Hydrogen chemical input LHV (kW). Chemical power drawn from hydrogen before fuel-cell conversion.",
+    "hydrogen_chemical_kwh": "Hydrogen chemical energy consumed (kWh). Cumulative hydrogen chemical energy consumed.",
+    "boost_loss_kw": "Fuel-cell boost-converter loss (kW). Fuel-cell boost-converter loss.",
+    "fuel_cell_boost_duty": "Ideal fuel-cell boost duty ratio (fraction). Idealised fuel-cell voltage boost duty ratio.",
+    "rejected_regeneration_kw": "Rejected regeneration (kW). Braking power the electrical path cannot accept.",
+    "battery_converter_loss_kw": "Battery converter loss (kW). Loss in the bidirectional battery converter.",
+    "friction_brake_kw": "Friction-brake power (kW). Braking demand left to the friction path in the model.",
+    "dc_unmet_energy_kwh": "Cumulative unserved DC energy (kWh). Accumulated unmet electric-bus energy; use this alongside instantaneous shortfall.",
+    "dc_load_energy_kwh": "Cumulative DC load energy (kWh). Accumulated requested electric-bus load energy.",
+    "required_battery_dc_kw": "Required battery DC-bus power (kW). Battery bus power requested before its limits.",
+    "limited_battery_dc_kw": "Battery bus power within current limits (kW). Battery bus power after limits.",
+    "battery_boost_duty": "Ideal battery boost duty ratio (fraction). Idealised battery-to-bus boost duty ratio.",
+    "engine_shaft_kw": "Available engine shaft power (kW). Diesel mechanical shaft output.",
+    "diesel_chemical_kw": "Diesel chemical power (kW). Instantaneous diesel chemical input power.",
+    "diesel_unmet_energy_kwh": "Cumulative unserved diesel energy (kWh). Accumulated unmet diesel demand.",
+    "overrun_fuel_cut": "Overrun fuel-cut condition (0/1). Native diesel fuel-cut indicator.",
+    "interval_mean_speed_mps": "Interval mean commanded speed (m/s). Requested speed averaged over the one-second interval.",
+    "commanded_acceleration_mps2": "Commanded acceleration (m/s^2). Change in requested speed per second.",
+    "electric_wheel_force_n": "Electric wheel force demand (N). Electric-vehicle wheel force required by requested driving and road load.",
+    "electric_wheel_power_kw": "Electric wheel power demand (kW). Electric-vehicle requested wheel power.",
+    "diesel_wheel_force_n": "Diesel wheel force demand (N). Diesel-vehicle requested wheel force.",
+    "diesel_wheel_power_kw": "Diesel wheel power demand (kW). Diesel-vehicle requested wheel power.",
+    "electric_operating_mass_kg": "Converted operating mass (kg). Converted kerb mass plus the shared payload.",
+    "diesel_operating_mass_kg": "Diesel operating mass (kg). Diesel kerb mass plus the same payload."
+  }
+}

@@ -10,7 +10,7 @@ pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 
 def open_steering(page,demo_records,live_server):
     page.goto(live_server.url+'/accounts/login/')
-    page.get_by_label('Email address',exact=True).fill(demo_records['student'].email)
+    page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email)
     page.get_by_label('Password',exact=True).fill('DemoPass!742')
     page.get_by_role('button',name='Sign in',exact=True).click()
     page.get_by_role('link',name='Virtual laboratory',exact=True).click()
@@ -105,3 +105,28 @@ def test_accessible_responsive_trajectory_and_visual_evidence(page,demo_records,
     page.locator('.steering-visual').screenshot(path=str(dest/f'trajectory-{width}.png'))
     scrub=page.locator('#steering-scrub');scrub.evaluate("e=>{e.value='2';e.dispatchEvent(new Event('input',{bubbles:true}));}")
     page.locator('.steering-visual').screenshot(path=str(dest/f'steering-event-{width}.png'))
+
+def test_varied_inputs_follow_calculated_trajectory_and_plain_guide(page,demo_records,live_server):
+    import re
+    page.emulate_media(reduced_motion='reduce');open_steering(page,demo_records,live_server)
+    errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+    positions=[]
+    for amplitude,speed,payload in [(0,60,0),(1,60,0),(-1,60,0),(1,90,0),(1,60,500)]:
+        for key,value in [('steeringAmplitudeDeg',amplitude),('speedKmh',speed),('payloadKg',payload)]:page.locator('#steering-input-'+key).fill(str(value))
+        expect(page.locator('#steering-full-path')).to_have_attribute('points','')
+        run(page);data=page.evaluate('SteeringLab.result');row=data['final'];scene=page.locator('#steering-scene')
+        assert float(scene.get_attribute('data-x-m'))==row['xM'];assert float(scene.get_attribute('data-y-m'))==row['yM']
+        points=data['samples'];xs=[0]+[p['xM'] for p in points];ys=[0]+[p['yM'] for p in points]
+        cx=(min(xs)+max(xs))/2;cy=(min(ys)+max(ys))/2;scale=min(640/max(10,max(xs)-min(xs)),290/max(10,max(ys)-min(ys)))
+        transform=page.locator('#steering-car').get_attribute('transform');match=re.search(r'translate\(([-\d.]+) ([-\d.]+)\) rotate\(([-\d.eE+]+)\)',transform)
+        assert float(match[1])==pytest.approx(410+(row['xM']-cx)*scale,abs=.00051)
+        assert float(match[2])==pytest.approx(205-(row['yM']-cy)*scale,abs=.00051)
+        assert float(match[3])==pytest.approx(-row['headingDeg'])
+        expect(page.locator('#steering-calculation-chain')).to_contain_text(f"X {row['xM']:.3f}, Y {row['yM']:.3f} m")
+        positions.append((row['xM'],row['yM']))
+    assert positions[0][1]==0;assert positions[1][1]==pytest.approx(-positions[2][1]);assert positions[3]!=positions[1];assert positions[4]!=positions[1]
+    button=page.get_by_role('button',name='Explain Steering application time',exact=True);button.click();expect(button).to_have_attribute('aria-expanded','true');button.click();expect(button).to_have_attribute('aria-expanded','false')
+    page.locator('#steering-learning-guide > summary').click()
+    expect(page.locator('#steering-learning-content')).to_contain_text('one simulated second')
+    link=page.get_by_role('link',name='Download complete learning guide (PDF)');response=page.request.get(live_server.url+link.get_attribute('href'));assert response.status==200;assert response.body().startswith(b'%PDF')
+    assert not errors,errors

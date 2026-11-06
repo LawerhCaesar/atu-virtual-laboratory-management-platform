@@ -5,7 +5,7 @@ from apps.accounts.models import User
 
 
 def test_bless_numerical_port():
-    result=subprocess.run(['node','--test','tests/bless/engine.test.mjs'],capture_output=True,text=True)
+    result=subprocess.run(['node','--test','tests/bless/engine.test.mjs','tests/bless/study.test.mjs'],capture_output=True,text=True)
     assert result.returncode==0,result.stdout+result.stderr
 
 

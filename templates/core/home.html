@@ -13,6 +13,7 @@
     <p class="story-description">A student-led practical-learning initiative created to support applied automotive education, simulation and collaborative research at ATU.</p>
     <div class="story-rule" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     <dl class="engineering-fields">{% for system in systems %}<div><dt>{{ system.code }}</dt><dd>{{ system.name }}</dd></div>{% endfor %}</dl>
+    {% include "includes/access_credit.html" %}
   </section>
   <section class="welcome-access" aria-labelledby="access-title">
     <section class="welcome-learning" aria-labelledby="learning-title" data-fact-url="{% url 'core:learning_fact' %}" data-fact-id="{{ learning_fact.id }}">

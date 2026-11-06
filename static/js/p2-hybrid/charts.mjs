@@ -1,3 +1,4 @@
+import {info as addInfo,SIGNAL_HELP} from './learning.mjs';
 export const COLORS=['#245abd','#a34f1d','#087e74','#773b9c'];
 export const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 export const svgEl=(tag,attrs={},text)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;};
@@ -26,7 +27,7 @@ export function createCharts(container,info,onTime){
  for(const[groupIndex,g]of info.scope_groups.entries()){
   const section=make('section',undefined,'p2-plot-group');section.dataset.scopeGroup=g.name;const title=make('h3',g.name,'h4');title.id=`p2-group-${groupIndex}`;section.setAttribute('aria-labelledby',title.id);const grid=make('div',undefined,'p2-chart-grid');section.append(title,grid);container.append(section);
   for(const keys of g.panels){const series=keys.map(k=>lookup[k]),f=make('figure'),caption=make('figcaption',series.map(s=>s.label).join(' / ')+` (${series[0].unit})`),legend=make('p',undefined,'p2-chart-legend'),svg=svgEl('svg',{role:'img','aria-label':caption.textContent+' versus time (s)'}),readout=make('p','Use recorded time to inspect a sample.','p2-chart-readout'),save=make('button','Export chart SVG','btn btn-sm btn-outline-secondary');save.type='button';save.disabled=true;
-   series.forEach((s,i)=>{const span=make('span',`${['Solid','Dashed','Dotted'][i]}: ${s.label}`);span.style.setProperty('--series-color',COLORS[i]);legend.append(span);});
+   series.forEach((s,i)=>{const span=make('span',`${['Solid','Dashed','Dotted'][i]}: ${s.label}`);span.style.setProperty('--series-color',COLORS[i]);addInfo(span,s.label,SIGNAL_HELP[s.key]||'Read this signal in the complete learning guide.');legend.append(span);});
    save.addEventListener('click',()=>exportSvg(svg,`p2-${keys[0]}`));f.append(caption,legend,svg,readout,save);grid.append(f);const chart={svg,series,readout,save};charts.push(chart);
    const inspect=e=>{if(!result)return;const r=svg.getBoundingClientRect(),v=(e.clientX-r.left)/r.width*500;onTime(Math.max(start,Math.min(end,start+(v-75)/395*(end-start))));};svg.addEventListener('pointermove',inspect);svg.addEventListener('click',inspect);
   }

@@ -41,6 +41,8 @@ def registration_payload(**overrides):
         "full_name": "Ama Mensah",
         "email": "ama@example.edu",
         "role": User.Role.STUDENT,
+        "qualification": "MTECH",
+        "index_number": "01181429M",
         "password1": "SafePassword!238",
         "password2": "SafePassword!238",
     }

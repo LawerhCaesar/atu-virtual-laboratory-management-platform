@@ -7,7 +7,7 @@ pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 MOCK="""window.SpeechRecognition=class {constructor(){window.recognizers??=[];window.recognizers.push(this);}start(){this.onstart?.();}abort(){} };"""
 def open_lab(page,demo_records,live_server):
  page.add_init_script(MOCK)
- page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
+ page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
  page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
 def contact(page,ms):
  target=page.locator('#yp-hold');target.focus()

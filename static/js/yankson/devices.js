@@ -1,0 +1,24 @@
+/* Real platform-authenticator ceremonies; no fingerprint image, template or hold timing. */
+(()=>{const host=document.getElementById('yp-workbench');if(!host)return;
+const panel=document.createElement('section');panel.className='ys-device-panel';panel.innerHTML='<h3>Use this computer’s device authentication</h3><p>Your operating system may offer Touch ID, Windows Hello, a fingerprint reader, face or PIN. The lab verifies a signed device response, not a fingerprint image. Register once, then verify before a new contact. A separate on-screen hold measures contact duration.</p><div class="ys-buttons"><button id="ya-register" class="btn btn-outline-primary">Register this device for the lab</button><button id="ya-verify" class="btn btn-primary">Verify device / fingerprint</button><button id="ya-clear" class="btn btn-outline-secondary">Clear device permission</button></div><p id="ya-device-status" role="status">Not verified. No device permission granted.</p>';
+host.querySelector('.yp-start-grid').before(panel);
+const status=document.getElementById('ya-device-status');let busy=false,generation=0,expiryTimer=0;
+const decode=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
+const encode=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function post(path,data={}){const response=await fetch('/virtual-lab/ice/starting/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value},credentials:'same-origin',body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw Error(result.error||'Verification request failed.');return result;}
+function invalidate(){clearTimeout(expiryTimer);generation++;window.YanksonPractical?.setDeviceIdentity(null);status.textContent='Device permission cleared. Verify again before a new contact.';}
+async function ceremony(operation){if(busy)return;busy=true;const epoch=++generation;window.YanksonLab.pause();window.YanksonPractical.setDeviceIdentity(null);status.textContent='Waiting for the operating-system authentication prompt…';try{
+ if(!isSecureContext||!window.PublicKeyCredential||!navigator.credentials)throw Error('Device authentication is unavailable here. Open this page in current Chrome, Edge or Safari over HTTPS.');
+ if(!await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())throw Error('No user-verifying platform authenticator was reported by this device. Configure device authentication in your operating system, or choose clearly labelled practice identity.');
+ const options=await post('device/'+operation+'/options/');options.challenge=decode(options.challenge);if(options.user)options.user.id=decode(options.user.id);for(const key of ['allowCredentials','excludeCredentials'])if(options[key])options[key]=options[key].map(c=>({...c,id:decode(c.id)}));
+ const credential=operation==='register'?await navigator.credentials.create({publicKey:options}):await navigator.credentials.get({publicKey:options});
+ if(epoch!==generation)throw Error('Device request cancelled or experiment changed.');
+ const r=credential.response,payload={id:credential.id,rawId:encode(credential.rawId),type:credential.type,response:{clientDataJSON:encode(r.clientDataJSON)},authenticatorAttachment:credential.authenticatorAttachment,clientExtensionResults:credential.getClientExtensionResults()};
+ if(r.attestationObject)payload.response.attestationObject=encode(r.attestationObject);else Object.assign(payload.response,{authenticatorData:encode(r.authenticatorData),signature:encode(r.signature),userHandle:r.userHandle?encode(r.userHandle):null});
+ const result=await post('device/'+operation+'/complete/',payload);if(epoch!==generation)throw Error('Experiment changed during verification.');
+ if(result.verified){window.YanksonPractical.setDeviceIdentity({expires:performance.now()+result.validForSeconds*1000,method:result.method});clearTimeout(expiryTimer);expiryTimer=setTimeout(invalidate,result.validForSeconds*1000);status.textContent='Device verified for 60 seconds. Use the contact pad for a short voice-authorizing contact, or hold for direct start. Fingerprint/PIN/face modality is not disclosed by the OS.';}
+ else status.textContent=result.message;
+ }catch(e){window.YanksonPractical.setDeviceIdentity(null);status.textContent=e.name==='NotAllowedError'?'Device verification cancelled, denied or timed out. No permission granted.':e.message;}finally{busy=false;}}
+document.getElementById('ya-register').onclick=()=>ceremony('register');document.getElementById('ya-verify').onclick=()=>ceremony('verify');document.getElementById('ya-clear').onclick=invalidate;
+for(const event of ['yankson:reset','yankson:stop','pagehide'])window.addEventListener(event,invalidate);
+})();

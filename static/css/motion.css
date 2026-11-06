@@ -1,12 +1,10 @@
 /* Presentation only: no navigation interception, delayed forms or hidden content. */
 @keyframes atu-rise { from { transform: translateY(7px); } to { transform: translateY(0); } }
-@keyframes atu-page-enter { from { transform: translateY(5px); } to { transform: translateY(0); } }
 @keyframes atu-surface-arrive { from { transform: translateY(12px); } to { transform: translateY(0); } }
 @keyframes atu-brand-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(232,197,104,.08); } 50% { box-shadow: 0 0 0 7px rgba(232,197,104,.12); } }
 @media (prefers-reduced-motion: no-preference) {
-  @view-transition { navigation: auto; }
-  ::view-transition-old(root) { animation-duration: 140ms; }
-  ::view-transition-new(root) { animation: atu-page-enter 220ms ease-out; }
+  /* Animate the new page's content locally. Cross-document transitions can
+     abort during rapid navigation or a change to reduced-motion preferences. */
   main > .page-heading, main > .access-layout, main > .eyebrow,
   main > h1, main > .row, .welcome-story > *, .welcome-access > * { animation: atu-rise 360ms ease-out both; }
   .welcome-story > :nth-child(2), .welcome-access > :nth-child(2) { animation-delay: 40ms; }
@@ -36,8 +34,6 @@
   #cutaway-workspace:not([hidden]) { animation: atu-rise 280ms ease-out; }
 }
 @media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-  ::view-transition-group(*) { animation: none !important; }
   .btn, .dashboard-card, .role-card, .form-control, .form-select,
   .welcome-story > *, .welcome-access > *, .welcome-brand img, .lab-system-card, .lab-model-card,
   .fuel-visual, .brake-visual, .brand-lockup img, #cutaway-workspace { animation: none !important; transition: none !important; }

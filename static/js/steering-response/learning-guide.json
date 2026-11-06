@@ -1,0 +1,200 @@
+{
+  "title": "Vehicle Steering Response",
+  "sections": [
+    [
+      "First run: follow one input through the system",
+      [
+        "Leave Reference step steer selected and press Run simulation. The road wheels remain straight for 1 simulated second, then turn to 1 degree. The front tyres produce sideways force, the body begins to turn, and its heading and sideways travel change. The car marker, path, cards and chart cursors all use the same recorded sample.",
+        "The completed run initially shows the final sample. Press Restart playback to return to time zero, then Play animation. You can pause or drag Playback position to inspect any saved point. Reduced-motion disables automatic playback while keeping the position slider and every calculated result available."
+      ]
+    ],
+    [
+      "Step time without the jargon",
+      [
+        "Steering application time means when you start steering. If it is 1 s, the vehicle first travels straight for one simulated second. This schedules the input change; it is not the numerical step used by the computer.",
+        "Output time step is the gap between saved result points. At 0.01 s the gap is one hundredth of a second, giving 100 saved points per second plus the initial point. A 10 s run normally has 1,001 points. At 0.005 s it has 2,001. Smaller gaps show more detail; they do not make the vehicle move more slowly.",
+        "The computer uses fourth-order Runge-Kutta integration (RK4). Demanding combinations of speed, stiffness and inertia may need several smaller internal steps between saved points. The result status and exported solver information report the number of subdivisions. Playback speed only changes how quickly you watch the saved run."
+      ]
+    ],
+    [
+      "Understand the three steering patterns",
+      [
+        "Step means turn the front wheels once and keep that angle. Sine smoothly moves between positive and negative steering; frequency sets how often it repeats. Doublet holds positive steering for the chosen half duration, then negative steering for the same time, then returns to zero. All patterns are zero before the application time.",
+        "A negative amplitude reverses the steering direction. Because this is a small-angle linear handling model, keep road-wheel angles small and read warnings for demanding cases. The steering ratio converts road-wheel angle into steering-wheel angle for display; it does not feed a second steering multiplication into the path calculation."
+      ]
+    ],
+    [
+      "Read the animation fairly",
+      [
+        "The marker centre follows calculated X and Y coordinates. Its body follows heading; the front wheels follow road-wheel angle. Velocity direction depends on heading plus sideslip, so the direction of travel can differ slightly from the direction the body faces. The diagram is top-down; no roll, pitch or suspension movement is calculated.",
+        "Dashed blue is the complete calculated path. Solid gold is the part reached at the selected playback time. Positive Y points upward. The vehicle is enlarged to stay visible, so it is a marker rather than a vehicle drawn at the same metre scale as the path.",
+        "Each new run automatically fits its own path to the panel. A wider turn can therefore look a similar size to a narrower turn. Compare the metre axes, X and Y readings, radius and charts; do not compare the apparent picture size alone. X and Y use the same distance scale within a run, so curves are not stretched differently in the two directions.",
+        "Body proportions use the shared Genesis GV70 reference. Wheelbase follows the entered front and rear centre-of-gravity distances. The GV70 preset loads shared mass and wheelbase; it estimates the axle split using the reference ratio and leaves inertia and stiffness as assumptions. It is not an independently calibrated GV70 handling model."
+      ]
+    ],
+    [
+      "A practical test sequence",
+      [
+        "Test 1: load Straight-line check and run. Y position, heading, yaw rate and lateral forces should stay zero. X should equal the effective forward speed multiplied by time. At 60 km/h for 10 s, X is about 166.667 m.",
+        "Test 2: use the reference settings and run +1 degree, then -1 degree. X should match while Y, heading and yaw rate reverse sign. The animation must move upward for positive Y and downward for negative Y. The metre axes may auto-fit differently, so inspect the numbers as well.",
+        "Test 3: change speed, payload or axle stiffness and run again. Read the new result at the same simulated time. The car position must match that result, rather than replaying an old path. Editing an input clears the previous result and disables export until the next calculation completes.",
+        "Test 4: change only steering ratio from 16 to 20. At 1 degree road-wheel input, steering-wheel angle should change from 16 to 20 degrees while the numerical path remains the same. This checks the difference between the road-wheel input and steering-wheel display.",
+        "Test 5: try sine and doublet, then inspect samples before and after application. Before application the road-wheel angle should be zero. Changing output time step changes sampling and numerical approximation; playback speed must never change exported numerical results."
+      ]
+    ],
+    [
+      "Equations: from a basic picture to the mathematical model",
+      [
+        "Let U be forward speed in m/s, beta body sideslip in radians, r yaw rate in radians/s, psi heading in radians, delta front road-wheel angle in radians, a the CG-to-front distance and b the CG-to-rear distance. Total mass is base mass plus payload. Wheelbase is a + b.",
+        "Front tyre slip angle is delta - beta - a times r/U. Rear tyre slip angle is -beta + b times r/U. Front force equals front cornering stiffness times front slip angle; rear force equals rear cornering stiffness times rear slip angle. Both are axle forces.",
+        "Sideslip rate equals (front force + rear force)/(mass times U) - r. Yaw acceleration equals (a times front force - b times rear force)/yaw inertia. Heading rate equals r. World-coordinate rates are X rate = U cos(psi + beta) and Y rate = U sin(psi + beta). These are the coordinates used by the displayed path.",
+        "Sideways acceleration equals total lateral force divided by mass. Turning radius equals U/(absolute r + 0.001). The extra 0.001 is the supplied reference term; do not interpret a straight-line radius as a physical measured turning circle. Steering-wheel angle equals road-wheel angle times steering ratio."
+      ]
+    ],
+    [
+      "Numerical limits and fair interpretation",
+      [
+        "The solver uses at least 0.5 m/s forward speed (1.8 km/h), even if you enter zero, because the equations divide by speed. Total mass is limited to 100 through 50,000 kg with warnings. Do not interpret a zero-speed input as a stationary-car steering test.",
+        "Tyres are linear and do not saturate. There is no road-friction limit, load transfer, roll, braking, acceleration, steering-assist dynamics or stability controller. Payload does not automatically change inertia or CG geometry. Those remain separate experimental settings.",
+        "The supplied source Simulink download was unavailable for inspection. Verification checks the written equations and reference output table; no independent physical-vehicle handling validation is claimed. The animation is a view of this calculation, not evidence that a real car can follow every requested path."
+      ]
+    ],
+    [
+      "Reference result and saving evidence",
+      [
+        "The reference final sample is approximately yaw rate 4.7027 deg/s, sideslip -0.17837 deg, lateral acceleration 1.36797 m/s squared (0.13945 g), radius 200.615 m, heading 41.876 degrees, X 153.963 m, Y 51.465 m, front force 1172.54 N, rear force 879.41 N and steering-wheel angle 16 degrees.",
+        "Export JSON preserves parameters, scenario, solver information, all samples and the ordered platform vector. CSV preserves every recorded sample. The displayed charts may reduce points while retaining peaks, and the path reduces points for drawing. The car and cursor still use an actual recorded sample, including the exact final point.",
+        "For a lecturer exercise, specify the input values and ask students to predict the direction of change, run the test, quote selected-sample coordinates and yaw, explain the relevant force or inertia relationship and state the model limits. Exported files are local learning evidence; they are not automatically submitted as assessment work.",
+        "Reference evidence is the supplied Vehicle Steering Response programmer handover and the project written-equation verification tests. The shared Genesis baseline supplies appearance and the explicitly labelled mass/wheelbase preset; it does not supply unprovided tyre or yaw calibration."
+      ]
+    ]
+  ],
+  "parameters": [
+    {
+      "key": "steeringAmplitudeDeg",
+      "title": "Road-wheel steering amplitude",
+      "unit": "deg",
+      "default": 1,
+      "help": "How far the front road wheels turn. Positive and negative values turn in opposite directions. This is not the angle of the steering wheel you hold."
+    },
+    {
+      "key": "stepTimeS",
+      "title": "Steering application time",
+      "unit": "s",
+      "default": 1,
+      "help": "When steering starts, in simulated seconds. For example, 1 s means drive straight for one simulated second, then begin the chosen steering pattern. It is different from Output time step."
+    },
+    {
+      "key": "durationS",
+      "title": "Simulation duration",
+      "unit": "s",
+      "default": 10,
+      "help": "How many simulated seconds to calculate. It is not how long you have to watch the animation."
+    },
+    {
+      "key": "timeStepS",
+      "title": "Output time step",
+      "unit": "s",
+      "default": 0.01,
+      "help": "Time between saved result points. At 0.01 s, 100 result points are saved each simulated second. Smaller values give more detail and take more work. Some demanding cases use smaller internal calculation steps, which the status reports."
+    },
+    {
+      "key": "sineFrequencyHz",
+      "title": "Sine frequency",
+      "unit": "Hz",
+      "default": 0.25,
+      "help": "How often a left-right steering cycle repeats each second after steering starts. 0.25 Hz means one complete cycle every four simulated seconds. Used only by the sine pattern."
+    },
+    {
+      "key": "doubletHalfDurationS",
+      "title": "Doublet half duration",
+      "unit": "s",
+      "default": 1,
+      "help": "How long each part of a doublet lasts. With 1 s, steer one way for one second, then the opposite way for one second, then return to zero. Used only by the doublet pattern."
+    },
+    {
+      "key": "speedKmh",
+      "title": "Vehicle speed",
+      "unit": "km/h",
+      "default": 60,
+      "help": "The forward speed held throughout the experiment. It does not accelerate or brake. Below 1.8 km/h the equations use 1.8 km/h to avoid dividing by a nearly zero speed."
+    },
+    {
+      "key": "baseMassKg",
+      "title": "Base vehicle mass",
+      "unit": "kg",
+      "default": 1500,
+      "help": "Vehicle mass before extra load. The solver adds payload to this number. Changing mass does not automatically change inertia or the centre-of-gravity distances."
+    },
+    {
+      "key": "payloadKg",
+      "title": "Payload",
+      "unit": "kg",
+      "default": 0,
+      "help": "Extra carried mass, such as occupants or cargo. It is added to vehicle mass; other geometry and inertia settings stay as you entered them."
+    },
+    {
+      "key": "yawInertiaKgM2",
+      "title": "Yaw moment of inertia",
+      "unit": "kg·m²",
+      "default": 2500,
+      "help": "How hard it is to start or stop the vehicle turning about a vertical axis. A larger value resists changes in turning rate."
+    },
+    {
+      "key": "cgToFrontM",
+      "title": "CG to front axle",
+      "unit": "m",
+      "default": 1.2,
+      "help": "Distance from the centre of gravity to the front axle. Together with the rear distance, this gives wheelbase."
+    },
+    {
+      "key": "cgToRearM",
+      "title": "CG to rear axle",
+      "unit": "m",
+      "default": 1.6,
+      "help": "Distance from the centre of gravity to the rear axle. Together with the front distance, this gives wheelbase."
+    },
+    {
+      "key": "frontCorneringStiffnessNPerRad",
+      "title": "Front axle cornering stiffness",
+      "unit": "N/rad",
+      "default": 80000,
+      "help": "How strongly the front axle produces sideways force for a small tyre slip angle. Higher means a stronger linear response, without a tyre-grip limit in this model."
+    },
+    {
+      "key": "rearCorneringStiffnessNPerRad",
+      "title": "Rear axle cornering stiffness",
+      "unit": "N/rad",
+      "default": 80000,
+      "help": "How strongly the rear axle produces sideways force for a small tyre slip angle. It is a linear axle value, not one tyre measurement."
+    },
+    {
+      "key": "steeringRatio",
+      "title": "Steering ratio",
+      "unit": "ratio",
+      "default": 16,
+      "help": "How many degrees of steering-wheel movement correspond to one degree at the road wheels. Here road-wheel angle is the input, so this ratio changes the displayed steering-wheel angle, not the calculated path."
+    },
+    {
+      "title": "Steering profile",
+      "unit": "pattern",
+      "default": "step",
+      "help": "Step turns the road wheels to a fixed angle and holds it. Sine smoothly repeats left and right. Doublet turns one way, then the other, then returns to zero."
+    }
+  ],
+  "signals": {
+    "yawRateDegPerS": "Yaw rate. How quickly the vehicle body turns, in degrees per second.",
+    "sideslipDeg": "Sideslip angle. The difference between where the body points and where it is actually travelling. This is different from the tyre slip angles used to calculate axle forces.",
+    "lateralAccelerationMps2": "Lateral acceleration. The sideways acceleration caused by front and rear axle forces, in metres per second squared.",
+    "lateralAccelerationG": "Lateral acceleration in g. Sideways acceleration divided by 9.81; 0.1 g is about 0.981 m/s squared.",
+    "turningRadiusM": "Turning radius. Forward speed divided by absolute yaw rate plus the reference 0.001 term. Straight travel therefore shows a large finite radius, not infinity. It does not indicate turn direction.",
+    "headingDeg": "Heading. The direction the vehicle body faces relative to the initial X direction. This sets the animation body angle.",
+    "xM": "X position. Forward-axis position in metres in the fixed world frame. It sets the animation position and path.",
+    "yM": "Y position. Sideways-axis position in metres in the fixed world frame. Positive Y is drawn upward; negative Y downward.",
+    "frontLateralForceN": "Front lateral force. Sideways force from the complete front axle. This is a linear model without force saturation.",
+    "rearLateralForceN": "Rear lateral force. Sideways force from the complete rear axle, using its slip angle and stiffness.",
+    "steeringWheelAngleDeg": "Steering-wheel angle. Front road-wheel angle multiplied by the entered steering ratio; changing the ratio alone does not steer the road wheels further.",
+    "roadWheelAngleDeg": "Road-wheel angle. The actual front steering angle supplied by the selected pattern at this sample.",
+    "timeS": "Sample time. The simulated time of the selected state; playback, cards and chart cursors use this same sample."
+  }
+}

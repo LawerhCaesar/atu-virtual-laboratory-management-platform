@@ -45,3 +45,10 @@ node --test tests/steering_response/*.test.mjs
 The 10 s reference produces yaw rate 4.70272086 deg/s, sideslip −0.17836748 deg, lateral acceleration 1.36796605 m/s² (0.13944608 g), radius 200.61477320 m, heading 41.87612118 deg, X 153.96269431 m, Y 51.46509589 m, front force 1172.54232583 N, rear force 879.40674437 N and steering-wheel angle 16 deg. All agree with the supplied rounded acceptance table within its tolerances.
 
 Visual evidence is stored under `test-results/steering-response/` using the project's ignored test-artifact convention: full-interface, final-trajectory and steering-event screenshots at desktop and mobile widths.
+
+
+## Steering learning revision (November 2026)
+
+The trajectory design and original RK4 solver are preserved. Recorded sample coordinates, heading and front-wheel angle are explicitly exposed for visual verification; the displayed calculation chain follows the same sample as the marker and chart cursors. The auto-fit note explains that different runs use different metre ranges, so picture size alone cannot establish steering sensitivity. Input edits remove stale paths and sample metadata.
+
+Plain-language information buttons cover every input, output, chart legend, playback speed and path legend, using the shared second-click/Escape/outside dismissal behaviour. The bottom Learning guide and reference evidence section contains the full basic-to-advanced guide and a four-page PDF generated from the same content, with timing examples, equations, reference values, controlled comparisons and limitations. Tests compare projected marker coordinates and orientation with results under straight, signed steering, changed speed and changed payload cases, and check that steering ratio changes steering-wheel display without changing the path.
