@@ -40,6 +40,10 @@ h1, h2 { color: #08162b; letter-spacing: -.035em; }
 .access-layout { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 7%; min-height: 65vh; }
 .access-introduction h1 { font-size: clamp(2.5rem, 4.5vw, 4rem); line-height: 1.05; }
 .access-description { color: #5c6879; line-height: 1.8; }
+.access-credit { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid #d2d9e3; font-family: "Poppins Footer", "Avenir Next", "Segoe UI", sans-serif; }
+.welcome-story .access-credit { border-color: #ffffff26; }
+.welcome-story .access-credit .footer-heading { color: #fff; }
+.welcome-story .access-credit .footer-detail { color: #d4ddeb; }
 .access-steps { list-style: none; counter-reset: access; padding: 0; margin-top: 2rem; }
 .access-steps li { counter-increment: access; display: flex; gap: .7rem; align-items: center; margin-block: .7rem; color: #536273; font-size: .85rem; }
 .access-steps li::before { content: counter(access); display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border: 1px solid #d2d9e3; border-radius: 50%; background: #fff; color: #172e52; }
