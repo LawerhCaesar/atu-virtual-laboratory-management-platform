@@ -1,5 +1,5 @@
 import json
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from pathlib import Path
 import pytest
 from playwright.sync_api import expect
@@ -8,7 +8,7 @@ MOCK="""window.SpeechRecognition=class {constructor(){window.recognizers??=[];wi
 def open_lab(page,demo_records,live_server):
  page.add_init_script(MOCK)
  page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
- page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
+ page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp+timedelta(seconds=1))
 def contact(page,ms):
  target=page.locator('#yp-hold');target.focus()
  target.dispatch_event('keydown',{'key':' ','repeat':False});page.clock.run_for(ms);target.dispatch_event('keyup',{'key':' '});

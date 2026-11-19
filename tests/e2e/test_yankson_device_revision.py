@@ -1,4 +1,4 @@
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 import pytest
 from playwright.sync_api import expect
 from test_yankson_practical import contact
@@ -17,7 +17,7 @@ def test_real_webauthn_ceremony_and_fault_recovery(page,demo_records,live_server
  page.route('**/device/verify/complete/',corrupt);page.locator('#ya-verify').click();expect(page.locator('#ya-device-status')).to_contain_text('could not be verified',timeout=20000);expect(page.locator('#yp-identity-source')).to_contain_text('none');page.unroute('**/device/verify/complete/',corrupt)
  page.locator('#ya-verify').click();expect(page.locator('#ya-device-status')).to_contain_text('Device verified',timeout=20000)
  expect(page.locator('#yp-practice')).not_to_be_checked()
- stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
+ stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp+timedelta(seconds=1))
  contact(page,1700);page.clock.run_for(4000);expect(page.locator('#ys-state')).to_contain_text('RUNNING')
  page.locator('#ys-reset').click();expect(page.locator('#yp-identity-source')).to_contain_text('none')
  page.locator('#ya-tab-circuit').click();page.locator('#ya-electrical-canHighV').fill('1.5');page.locator('#ya-check').click();expect(page.locator('#ya-preflight')).to_contain_text('failed')
@@ -40,7 +40,7 @@ def test_revision_views_guide_and_accessibility(page,demo_records,live_server,wi
  from test_yankson_practical import MOCK,result
  page.set_viewport_size({'width':width,'height':1000});page.add_init_script(MOCK);login(page,demo_records['student'],live_server)
  expect(page.locator('#ya-stand canvas')).to_be_visible(timeout=15000);expect(page.locator('#ya-learning')).to_contain_text('Controller parameter glossary')
- stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
+ stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp+timedelta(seconds=1))
  page.locator('#yp-practice').check();contact(page,300);page.locator('#yp-listen').click();result(page,'Hey Start');page.clock.run_for(4000)
  page.locator('#ya-tab-signals').click();expect(page.locator('#ya-binary')).to_contain_text('01101000');expect(page.locator('#ya-command')).to_contain_text('00000001');expect(page.locator('#ya-chain')).to_contain_text('RUNNING')
  assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -54,7 +54,7 @@ def test_revision_views_guide_and_accessibility(page,demo_records,live_server,wi
  link=page.get_by_role('link',name='Download complete learning guide (PDF)');assert page.request.get(link.get_attribute('href')).status==200
 
 def test_ideal_fuse_latches_until_repaired_and_replaced(page,demo_records,live_server):
- login(page,demo_records['student'],live_server);stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
+ login(page,demo_records['student'],live_server);stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp+timedelta(seconds=1))
  page.locator('#yp-practice').check();page.locator('#ya-tab-circuit').click();page.locator('#ya-electrical-fuseA').fill('100');contact(page,1700);page.clock.run_for(100)
  expect(page.locator('#ya-electrical-values')).to_contain_text('fuse OPEN');page.locator('#ys-reset').click();expect(page.locator('#ya-electrical-values')).to_contain_text('fuse OPEN')
  page.locator('#ya-fuse').click();expect(page.locator('#ya-preflight')).to_contain_text('Overload still present')
