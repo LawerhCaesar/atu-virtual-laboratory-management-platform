@@ -29,10 +29,7 @@ let config = { ...DEFAULT_ELECTRICAL },
   identity = "none",
   lastDraw = -1,
   lastStand = -Infinity;
-let openHelp = null;
-document.addEventListener("pointerdown", (event) => {
-  if (openHelp && !openHelp.span.contains(event.target)) openHelp.close();
-});
+// Shared lab-help.js owns click, keyboard, dismissal and popup positioning.
 function help(title, text) {
   const span = document.createElement("span");
   const button = document.createElement("button");
@@ -44,55 +41,11 @@ function help(title, text) {
   button.setAttribute("aria-expanded", "false");
   tip.id = "ys-tip-" + crypto.randomUUID();
   tip.className = "ys-tooltip";
-  tip.setAttribute("role", "note");
+  tip.setAttribute("role", "tooltip");
   tip.textContent = text;
   tip.hidden = true;
   button.setAttribute("aria-describedby", tip.id);
   span.append(button, tip);
-  let pinned = false;
-  function close() {
-    pinned = false;
-    tip.hidden = true;
-    button.setAttribute("aria-expanded", "false");
-    if (openHelp?.span === span) openHelp = null;
-  }
-  function show() {
-    if (openHelp?.span !== span) openHelp?.close();
-    tip.hidden = false;
-    button.setAttribute("aria-expanded", "true");
-    const box = button.getBoundingClientRect();
-    const width = Math.min(280, innerWidth - 24);
-    tip.style.width = width + "px";
-    tip.style.left =
-      Math.max(12, Math.min(innerWidth - width - 12, box.left)) + "px";
-    tip.style.top = box.bottom + 8 + "px";
-    if (tip.getBoundingClientRect().bottom > innerHeight)
-      tip.style.top =
-        Math.max(8, box.top - tip.getBoundingClientRect().height - 8) + "px";
-    openHelp = { span, close };
-  }
-  span.onmouseenter = show;
-  span.onmouseleave = () => {
-    if (!pinned) close();
-  };
-  button.onfocus = show;
-  button.onblur = () => {
-    if (!pinned) close();
-  };
-  button.onclick = (event) => {
-    event.preventDefault();
-    if (pinned) close();
-    else {
-      pinned = true;
-      show();
-    }
-  };
-  button.onkeydown = (event) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      close();
-    }
-  };
   return span;
 }
 for (const [key, title, unit, lo, hi, step, description] of ELECTRICAL_FIELDS) {
