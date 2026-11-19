@@ -62,6 +62,8 @@ def test_UI_02_help_toggle_zoom_and_camera(page,demo_records,live_server):
     expect(tip).to_have_attribute('aria-expanded','false')
     tip.press('Tab')
     tip.focus()
+    expect(tip).to_have_attribute('aria-expanded','false')
+    tip.press('Enter')
     expect(tip).to_have_attribute('aria-expanded','true')
     tip.press('Escape')
     expect(tip).to_have_attribute('aria-expanded','false')
