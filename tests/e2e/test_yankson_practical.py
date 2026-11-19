@@ -1,14 +1,22 @@
 import json
-from datetime import datetime,timezone,timedelta
+from datetime import datetime,timezone
 from pathlib import Path
 import pytest
 from playwright.sync_api import expect
 pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 MOCK="""window.SpeechRecognition=class {constructor(){window.recognizers??=[];window.recognizers.push(this);}start(){this.onstart?.();}abort(){} };"""
+def freeze_lab_clock(page):
+ # Keep wall time fixed across the pause request so a slow CI runner cannot
+ # make its target fall into the past. Restore advancing dates after pausing.
+ stamp=datetime(2026,1,1,tzinfo=timezone.utc)
+ page.clock.install(time=stamp)
+ page.clock.set_fixed_time(stamp)
+ page.clock.pause_at(stamp)
+ page.clock.set_system_time(stamp)
 def open_lab(page,demo_records,live_server):
  page.add_init_script(MOCK)
  page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
- page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp+timedelta(seconds=1))
+ page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');freeze_lab_clock(page)
 def contact(page,ms):
  target=page.locator('#yp-hold');target.focus()
  target.dispatch_event('keydown',{'key':' ','repeat':False});page.clock.run_for(ms);target.dispatch_event('keyup',{'key':' '});
@@ -84,3 +92,17 @@ def test_identity_rearm_epoch_and_parameter_countdown(page,demo_records,live_ser
  remaining=page.evaluate('YanksonLab.parameters[3]-(YanksonLab.row[0]-YanksonLab.row[24])')
  assert 4.5<remaining<=5
  expect(page.locator('#ys-auth')).to_contain_text(f'{remaining:.2f} s remaining')
+
+
+def test_clock_pause_survives_slow_runner(page,demo_records,live_server,monkeypatch):
+ import time
+ original=page.clock.pause_at
+ def delayed_pause(stamp):
+  time.sleep(1.5)
+  original(stamp)
+ monkeypatch.setattr(page.clock,'pause_at',delayed_pause)
+ open_lab(page,demo_records,live_server)
+ before=page.evaluate('Date.now()')
+ page.clock.run_for(2000)
+ assert page.evaluate('Date.now()')==before+2000
+ expect(page.locator('#ys-state')).to_contain_text('LOCKED')
