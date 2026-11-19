@@ -9,7 +9,9 @@ pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 def freeze_clock(page):
     stamp=datetime(2026,11,16,tzinfo=timezone.utc)
     page.clock.install(time=stamp)
+    page.clock.set_fixed_time(stamp)
     page.clock.pause_at(stamp)
+    page.clock.set_system_time(stamp)
 
 def test_engine_pause_correction(page,demo_records,live_server):
     open_engine(page,demo_records,live_server)
