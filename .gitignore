@@ -19,3 +19,6 @@ deploy/tls/
 output/
 tmp/
 storage/
+
+# Local research evidence remains outside the release source.
+review-evidence/

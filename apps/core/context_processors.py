@@ -23,5 +23,16 @@ def simulation_walkthrough(request):
             if model["route_name"] == route:
                 return {"walkthrough_module": {"route": route, "name": model["title"], "user_id": str(request.user.pk)},
                         "vehicle_baseline": VEHICLE_BASELINE,
-                        "module_student": student_profile(route, model["title"])}
+                        "module_student": student_profile(route, model["title"]),
+                        "platform_deployment": deployment_metadata()}
     return {}
+
+
+def deployment_metadata():
+    """Public release provenance only; never expose environment secrets."""
+    import os
+    return {
+        "commit": os.environ.get("RENDER_GIT_COMMIT") or None,
+        "branch": os.environ.get("RENDER_GIT_BRANCH") or None,
+        "environment": "render" if os.environ.get("RENDER") == "true" else "local",
+    }

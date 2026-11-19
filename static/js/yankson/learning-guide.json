@@ -1,7 +1,25 @@
 {
   "title": "Authenticated Engine Starting: practical learning guide",
-  "version": "Local review \u2022 1 November 2026",
+  "version": "Isolated retest review | 19 November 2026",
   "sections": [
+    [
+      "Before engine permission: check two independent services",
+      [
+        "Simulation and device controls are on the left. Results and export buttons are on the right, or below on a narrow screen. Start with Test microphone. Allow the browser prompt, speak and check the waveform and level. Stop capture when finished. This diagnostic never authorizes or starts the engine.",
+        "Next choose Listen for test - phrase only. Say the complete active phrase, initially Hey Start. RESULT and MATCH mean a diagnostic transcript matched; they do not mean engine authorization. Check actual recognized text. This mode works while the engine remains locked. Its result cannot be reused to start.",
+        "Capture and recognition are different services. A responsive waveform proves capture only. The recognition service may be unavailable or require internet access even when capture works. An unanswered device prompt is WAITING, not permission denied. Cancel stops a pending request; a stream that arrives late is closed.",
+        "Recognition progresses through REQUESTING, STARTING SERVICE and LISTENING only after the service starts. A startup taking more than 8 seconds reports STARTUP_TIMEOUT; a session has a 20-second maximum. ERROR retains its cause after the end event. Retry or cancel without changing the 10-second production permission setting."
+      ]
+    ],
+    [
+      "Practice a custom phrase before activation",
+      [
+        "Keep Hey Start as the working default. Type a candidate phrase, select English US or UK and choose Listen for test - phrase only. Read target, final transcript, language and exact MATCH/NO MATCH together. A new custom phrase can be activated only after this check matches. This does not grant permission or start the engine.",
+        "If the service hears different words, choose a clearer phrase and retest. Never silently enrol misheard words. Recognition still compares the full normalized phrase; a longer sentence containing the target is not accepted. The language setting selects the requested recognition language, not a guarantee of availability or accent accuracy.",
+        "The external 17 November retest report records one successful human Hey Start run using practice identity and seven nonmatching Yankson Start results. These are historical reported outcomes, not new trials in the active run or a population recognition-accuracy estimate. A fresh human custom-phrase trial is still required on the revised interface.",
+        "Controls for inputs remain on the left; exports and results are on the right. CSV and JSON use the selected run. Reset and parameter application create a new run, clear active transcripts and events, and retain only explicitly separated historical report context."
+      ]
+    ],
     [
       "Start here: two routes to a start",
       [
@@ -27,7 +45,7 @@
         "Speech recognition is separate: the browser converts sound to text using its own supported service. It may require the internet and send audio to its provider. This lab does not store raw audio. If recognition is unavailable, use a supported full browser; the microphone diagnostic alone cannot recognize words.",
         "The complete recognized phrase is normalized for case, punctuation and spacing and compared with the saved phrase. The technical view then shows UTF-8 text bytes in hex and binary. These are the encoded transcript, not raw microphone audio. A match requests command ID 1, shown as 00000001.",
         "A matching phrase still needs current permission, a new sequence, capture after the current authorization epoch and acceptable capture age. Voice recognizes the command, not the identity of the speaker. A wrong phrase, delayed response, changed command, cancelled request or expired permission must never start the engine.",
-        "If the microphone is denied, allow it in this site\u2019s browser settings and retry. If the level is silent, check the selected input device. A network/service failure is reported separately. Automated speech tests use controlled recognition results; they do not prove human accent accuracy."
+        "If the microphone is denied, allow it in this site’s browser settings and retry. If the level is silent, check the selected input device. A network/service failure is reported separately. Automated speech tests use controlled recognition results; they do not prove human accent accuracy."
       ]
     ],
     [
@@ -83,7 +101,7 @@
       "Save and share a trial exercise",
       [
         "Lecturers and administrators can save a title, student instructions, electrical values, active controller parameters, functional connections and fault switches to their own account. Choose My saved exercises or share the numeric exercise ID with an approved student.",
-        "Loading restores the original question settings and resets authorization. Each student repairs their browser\u2019s local copy. Students cannot save over the lecturer question. The shared ID is for approved laboratory users, not an anonymous public link. Saved questions are not a private examination bank, submission system or automatic grading service.",
+        "Loading restores the original question settings and resets authorization. Each student repairs their browser’s local copy. Students cannot save over the lecturer question. The shared ID is for approved laboratory users, not an anonymous public link. Saved questions are not a private examination bank, submission system or automatic grading service.",
         "Current load torque and RPM override value are also stored with the question. Transient voice/contact events, an already-running engine, device secrets, live audio and a latched fuse are not stored as question state. Use a low fuse setting to make the student reproduce a fuse fault.",
         "Apply parameters / new experiment resets the experiment. Keep the numerical integration step fixed at 0.01 s. Input ranges and threshold consistency are checked before applying a configuration."
       ]
@@ -95,6 +113,25 @@
         "This is device verification for an educational browser simulation. The server does not control an actual engine, and client-side lab inputs remain inspectable by students. It is not a production vehicle immobilizer. No physical R503 reader, CAN transceiver, ECU pinout or starter actuator is connected.",
         "The original 10 ms controller equations remain unchanged. Static electrical exercises and 3D rendering are added adapters. The referenced methodology was available locally; its unavailable historical chat was not treated as reviewed evidence. Native MATLAB/SLX traces and human microphone/fingerprint trials must be separately validated.",
         "References: supplied Yankson implementation guide, programmer guide and practical follow-up; W3C Web Authentication specification; py_webauthn registration/authentication documentation. Browser/device capability determines which real-input paths are available."
+      ]
+    ],
+    [
+      "Review, replay and defensible results",
+      [
+        "Opening a match or contact connection blocks both a simulated preset and the measured contact route. All raw inputs are assembled first; circuit and electrical constraints are then applied. The starter request is not the same as delivered actuation: an open starter driver can leave a request while the pinion and delivered coil remain off.",
+        "The CAN output separates expected and received identifier and DLC, raw and decoded RPM, validity, frame age and drop status. Last accepted numeric RPM can stay visible while invalid. The CAN frame here is an educational RPM feedback frame, not an OEM engine-start command.",
+        "Each reset creates a new run ID and clears run-specific practical, signal, trial and recognition histories. JSON saves the original 28 output columns, the complete deterministic input timeline, supplementary received-frame/delivered-output trace, parameters and provenance. Raw audio and credential material are not exported.",
+        "Record a question, baseline, one controlled change, expected result, measured result and conditions in Experiment record and replay. Human-source entries are operator attestations and need evidence review. Attach a reference by filename; attachment does not independently verify its content. Preserve failed, blocked and not-run attempts.",
+        "Validate an exported JSON run to replay its deterministic inputs against the reference engine within 1e-9 absolute tolerance. Recorded animation replay is separate from the live clock. Slowing replay never extends a live voice window. Camera views and transparent casing affect presentation only.",
+        "The runtime deployment commit is included separately in exported evidence when provided by the host. Automated recognition callbacks verify software handling only. The reported 17 November default human speech trial is retained separately. The revised custom phrase and owner-device paths still require new owner trials. The 33 original native input/trace pairs were unavailable for a new parity run. The physical objective is not achieved: time constraints prevented any construction attempt within the project period."
+      ]
+    ],
+    [
+      "Human retest protocol",
+      [
+        "Record every attempt: date, OS/browser, microphone/device, recognition language, target phrase, identity source, permission at request, final transcript or exact service error/no-result status, match decision and engine outcome. Keep denied, cancelled and failed attempts. Select operator-attested human speech in the trial record only when a person actually spoke.",
+        "Browser event durations measure service-request to callback time. Do not label them acoustic-onset latency. Use the microphone diagnostic first, then a phrase-only check, then short contact and authorized production speech at 1x. Repeat both default and chosen custom phrases, and include wrong/longer phrases as negative tests. Save JSON before resetting. No fixed number of these informal trials establishes population accuracy.",
+        "SpeechRecognition.phrases contextual biasing was reviewed in official MDN documentation. It is not enabled in this review: actual engine/browser support and service behavior must be verified first. No fuzzy matching, new audio provider or unverified hint support is introduced."
       ]
     ]
   ],
@@ -166,7 +203,7 @@
     ],
     [
       "Rotational inertia",
-      "0.25 kg m\u00b2",
+      "0.25 kg m²",
       "Resistance to angular acceleration in the virtual torque model."
     ],
     [

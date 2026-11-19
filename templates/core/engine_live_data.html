@@ -13,13 +13,14 @@
     <a href="{% url 'core:laboratory_system' 'ice' %}" class="btn btn-outline-secondary">Back to ICE models</a>
   </div>
   {% include "includes/engine_simulation_toolbar.html" %}
+  <div class="mb-3"><button id="engine-export-package" type="button" class="btn btn-outline-primary" disabled>Export evidence package (JSON)</button><p class="small mt-2">Export CSV retains the latest 60 seconds, up to 1201 samples. For run ID, units, source build, exact time window and transition events, use Export evidence package; it contains the same CSV without changing its numeric columns.</p></div>
   <details class="engine-model-limits mt-3 mb-3">
-    <summary class="small fw-semibold">Educational model · safety and physical-stage limitations</summary>
+    <summary class="small fw-semibold">Educational virtual model · scope and limitations</summary>
   <div class="alert alert-warning small mt-2 mb-0">
     This is a simplified educational model. Its equations are not Toyota 1NZ, OEM or production ECU calibration data.
     Do not use it to control a road vehicle or safety-critical hardware.
-    <strong>Virtual stage only.</strong> The separate physical 1NZ setup has no electric water pump.
-    The stages are tested independently, with no comparison.
+    <strong>Virtual stage only.</strong> The electric-water-pump duty is a virtual command. RPM is imposed by the student.
+    No biometric recognition, pump hardware or physical engine testing is performed in this module.
   </div>
   </details>
   <noscript><div class="alert alert-danger">Enable JavaScript to use the simulation. Calculations run in your browser without MATLAB or a network calculation API.</div></noscript>
@@ -55,7 +56,7 @@
         <h2 class="h5">Engine operating sequence</h2>
         <ol class="engine-stepper" id="engine-stepper" aria-label="Engine states"></ol>
         <p class="small mb-0">Time in state: <output id="engine-state-time">0.00</output> s.
-          Prime: 2.0 s · Crank timeout: 5.0 s · Shutdown: 0.5 s.</p>
+          Nominal thresholds: prime 2.0 s · crank 5.0 s · shutdown 0.5 s.</p><p class="small mb-0">With the approved floating-point sample convention, uninterrupted transitions occur after 2.00 s, 5.05 s and 0.55 s respectively. See the learning guide for tick counts.</p>
         <p class="small mt-2 mb-0" id="engine-start-reason" role="status"></p>
       </div>
       <nav class="engine-tabs mt-3 compact-ribbon" id="engine-tabs" aria-label="Engine system views"></nav>

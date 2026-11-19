@@ -229,7 +229,7 @@
     "rawDutyCyclePct": "Requested injector duty before the display limit of 100% is applied.",
     "injectorDutyCyclePct": "Percentage of the available cycle requested for injection. Above 85% raises a warning; at 100% the injector is shown as saturated.",
     "predictedLambda": "Estimated mixture after trims, scale and injector bias. This is a calculated estimate, not a new sensor measurement.",
-    "fuelSavingPct": "Percentage reduction from the untrimmed corrected-fuel baseline. It can be negative and does not prove a safe or efficient optimum.",
+    "fuelSavingPct": "Percentage reduction from the corrected operating baseline before trims, scale and injector bias. It can be negative and does not prove a safe or efficient optimum.",
     "fuelFlowGps": "Theoretical fuel used each second, in grams.",
     "fuelFlowLph": "Theoretical fuel flow expressed in litres per hour.",
     "cumulativeFuelG": "Total fuel counted during the recorded run, in grams.",
@@ -259,7 +259,7 @@
     ],
     [
       "Read the graphs and gauges",
-      "Graphs show recorded virtual time, not wall-clock time. Each chart names its signal and unit. Solid, dashed and dotted lines distinguish traces as well as colour. Injector duty shows the requested share of the cycle, limited to 100% for display. Fuel consumed is the accumulated mass; its progress bar uses a display scale rather than a tank capacity. A preview after an edit can differ from the last recorded chart point."
+      "Graphs show recorded virtual time, not wall-clock time. Each chart names its signal and unit. Solid, dashed and dotted lines distinguish traces as well as colour. Injector duty shows the requested share of the cycle, limited to 100% for display. Fuel consumed is the accumulated mass; its progress bar uses a display scale rather than a tank capacity. Current preview after an edit can differ from Last recorded run. The chart retains old samples with their original inputs. Recorded run inputs show first/last settings and the number of input segments; resuming with edits does not relabel earlier samples."
     ],
     [
       "Try and verify: the default run",
@@ -271,7 +271,7 @@
     ],
     [
       "Compare fuel trials fairly",
-      "Compare baseline and adjusted calculates two fresh full-duration runs from the current inputs, with scale as their only difference. It does not replay edits in a recorded run. Apply recommended scale changes the multiplier only on request. Keep duration, step, load, torque and all other inputs the same. Check predicted lambda, target error, duty and warnings alongside fuel totals. Less fuel alone does not establish a better result."
+      "Compare baseline and adjusted calculates two fresh full-duration runs from the current inputs, with scale as their only difference. It does not replay edits in a recorded run. Suggested scale to test is measured lambda divided by target lambda, limited to 0.85–1.05. It does not compensate for corrections already applied by STFT, LTFT or injector bias. Applying it changes the multiplier only on request; check the adjacent mixture warning. Keep duration, step, load, torque and all other inputs the same. Check predicted lambda, target error, duty and warnings alongside fuel totals. Displayed Fuel saving uses the corrected operating baseline before trims, scale and injector bias. A separately calculated fuel-mass change compares the two completed fresh runs. Less fuel alone does not establish a better result."
     ],
     [
       "Advanced: how the calculation is connected",
@@ -283,7 +283,7 @@
     ],
     [
       "Reference evidence and model boundaries",
-      "The existing implementation was derived from the supplied programmer guide, implementation script and inspected Fuel_Delivery_Optimisation_All_In_One.slx equations and wiring. No MATLAB numerical run was performed. The GV70 baseline supplies overall dimensions, wheelbase, track and tyre radius; the body is not manufacturer CAD and the fuel-system arrangement is illustrative. This module has four cylinders and a nominal 14.7:1 gasoline ratio. It is an educational software model without hardware connection or OEM calibration. Numerical tests check implementation behaviour; they do not validate fuel economy or real injector spray."
+      "The existing implementation was derived from the supplied programmer guide, implementation script and inspected Fuel_Delivery_Optimisation_All_In_One.slx equations and wiring. No MATLAB numerical run was performed. The numerical fuel model is generic and four-cylinder, not a validated specification of the illustrated vehicle. The GV70 baseline supplies overall dimensions, wheelbase, track and tyre radius; the body is not manufacturer CAD and the fuel-system arrangement is illustrative. This module has four cylinders and a nominal 14.7:1 gasoline ratio. It is an educational software model without hardware connection or OEM calibration. Numerical tests check implementation behaviour; they do not validate fuel economy or real injector spray."
     ],
     [
       "Chemistry context",

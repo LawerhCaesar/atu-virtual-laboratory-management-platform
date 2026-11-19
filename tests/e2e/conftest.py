@@ -25,6 +25,7 @@ def isolate_external_learning_source(monkeypatch):
 
 @pytest.fixture
 def demo_records(settings, tmp_path, transactional_db):
+    Path("test-results/corrections").mkdir(parents=True, exist_ok=True)
     settings.DEBUG = True
     settings.MEDIA_ROOT = tmp_path / "private-media"
     # Django's live_server helper otherwise exposes media for convenience.

@@ -1,2 +1,165 @@
-// Explicit local microphone diagnostic. No recording, upload or persisted audio.
-export function mountMicrophone(host){host.innerHTML=`<details><summary>Check your actual microphone · waveform and sample bytes</summary><p>This check requests your microphone and shows its local waveform. It does not start the engine. For starting, use a verified short contact, then Listen and say the active phrase. Browser speech recognition is a separate service and may use a remote provider.</p><div class="ys-buttons"><button id="ya-mic-start" class="btn btn-outline-primary">Test microphone</button><button id="ya-mic-stop" class="btn btn-outline-secondary">Stop microphone test</button></div><p id="ya-mic-status" role="status">Microphone test is off.</p><canvas id="ya-mic-wave" width="700" height="100" role="img" aria-label="Live local microphone waveform"></canvas><pre id="ya-mic-bytes">No samples. These diagnostic bytes will not be saved or exported.</pre></details>`;const $=s=>host.querySelector(s);let stream=null,ctx=null,raf=0,generation=0;function stop(message='Microphone test stopped.'){generation++;cancelAnimationFrame(raf);stream?.getTracks().forEach(t=>t.stop());stream=null;if(ctx){ctx.close().catch(()=>{});ctx=null;}$('#ya-mic-status').textContent=message;$('#ya-mic-bytes').textContent='No retained audio samples.';}$('#ya-mic-stop').onclick=()=>stop();$('#ya-mic-start').onclick=async()=>{stop();const epoch=generation;try{if(!isSecureContext||!navigator.mediaDevices?.getUserMedia)throw Error('Microphone access requires HTTPS or localhost and a browser with microphone support.');const acquired=await navigator.mediaDevices.getUserMedia({audio:true,video:false});if(epoch!==generation){acquired.getTracks().forEach(t=>t.stop());return;}stream=acquired;ctx=new(window.AudioContext||window.webkitAudioContext)();await ctx.resume();if(epoch!==generation)return;const analyser=ctx.createAnalyser();analyser.fftSize=256;ctx.createMediaStreamSource(stream).connect(analyser);const data=new Uint8Array(256),canvas=$('#ya-mic-wave'),paint=canvas.getContext('2d');let last=0;function tick(t){if(!stream)return;if(t-last>=80){last=t;analyser.getByteTimeDomainData(data);let sum=0;paint.clearRect(0,0,700,100);paint.strokeStyle='#73e3cb';paint.lineWidth=2;paint.beginPath();data.forEach((v,i)=>{const y=v/255*100;if(i)paint.lineTo(i*700/255,y);else paint.moveTo(0,y);sum+=((v-128)/128)**2;});paint.stroke();const rms=Math.sqrt(sum/data.length);$('#ya-mic-status').textContent='Live microphone · level '+Math.round(rms*100)+'% RMS of full scale · '+ctx.sampleRate+' samples/s. '+(rms<.003?'Very quiet: check the selected microphone and input level.':'Signal detected; speech recognition must still understand the phrase.');$('#ya-mic-bytes').textContent='Latest 16 diagnostic 8-bit waveform samples (128 is approximately silence):\n'+[...data.slice(0,16)].map(v=>v.toString(2).padStart(8,'0')).join(' ')+'\nThese are analyser display samples, not a speech codec or recognized command.';}raf=requestAnimationFrame(tick);}raf=requestAnimationFrame(tick);}catch(e){stop(e.name==='NotAllowedError'?'Microphone permission denied. Allow microphone access in this browser’s site settings and retry.':e.message);}};for(const event of ['pagehide','yankson:stop','yankson:reset'])window.addEventListener(event,()=>stop());document.addEventListener('visibilitychange',()=>{if(document.hidden)stop('Page hidden; microphone test stopped.');});}
+// Local capture diagnostic. Audio samples remain in memory for the visible analyser.
+export function mountMicrophone(host) {
+  host.innerHTML = `<details open><summary>Check your actual microphone · waveform and sample bytes</summary>
+    <p>Test capture before requesting engine permission. Watch the waveform while speaking, then stop. Recognition is checked separately.</p>
+    <div class="ys-buttons"><button id="ya-mic-start" class="btn btn-outline-primary">Test microphone</button><button id="ya-mic-stop" class="btn btn-outline-secondary">Stop microphone test</button></div>
+    <p id="ya-mic-status" role="status">Microphone test is off.</p>
+    <canvas id="ya-mic-wave" width="700" height="100" role="img" aria-label="Live local microphone waveform"></canvas>
+    <pre id="ya-mic-bytes">No samples. Diagnostic bytes are not saved or exported.</pre></details>`;
+  const get = (id) => document.getElementById(id);
+  let stream = null;
+  let context = null;
+  let frame = 0;
+  let generation = 0;
+  let guidanceTimer = 0;
+  const events = [];
+
+  function state(code, message) {
+    get("ya-mic-status").dataset.state = code;
+    get("ya-mic-status").textContent = message;
+    events.push({
+      code,
+      message,
+      monotonicMs: performance.now(),
+      runId: window.YanksonLab.runId,
+    });
+    window.dispatchEvent(
+      new CustomEvent("yankson:microphone", { detail: events.at(-1) }),
+    );
+  }
+  function stop(message = "Microphone test stopped.", code = "STOPPED") {
+    generation++;
+    clearTimeout(guidanceTimer);
+    cancelAnimationFrame(frame);
+    stream?.getTracks().forEach((track) => track.stop());
+    stream = null;
+    const previousContext = context;
+    context = null;
+    previousContext?.close().catch(() => {});
+    get("ya-mic-start").disabled = false;
+    get("ya-mic-bytes").textContent = "No retained audio samples.";
+    state(code, message);
+  }
+  get("ya-mic-stop").onclick = () => stop();
+  get("ya-mic-start").onclick = async () => {
+    stop();
+    const epoch = generation;
+    get("ya-mic-start").disabled = true;
+    state(
+      "REQUESTING",
+      "Requesting microphone access. Choose Allow in the browser prompt, or Cancel this test.",
+    );
+    guidanceTimer = setTimeout(() => {
+      if (epoch === generation && !stream)
+        state(
+          "WAITING_FOR_PERMISSION",
+          "Still waiting for microphone access. An unanswered prompt is not a denial. Check the address-bar microphone icon, or cancel and retry.",
+        );
+    }, 5000);
+    try {
+      if (!isSecureContext || !navigator.mediaDevices?.getUserMedia)
+        throw new Error(
+          "Microphone capture requires HTTPS or localhost and a supported browser.",
+        );
+      const acquired = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+      if (epoch !== generation) {
+        acquired.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      clearTimeout(guidanceTimer);
+      stream = acquired;
+      const localContext = new (
+        window.AudioContext || window.webkitAudioContext
+      )();
+      context = localContext;
+      await localContext.resume();
+      if (epoch !== generation) {
+        acquired.getTracks().forEach((track) => track.stop());
+        await localContext.close().catch(() => {});
+        return;
+      }
+      for (const track of stream.getTracks())
+        track.addEventListener("ended", () => {
+          if (epoch === generation)
+            stop(
+              "The microphone track ended. Check the device and retry.",
+              "TRACK_ENDED",
+            );
+        });
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 256;
+      context.createMediaStreamSource(stream).connect(analyser);
+      const data = new Uint8Array(256);
+      const paint = get("ya-mic-wave").getContext("2d");
+      state("CAPTURING", "Capture active. Speak to check the local waveform.");
+      let last = 0;
+      function tick(time) {
+        if (epoch !== generation || !stream) return;
+        if (time - last >= 80) {
+          last = time;
+          analyser.getByteTimeDomainData(data);
+          let squared = 0;
+          paint.clearRect(0, 0, 700, 100);
+          paint.strokeStyle = "#73e3cb";
+          paint.lineWidth = 2;
+          paint.beginPath();
+          data.forEach((value, index) => {
+            const x = (index * 700) / 255;
+            const y = (value * 100) / 255;
+            if (index) paint.lineTo(x, y);
+            else paint.moveTo(x, y);
+            squared += ((value - 128) / 128) ** 2;
+          });
+          paint.stroke();
+          const rms = Math.sqrt(squared / data.length);
+          get("ya-mic-status").textContent =
+            `Live microphone · level ${Math.round(rms * 100)}% RMS of full scale · ${context.sampleRate} samples/s. ${rms < 0.003 ? "Very quiet. Check the selected input." : "Signal detected. Test phrase recognition separately."}`;
+          get("ya-mic-bytes").textContent =
+            "Latest 16 analyser bytes (128 is approximately silence)\n" +
+            Array.from(data.slice(0, 16), (value) =>
+              value.toString(2).padStart(8, "0"),
+            ).join(" ");
+        }
+        frame = requestAnimationFrame(tick);
+      }
+      frame = requestAnimationFrame(tick);
+    } catch (error) {
+      if (epoch !== generation) return;
+      const messages = {
+        NotAllowedError:
+          "Microphone permission denied. Check browser site settings.",
+        NotFoundError: "No audio input was found.",
+        NotReadableError: "Microphone is busy or unreadable.",
+        AbortError: "Audio capture was interrupted.",
+        SecurityError: "Browser security settings prevent capture.",
+      };
+      stop(
+        (messages[error.name] || error.message) + " [" + error.name + "]",
+        "ERROR",
+      );
+    }
+  };
+  for (const name of [
+    "pagehide",
+    "yankson:stop",
+    "yankson:recognition-request",
+  ])
+    window.addEventListener(name, () => stop());
+  window.addEventListener("yankson:reset", () => {
+    stop();
+    events.length = 0;
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stop("Page hidden. Capture stopped.");
+  });
+  window.YanksonMicrophone = {
+    stop,
+    trace: () => events.slice(),
+    get capturing() {
+      return !!stream;
+    },
+  };
+}

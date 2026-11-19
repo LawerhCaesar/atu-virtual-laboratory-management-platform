@@ -140,7 +140,7 @@ def test_fuel_feedback_motion_pause_validation_and_fresh_navigation(page, demo_r
     expect(output(page,"bsfcGPerKWh")).to_have_text("Not meaningful at near-zero power")
     page.get_by_role("button",name="Reset",exact=True).click()
     page.get_by_label("Measured lambda (ratio)", exact=True).fill("0.95")
-    page.get_by_role("button",name="Apply recommended scale",exact=True).click()
+    page.get_by_role("button",name="Apply suggested scale to test",exact=True).click()
     expect(page.get_by_label("Fuel optimisation scale (ratio)",exact=True)).to_have_value("0.95")
     page.get_by_label("Air flow (g/s)", exact=True).fill("200")
     expect(page.locator("#fuel-warnings")).to_contain_text("saturation")

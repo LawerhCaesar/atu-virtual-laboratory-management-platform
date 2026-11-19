@@ -53,6 +53,7 @@
     {% if module_student %}{% include "includes/module_student.html" %}{% endif %}
     {% if walkthrough_module.route == "core:bless" %}{% include "includes/hiace_reference.html" %}{% elif vehicle_baseline %}{% include "includes/vehicle_baseline.html" %}{% endif %}
   </main>
+  {% if platform_deployment %}{{ platform_deployment|json_script:"platform-deployment" }}{% endif %}
   {% if walkthrough_module %}<script type="module" src="{% static 'js/walkthrough/ui.mjs' %}"></script><script type="module" src="{% static 'js/lab-learning.mjs' %}"></script>{% endif %}
 
   <footer class="platform-footer border-top py-4 mt-auto{% if walkthrough_module %} walkthrough-footer{% endif %}">

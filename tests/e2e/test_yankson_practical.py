@@ -8,7 +8,7 @@ MOCK="""window.SpeechRecognition=class {constructor(){window.recognizers??=[];wi
 def open_lab(page,demo_records,live_server):
  page.add_init_script(MOCK)
  page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
- page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
+ page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');stamp=datetime(2026,1,1,tzinfo=timezone.utc);page.clock.install(time=stamp);page.clock.pause_at(stamp)
 def contact(page,ms):
  target=page.locator('#yp-hold');target.focus()
  target.dispatch_event('keydown',{'key':' ','repeat':False});page.clock.run_for(ms);target.dispatch_event('keyup',{'key':' '});
@@ -20,7 +20,7 @@ def test_voice_personalization_epoch_and_normal_time(page,demo_records,live_serv
  page.locator('#yp-practice').check();contact(page,300)
  expect(page.locator('#ys-auth')).to_contain_text('permission ·')
  page.locator('#yp-listen').click();result(page,'do not hey start');expect(page.locator('#yp-reason')).to_contain_text('Wrong command')
- page.locator('#yp-command').fill('Start my engine');page.locator('#yp-save').click();page.locator('#yp-listen').click();result(page,'START, MY ENGINE!');page.clock.run_for(4000)
+ page.locator('#yp-command').fill('Start my engine');page.locator('#yp-test-phrase').click();result(page,'Start my engine');page.locator('#yp-save').click();page.locator('#yp-listen').click();result(page,'START, MY ENGINE!');page.clock.run_for(4000)
  expect(page.locator('#ys-state')).to_contain_text('RUNNING');expect(page.locator('#ys-outputs')).to_contain_text('Starter OFF · Run supply ON')
  page.locator('#ys-reset').click();contact(page,300);page.locator('#yp-listen').click();page.locator('#ys-reset').click();result(page,'Start my engine');expect(page.locator('#ys-state')).to_contain_text('LOCKED')
  page.locator('#yp-default').click();expect(page.locator('#yp-command')).to_have_value('Hey Start')
@@ -53,7 +53,7 @@ def test_practical_visual_capabilities_and_errors(page,demo_records,live_server,
 
 def test_delayed_recognition_and_unavailable_services(page,demo_records,live_server):
  open_lab(page,demo_records,live_server);page.locator('#yp-practice').check();contact(page,300)
- page.locator('#yp-listen').click();page.locator('#yp-command').fill('My start');page.locator('#yp-save').click();result(page,'Hey Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
+ page.locator('#yp-listen').click();page.locator('#yp-command').fill('My start');page.locator('#yp-test-phrase').click();result(page,'My start');page.locator('#yp-save').click();result(page,'Hey Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
  page.locator('#yp-listen').click();page.clock.run_for(11000);result(page,'My start');expect(page.locator('#ys-state')).to_contain_text('LOCKED')
  page.locator('#ys-reset').click();contact(page,300);page.locator('#yp-listen').click();page.locator('#yp-stop-listening').click();result(page,'My start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
  page.evaluate('delete window.SpeechRecognition;delete window.webkitSpeechRecognition');page.locator('#yp-listen').click();expect(page.locator('#yp-speech')).to_contain_text('unavailable')

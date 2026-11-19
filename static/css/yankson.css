@@ -1,9 +1,617 @@
-.ys-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.ys-buttons{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}.ys-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.ys-fields label{min-width:0}#ys-supervisor svg,#ys-chart{width:100%;height:auto}#ys-results pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem}#ys-auth{color:#235d70;background:#edf5f7;padding:14px;border-radius:12px}#ys-state{color:#173c5e}details{margin-top:16px}@media(max-width:700px){.ys-grid{grid-template-columns:1fr}.ys-fields{grid-template-columns:1fr 1fr}.ys-buttons .btn{min-height:44px}}
-.yp-status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.yp-status-grid p{background:#edf4f8;padding:14px;border-radius:12px;font-size:.85rem}.yp-start-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px}.yp-hold{min-height:155px;width:100%;border:2px solid #267a87;border-radius:22px;background:#e3f3f3;color:#163b51;font:600 1.15rem/1.6 inherit;touch-action:none;user-select:none}.yp-hold:active{background:#bfe7df}.yp-hold:focus-visible{outline:4px solid #c49121;outline-offset:4px}#yp-progress{width:100%;height:18px}.yp-reason{padding:18px;background:#eef6f2;border-left:4px solid #257a64}.yp-disconnected{stroke-dasharray:6 8;opacity:.25}#yp-circuit svg{width:100%;height:auto}#yp-wires{margin:20px 0}#yp-parameters button{min-height:44px}@media(max-width:700px){.yp-status-grid{grid-template-columns:1fr 1fr}.yp-start-grid{grid-template-columns:1fr}.yp-status-grid p{overflow-wrap:anywhere}}
+.ys-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.ys-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.ys-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.ys-fields label {
+  min-width: 0;
+}
+#ys-supervisor svg,
+#ys-chart {
+  width: 100%;
+  height: auto;
+}
+#ys-results pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+#ys-auth {
+  color: #235d70;
+  background: #edf5f7;
+  padding: 14px;
+  border-radius: 12px;
+}
+#ys-state {
+  color: #173c5e;
+}
+details {
+  margin-top: 16px;
+}
+@media (max-width: 700px) {
+  .ys-grid {
+    grid-template-columns: 1fr;
+  }
+  .ys-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ys-buttons .btn {
+    min-height: 44px;
+  }
+}
+.yp-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+.yp-status-grid p {
+  background: #edf4f8;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+.yp-start-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 26px;
+}
+.yp-hold {
+  min-height: 155px;
+  width: 100%;
+  border: 2px solid #267a87;
+  border-radius: 22px;
+  background: #e3f3f3;
+  color: #163b51;
+  font: 600 1.15rem/1.6 inherit;
+  touch-action: none;
+  user-select: none;
+}
+.yp-hold:active {
+  background: #bfe7df;
+}
+.yp-hold:focus-visible {
+  outline: 4px solid #c49121;
+  outline-offset: 4px;
+}
+#yp-progress {
+  width: 100%;
+  height: 18px;
+}
+.yp-reason {
+  padding: 18px;
+  background: #eef6f2;
+  border-left: 4px solid #257a64;
+}
+.yp-disconnected {
+  stroke-dasharray: 6 8;
+  opacity: 0.25;
+}
+#yp-circuit svg {
+  width: 100%;
+  height: auto;
+}
+#yp-wires {
+  margin: 20px 0;
+}
+#yp-parameters button {
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .yp-status-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .yp-start-grid {
+    grid-template-columns: 1fr;
+  }
+  .yp-status-grid p {
+    overflow-wrap: anywhere;
+  }
+}
 
-.yp-diagram-scroll{overflow:auto;border:1px solid #d6e3eb;border-radius:12px;padding:12px;margin:16px 0}.yp-diagram-scroll svg{min-width:780px;display:block}.yp-diagram-scroll:focus-visible{outline:3px solid #b48419;outline-offset:3px}
+.yp-diagram-scroll {
+  overflow: auto;
+  border: 1px solid #d6e3eb;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+}
+.yp-diagram-scroll svg {
+  min-width: 780px;
+  display: block;
+}
+.yp-diagram-scroll:focus-visible {
+  outline: 3px solid #b48419;
+  outline-offset: 3px;
+}
 
-.yp-path-live{stroke-dasharray:9 5;animation:yp-signal 1.2s linear infinite}@keyframes yp-signal{to{stroke-dashoffset:-28}}@media(prefers-reduced-motion:reduce){.yp-path-live{animation:none}}
-.ys-device-panel{padding:24px;background:#eef4fa;border:1px solid #c9d9e7;border-radius:16px;margin:24px 0}.ya-chain{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0}.ya-chain>div{border:1px solid #cbdce5;background:#f1f7fa;border-radius:12px;padding:16px;overflow-wrap:anywhere}.ya-chain p{font-size:.85rem;margin-bottom:0}.ya-signal-grid,.ya-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.ya-signal-grid>section,.ya-chart{min-width:0;border:1px solid #cbdce5;border-radius:14px;padding:18px}.ya-signal-grid pre,#ya-signal-events{font-size:.82rem;white-space:pre-wrap;overflow-wrap:anywhere}.ya-chart svg{width:100%;height:auto}.ya-chart svg text{font:13px sans-serif;fill:#29485d}.ya-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem}.ya-legend>span{display:inline-flex;align-items:center;gap:6px}#ya-results [hidden]{display:none!important}#ya-stand{height:420px;border-radius:18px;overflow:hidden;margin:20px 0}#ya-stand canvas{display:block;width:100%;height:100%;touch-action:pan-y}#ya-preflight{border-left:4px solid #ab5420;background:#fff4e6;padding:18px;margin:20px 0}#ya-preflight[data-ready=true]{border-color:#287060;background:#edf8f4}#ya-exercise-list,#ya-exercise-id,#ya-instructions,#ya-exercise-title{margin:8px 0 18px}.ya-help{display:inline-flex;margin-left:6px}.ya-help>button{border:1px solid #50728c;color:#214d6b;background:#edf5fc;border-radius:50%;width:25px;height:25px;font:bold 14px Georgia;cursor:help}.ya-tip{display:none;position:fixed;z-index:3000;padding:14px;border:1px solid #8faaba;border-radius:10px;background:#102e45;color:#fff;font:400 14px/1.5 system-ui;box-shadow:0 8px 24px #102e4530;pointer-events:none}.ya-help:hover .ya-tip,.ya-help:focus-within .ya-tip,.ya-help.open .ya-tip{display:block}.ya-guide article{padding:18px 0;border-bottom:1px solid #d6e3eb}.ya-guide dt{font-weight:650;margin-top:14px}.ya-guide dd{margin:6px 0 16px}.ya-guide table{width:100%;font-size:.85rem}.ya-guide th,.ya-guide td{padding:10px;border-bottom:1px solid #d6e3eb;vertical-align:top}#ya-mic-wave{width:100%;height:90px;background:#132d42;border-radius:10px}#ya-mic-bytes{white-space:pre-wrap;font-size:.8rem;overflow-wrap:anywhere}@media(max-width:800px){.ya-chain{grid-template-columns:repeat(2,minmax(0,1fr))}.ya-signal-grid,.ya-charts{grid-template-columns:1fr}#ya-stand{height:310px}}@media(prefers-reduced-motion:reduce){#ya-results *{scroll-behavior:auto;transition:none}}
-#ya-circuit-meters label{display:block;font-size:.85rem;font-weight:600;min-height:2.8em}#ya-circuit-meters meter{display:block;width:100%;height:20px;margin:10px 0}#ya-circuit-meters output{font-size:1.1rem;font-weight:650}#ya-stand-status{padding:14px 18px;border-left:4px solid #276c80;background:#edf5f7;border-radius:8px;font-weight:600}
-.ya-field-help{min-width:0;position:relative}.ya-field-help>label{display:block}.ya-field-help>.ya-help{position:absolute;right:0;top:0}.ya-field-help>label{padding-right:32px}.ya-field-help label input[type=number]{margin-top:8px}.ya-help>button{flex-shrink:0}
+.yp-path-live {
+  stroke-dasharray: 9 5;
+  animation: yp-signal 1.2s linear infinite;
+}
+@keyframes yp-signal {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yp-path-live {
+    animation: none;
+  }
+}
+.ys-device-panel {
+  padding: 24px;
+  background: #eef4fa;
+  border: 1px solid #c9d9e7;
+  border-radius: 16px;
+  margin: 24px 0;
+}
+.ya-chain {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+.ya-chain > div {
+  border: 1px solid #cbdce5;
+  background: #f1f7fa;
+  border-radius: 12px;
+  padding: 16px;
+  overflow-wrap: anywhere;
+}
+.ya-chain p {
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+.ya-signal-grid,
+.ya-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.ya-signal-grid > section,
+.ya-chart {
+  min-width: 0;
+  border: 1px solid #cbdce5;
+  border-radius: 14px;
+  padding: 18px;
+}
+.ya-signal-grid pre,
+#ya-signal-events {
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ya-chart svg {
+  width: 100%;
+  height: auto;
+}
+.ya-chart svg text {
+  font: 13px sans-serif;
+  fill: #29485d;
+}
+.ya-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+.ya-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#ya-results [hidden] {
+  display: none !important;
+}
+#ya-stand {
+  height: 420px;
+  border-radius: 18px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+#ya-stand canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+#ya-preflight {
+  border-left: 4px solid #ab5420;
+  background: #fff4e6;
+  padding: 18px;
+  margin: 20px 0;
+}
+#ya-preflight[data-ready="true"] {
+  border-color: #287060;
+  background: #edf8f4;
+}
+#ya-exercise-list,
+#ya-exercise-id,
+#ya-instructions,
+#ya-exercise-title {
+  margin: 8px 0 18px;
+}
+.ya-help {
+  display: inline-flex;
+  margin-left: 6px;
+}
+.ya-help > button {
+  border: 1px solid #50728c;
+  color: #214d6b;
+  background: #edf5fc;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font: bold 14px Georgia;
+  cursor: help;
+}
+.ya-tip {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  padding: 14px;
+  border: 1px solid #8faaba;
+  border-radius: 10px;
+  background: #102e45;
+  color: #fff;
+  font: 400 14px/1.5 system-ui;
+  box-shadow: 0 8px 24px #102e4530;
+  pointer-events: none;
+}
+.ya-help:hover .ya-tip,
+.ya-help:focus-within .ya-tip,
+.ya-help.open .ya-tip {
+  display: block;
+}
+.ya-guide article {
+  padding: 18px 0;
+  border-bottom: 1px solid #d6e3eb;
+}
+.ya-guide dt {
+  font-weight: 650;
+  margin-top: 14px;
+}
+.ya-guide dd {
+  margin: 6px 0 16px;
+}
+.ya-guide table {
+  width: 100%;
+  font-size: 0.85rem;
+}
+.ya-guide th,
+.ya-guide td {
+  padding: 10px;
+  border-bottom: 1px solid #d6e3eb;
+  vertical-align: top;
+}
+#ya-mic-wave {
+  width: 100%;
+  height: 90px;
+  background: #132d42;
+  border-radius: 10px;
+}
+#ya-mic-bytes {
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .ya-chain {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ya-signal-grid,
+  .ya-charts {
+    grid-template-columns: 1fr;
+  }
+  #ya-stand {
+    height: 310px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ya-results * {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+#ya-circuit-meters label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-height: 2.8em;
+}
+#ya-circuit-meters meter {
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: 10px 0;
+}
+#ya-circuit-meters output {
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+#ya-stand-status {
+  padding: 14px 18px;
+  border-left: 4px solid #276c80;
+  background: #edf5f7;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.ya-field-help {
+  min-width: 0;
+  position: relative;
+}
+.ya-field-help > label {
+  display: block;
+}
+.ya-field-help > .ya-help {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.ya-field-help > label {
+  padding-right: 32px;
+}
+.ya-field-help label input[type="number"] {
+  margin-top: 8px;
+}
+.ya-help > button {
+  flex-shrink: 0;
+}
+
+/* Isolated correction workbench. Inputs scroll independently on desktop. */
+#ys-workbench {
+  display: grid;
+  grid-template-columns: minmax(300px, 350px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+#ys-inputs {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  padding: 0 12px 24px 2px;
+  scrollbar-gutter: stable;
+}
+#ys-output-pane,
+#ys-inputs,
+#ys-workbench section {
+  min-width: 0;
+}
+#ys-inputs .content-panel {
+  padding: 14px;
+  margin: 0;
+}
+#ys-inputs .ys-fields,
+#ys-inputs .yp-start-grid {
+  grid-template-columns: 1fr;
+}
+#ys-inputs .ys-buttons {
+  gap: 8px;
+}
+#ys-inputs .ys-buttons > .btn {
+  flex: 1 1 100%;
+  min-height: 44px;
+  white-space: normal;
+}
+#ys-inputs input:not([type="checkbox"]),
+#ys-inputs select,
+#ys-inputs textarea {
+  width: 100%;
+  max-width: 100%;
+}
+#ys-inputs .yp-hold {
+  min-height: 100px;
+}
+.ys-input-group {
+  padding: 12px;
+  border: 1px solid #cad9e2;
+  border-radius: 12px;
+  background: #fff;
+  margin: 12px 0;
+}
+.ys-input-group > summary {
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: #173b58;
+}
+.ys-input-group:focus-within {
+  border-color: #267a87;
+  box-shadow: 0 0 0 2px #267a8720;
+}
+.ys-clock-controls {
+  position: sticky;
+  top: 0;
+  background: #f4f7fb !important;
+  z-index: 3;
+  border: 1px solid #bdcfdc;
+}
+#ys-output-pane .yp-status-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0;
+}
+#ys-output-pane .yp-status-grid p {
+  margin: 0;
+}
+#ys-output-pane #yp-reason {
+  grid-column: 1/-1;
+}
+#ys-output-pane pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+#ys-output-pane .ya-chain {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#ys-output-pane .ya-signal-grid,
+#ys-output-pane .ya-charts {
+  grid-template-columns: 1fr;
+}
+#ys-output-pane .content-panel {
+  padding: 18px;
+}
+#ys-workbench .ys-device-panel {
+  padding: 12px;
+  margin: 12px 0;
+}
+#ys-workbench label {
+  overflow-wrap: anywhere;
+}
+#ys-workbench .ys-workflow {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #405b6d;
+}
+#ys-workbench #ya-mic-wave {
+  max-width: 100%;
+}
+@media (max-width: 800px) {
+  #ys-workbench {
+    grid-template-columns: 1fr;
+  }
+  #ys-inputs {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+  #ys-inputs .ys-clock-controls {
+    position: sticky;
+    top: 0;
+  }
+  #ys-output-pane .yp-status-grid {
+    grid-template-columns: 1fr;
+  }
+  #ys-output-pane .ya-chain {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ys-tooltip {
+  position: fixed;
+  z-index: 4000;
+  padding: 14px;
+  border: 1px solid #8faaba;
+  border-radius: 10px;
+  background: #102e45;
+  color: #fff;
+  font: 400 14px/1.5 system-ui;
+  box-shadow: 0 8px 24px #102e4530;
+  pointer-events: none;
+}
+.ys-tooltip[hidden] {
+  display: none !important;
+}
+
+#ys-inputs .ys-clock-controls {
+  position: static;
+  z-index: auto;
+}
+#ys-quick-controls {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f4f7fb;
+  border: 1px solid #bdcfdc;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+#ys-quick-controls p {
+  margin: 6px 0;
+  font-size: 0.78rem;
+}
+#ys-quick-controls output {
+  font-size: 0.8rem;
+}
+.ys-quick-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ys-quick-buttons .btn {
+  min-height: 44px;
+  font-size: 0.82rem;
+  padding: 8px;
+  white-space: normal;
+}
+#ys-readiness-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+#ys-readiness-strip > div {
+  border: 1px solid #d3e0e8;
+  background: #edf4f8;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+#ys-readiness-strip strong,
+#ys-readiness-strip span {
+  display: block;
+}
+#ys-status-details {
+  margin: 8px 0 18px;
+}
+#ys-status-details > summary {
+  font-size: 0.85rem;
+}
+#ys-output-pane #ya-stand {
+  height: 360px;
+}
+#ys-inputs .ys-clock-controls .ys-buttons:empty {
+  display: none;
+}
+@media (max-width: 600px) {
+  #ys-readiness-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the engine visible beneath the compact readiness summary. */
+@media (min-width: 1100px) {
+  #ys-readiness-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+#ys-readiness-strip > div {
+  padding: 7px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+#ys-output-pane > h2 {
+  font-size: 1.4rem;
+  margin: 12px 0;
+}
+#ya-results > h2,
+#ya-results > .eyebrow {
+  display: none;
+}
+#ya-engine-panel > h3 {
+  font-size: 1.3rem;
+}
+#ya-engine-panel > p:first-of-type {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+#ys-output-pane #ya-stand {
+  margin: 10px 0;
+}
