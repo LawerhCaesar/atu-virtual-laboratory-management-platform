@@ -94,7 +94,7 @@ def test_render_blueprint_keeps_password_out_of_source_and_uploads_on_disk():
     assert variables["POSTGRES_PASSWORD"] == {"key": "POSTGRES_PASSWORD", "sync": False}
     assert variables["DJANGO_SECRET_KEY"]["generateValue"] is True
     assert variables["DJANGO_MEDIA_ROOT"]["value"].startswith(service["disk"]["mountPath"] + "/")
-    assert service["autoDeployTrigger"] == "off"
+    assert service["autoDeployTrigger"] == "checksPass"
     assert service["healthCheckPath"] == "/health/ready/"
 
 

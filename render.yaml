@@ -6,7 +6,7 @@ services:
     plan: 0.5c-512mb
     region: ohio
     branch: main
-    autoDeployTrigger: "off"
+    autoDeployTrigger: checksPass
     buildCommand: pip install -r requirements.txt && DJANGO_DEBUG=true python manage.py collectstatic --noinput --settings=config.build_settings
     startCommand: python deploy/render_start.py
     healthCheckPath: /health/ready/
