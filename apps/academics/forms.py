@@ -13,6 +13,9 @@ class AcademicSetupForm(forms.ModelForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+        from .catalogue import requested_structure_initial
+        for key, value in requested_structure_initial(user).items():
+            self.initial.setdefault(key, value)
         if user.index_number:
             self.initial.setdefault("student_or_staff_id", user.index_number)
             self.fields["student_or_staff_id"].help_text = "Use the index number supplied at registration: " + user.index_number

@@ -9,9 +9,12 @@
     {% csrf_token %}
     {% include "includes/form_fields.html" %}
     <p id="registration-index-status" class="small text-secondary" role="status" aria-live="polite"></p>
+    <p id="registration-programme-status" class="small text-secondary" role="status" aria-live="polite"></p>
     <button class="btn btn-primary" type="submit">Submit registration</button>
   </form>
+  <p class="small text-secondary mt-3">Programme choices checked against ATU’s 2026/2027 listings. <a href="https://atu.edu.gh/available-programmes/" target="_blank" rel="noopener">View ATU’s official programmes</a>.</p>
 </div>
+{{ academic_catalogue|json_script:"registration-academic-catalogue" }}
 <script src="{% static 'js/registration.js' %}" defer></script>
 {% endblock %}
 

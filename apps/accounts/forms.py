@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .models import User
 from .identifiers import normalise_index, validate_student_index
+from apps.academics.catalogue import registration_catalogue, selection_snapshot
 
 
 class AccountAvailabilityForm(forms.Form):
@@ -11,6 +12,10 @@ class AccountAvailabilityForm(forms.Form):
 
 
 class RegistrationForm(UserCreationForm):
+    faculty = forms.ChoiceField(label="Faculty / school", choices=())
+    department = forms.ChoiceField(label="Department", choices=())
+    programme = forms.ChoiceField(label="Programme", choices=(), required=False,
+        help_text="Choose your programme. An administrator will confirm your academic details before access.")
     qualification = forms.ChoiceField(label="Course", choices=[("", "Select your course"), *User.Qualification.choices], required=False,
         help_text="Students: HND ends in D, BTECH in B, MTECH in M.")
     index_number = forms.CharField(label="Username (index number)", required=False, max_length=9,
@@ -28,6 +33,14 @@ class RegistrationForm(UserCreationForm):
         model = User
         fields = ("full_name", "role", "qualification", "index_number", "email")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        catalogue = registration_catalogue()
+        self.fields["faculty"].choices = [("", "Select your faculty or school")] + [(f["id"], f["name"]) for f in catalogue["faculties"]]
+        self.fields["department"].choices = [("", "Select your department")] + [(d["id"], d["name"]) for d in catalogue["departments"]]
+        self.fields["programme"].choices = [("", "Select your programme")] + [(p["id"], p["name"]) for p in catalogue["programmes"]]
+        self.order_fields(["full_name", "role", "qualification", "faculty", "department", "programme", "index_number", "email", "password1", "password2"])
+
     def clean_index_number(self):
         value = normalise_index(self.cleaned_data.get("index_number"))
         if value:
@@ -38,7 +51,16 @@ class RegistrationForm(UserCreationForm):
 
     def clean(self):
         cleaned = super().clean()
+        catalogue = registration_catalogue()
+        department = next((d for d in catalogue["departments"] if d["id"] == cleaned.get("department")), None)
+        programme = next((p for p in catalogue["programmes"] if p["id"] == cleaned.get("programme")), None)
+        if department and department["faculty"] != cleaned.get("faculty"):
+            self.add_error("department", "Choose a department in your selected faculty or school.")
         if cleaned.get("role") == User.Role.STUDENT:
+            if not programme and "programme" not in self.errors:
+                self.add_error("programme", "Select your programme.")
+            if programme and programme["qualification"] != cleaned.get("qualification"):
+                self.add_error("programme", "Choose a programme at your selected course level.")
             if not cleaned.get("qualification"):
                 self.add_error("qualification", "Select your course: HND, BTECH or MTECH.")
             if "index_number" not in self.errors:
@@ -49,6 +71,11 @@ class RegistrationForm(UserCreationForm):
         elif cleaned.get("role") == User.Role.LECTURER:
             cleaned["index_number"] = None
             cleaned["qualification"] = ""
+            cleaned["programme"] = ""
+            programme = None
+        if programme and department:
+            if (programme["department"] and programme["department"] != department["id"]) or (programme["faculty"] and programme["faculty"] != department["faculty"]):
+                self.add_error("programme", "Choose a programme in your selected department.")
         return cleaned
 
     def clean_role(self):
@@ -62,6 +89,9 @@ class RegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.registration_academics = selection_snapshot(
+            self.cleaned_data["faculty"], self.cleaned_data["department"], self.cleaned_data.get("programme"),
+        )
         user.approval_status = User.ApprovalStatus.PENDING
         user.is_staff = False
         user.is_superuser = False

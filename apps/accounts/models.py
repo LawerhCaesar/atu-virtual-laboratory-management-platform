@@ -64,6 +64,7 @@ class User(AbstractUser):
     username = None
     index_number = models.CharField(max_length=9, unique=True, null=True, blank=True, verbose_name="index number")
     qualification = models.CharField(max_length=5, choices=Qualification.choices, blank=True, default="", verbose_name="course")
+    registration_academics = models.JSONField(default=dict, blank=True, help_text="Self-reported academic selection; an administrator must confirm academic setup.")
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=180)
     role = models.CharField(max_length=16, choices=Role.choices, default=Role.STUDENT)

@@ -13,7 +13,11 @@ pytestmark=pytest.mark.django_db
 
 def payload(**changes):
     data=dict(full_name='Index Student',email='index@example.edu',role='STUDENT',qualification='MTECH',index_number='01181429M',password1='SafeExample!482',password2='SafeExample!482')
-    data.update(changes);return data
+    data.update(changes)
+    data.setdefault('faculty','engineering');data.setdefault('department','mechanical')
+    level=data.get('qualification') or 'MTECH'
+    data.setdefault('programme',{'HND':'hnd-automobile-engineering','BTECH':'btech-automotive-engineering','MTECH':'mtech-automotive-engineering'}.get(level,'mtech-automotive-engineering'))
+    return data
 
 @pytest.mark.parametrize('course,suffix',[('HND','D'),('BTECH','B'),('MTECH','M')])
 def test_course_index_saved_and_pending_login_not_bypassed(client,course,suffix):

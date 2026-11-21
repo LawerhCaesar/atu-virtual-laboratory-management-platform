@@ -29,7 +29,8 @@ def register(request):
             form.add_error(None, "An account already uses that email address or index number. Review your details.")
         else:
             return render(request, "accounts/registration_complete.html", {"registered_user": user})
-    return render(request, "accounts/register.html", {"form": form})
+    from apps.academics.catalogue import registration_catalogue
+    return render(request, "accounts/register.html", {"form": form, "academic_catalogue": registration_catalogue()})
 
 
 class PlatformLoginView(LoginView):

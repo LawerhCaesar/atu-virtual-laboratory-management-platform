@@ -5,6 +5,14 @@
   <p class="eyebrow">Account activation</p>
   <h1 class="h2">Complete academic setup</h1>
   <p class="text-secondary">Assign the verified academic details for <strong>{{ account.full_name }}</strong> ({{ account.get_role_display }}).</p>
+  {% if account.registration_academics %}
+  <aside class="alert alert-info" aria-label="Academic details supplied at registration">
+    <strong>Requested at registration</strong><br>
+    {{ account.registration_academics.faculty }} · {{ account.registration_academics.department }}
+    {% if account.registration_academics.programme %}<br>{{ account.registration_academics.programme }}{% endif %}
+    <p class="mb-0 mt-2">Confirm these details before activating this account.{% if account.registration_academics.department_confirmation_required %} ATU’s published sources did not confirm this programme’s department; select its verified academic assignment below.{% endif %}</p>
+  </aside>
+  {% endif %}
   <form method="post" novalidate class="card card-body shadow-sm mt-4">
     {% csrf_token %}
     {% include "includes/form_fields.html" %}

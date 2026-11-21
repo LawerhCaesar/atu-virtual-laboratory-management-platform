@@ -1,0 +1,1223 @@
+{
+  "reviewed_on": "2026-11-21",
+  "academic_year": "2026/2027",
+  "sources": {
+    "directory": "https://atu.edu.gh/academic-departments/",
+    "admissions_2026": "https://atu.edu.gh/gradsch/wp-content/uploads/2026/05/ADMISSION-AD-2026-2027-ACADEMIC-YEAR.pdf",
+    "btech": "https://atu.edu.gh/bachelor-of-technology-programmes-4-year-straight-2-year-top-up-degree/",
+    "hnd": "https://atu.edu.gh/higher-national-diploma-3-years/",
+    "sciences": "https://atu.edu.gh/faculty-of-applied-sciences/",
+    "mechanical": "https://atu.edu.gh/department-of-mechanical-engineering/",
+    "electrical": "https://atu.edu.gh/department-of-electrical-electronic-engineering/",
+    "civil": "https://atu.edu.gh/department-of-civil-engineering/",
+    "building": "https://atu.edu.gh/department-of-building-technology/",
+    "interior": "https://atu.edu.gh/faculty-of-built-environment/",
+    "mathematics": "https://atu.edu.gh/department-of-applied-mathematics-statistics/",
+    "slt": "https://atu.edu.gh/department-of-science-laboratory-technology/",
+    "computing": "https://atu.edu.gh/department-of-computer-science/",
+    "medical": "https://atu.edu.gh/department-of-medical-laboratory-technology/",
+    "liberal": "https://atu.edu.gh/department-of-liberal-studies-and-communications-technology/",
+    "fashion": "https://atu.edu.gh/faculty-of-applied-arts/",
+    "hospitality": "https://atu.edu.gh/faculty-of-applied-arts/",
+    "accounting": "https://atu.edu.gh/faculty-of-business/",
+    "management": "https://atu.edu.gh/department-of-management-and-public/",
+    "procurement": "https://atu.edu.gh/department-of-procurement-and-supply-chain-management/",
+    "marketing": "https://atu.edu.gh/marketing/",
+    "engineering_report": "https://atu.edu.gh/wp-content/uploads/2024/12/vice-chancellors-report.pdf",
+    "fees_2025": "https://atu.edu.gh/wp-content/uploads/2025/08/Schedule-Of-Fees-For-2025-2026_250813_123212.pdf"
+  },
+  "faculties": [
+    {
+      "id": "engineering",
+      "name": "Faculty of Engineering"
+    },
+    {
+      "id": "built-environment",
+      "name": "Faculty of Built Environment"
+    },
+    {
+      "id": "applied-sciences",
+      "name": "Faculty of Applied Sciences"
+    },
+    {
+      "id": "applied-arts",
+      "name": "Faculty of Applied Arts"
+    },
+    {
+      "id": "business",
+      "name": "ATU Business School"
+    }
+  ],
+  "departments": [
+    {
+      "id": "mechanical",
+      "name": "Mechanical Engineering",
+      "faculty": "engineering",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "electrical",
+      "name": "Electrical/Electronic Engineering",
+      "faculty": "engineering",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "civil",
+      "name": "Civil Engineering",
+      "faculty": "engineering",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "interior",
+      "name": "Interior Design and Upholstery Technology",
+      "faculty": "built-environment",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "building",
+      "name": "Building Technology",
+      "faculty": "built-environment",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "mathematics",
+      "name": "Applied Mathematics and Statistics",
+      "faculty": "applied-sciences",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "slt",
+      "name": "Science Laboratory Technology",
+      "faculty": "applied-sciences",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "computing",
+      "name": "Computer Science",
+      "faculty": "applied-sciences",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "medical",
+      "name": "Medical Laboratory Technology",
+      "faculty": "applied-sciences",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "information-systems",
+      "name": "Information Systems and Technology",
+      "faculty": "applied-sciences",
+      "sources": [
+        "sciences"
+      ]
+    },
+    {
+      "id": "hospitality",
+      "name": "Hotel, Catering and Institutional Management",
+      "faculty": "applied-arts",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion Design and Textiles",
+      "faculty": "applied-arts",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "liberal",
+      "name": "Liberal Studies and Communications Technology",
+      "faculty": "applied-arts",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "accounting",
+      "name": "Accounting and Finance",
+      "faculty": "business",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "management",
+      "name": "Management and Public Administration",
+      "faculty": "business",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "procurement",
+      "name": "Procurement and Supply Chain Management",
+      "faculty": "business",
+      "sources": [
+        "directory"
+      ]
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "faculty": "business",
+      "sources": [
+        "directory"
+      ]
+    }
+  ],
+  "programmes": [
+    {
+      "id": "hnd-mechanical-engineering",
+      "name": "HND Mechanical Engineering",
+      "qualification": "HND",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "mechanical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-automobile-engineering",
+      "name": "HND Automobile Engineering",
+      "qualification": "HND",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "mechanical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-electrical-and-electronic-engineering",
+      "name": "HND Electrical and Electronic Engineering",
+      "qualification": "HND",
+      "department": "electrical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "electrical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-civil-engineering",
+      "name": "HND Civil Engineering",
+      "qualification": "HND",
+      "department": "civil",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "civil"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-building-technology",
+      "name": "HND Building Technology",
+      "qualification": "HND",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "building"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-interior-design-and-technology",
+      "name": "HND Interior Design and Technology",
+      "qualification": "HND",
+      "department": "interior",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "interior"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-furniture-design-and-production",
+      "name": "HND Furniture Design and Production",
+      "qualification": "HND",
+      "department": "interior",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "interior"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-science-laboratory-technology",
+      "name": "HND Science Laboratory Technology",
+      "qualification": "HND",
+      "department": "slt",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "slt"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-statistics",
+      "name": "HND Statistics",
+      "qualification": "HND",
+      "department": "mathematics",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "mathematics"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-computer-science",
+      "name": "HND Computer Science",
+      "qualification": "HND",
+      "department": "computing",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "computing"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-hotel-catering-and-institutional-management",
+      "name": "HND Hotel, Catering and Institutional Management",
+      "qualification": "HND",
+      "department": "hospitality",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "hospitality"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-fashion-design-and-textiles",
+      "name": "HND Fashion Design and Textiles",
+      "qualification": "HND",
+      "department": "fashion",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "fashion"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-accountancy",
+      "name": "HND Accountancy",
+      "qualification": "HND",
+      "department": "accounting",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "accounting"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-marketing",
+      "name": "HND Marketing",
+      "qualification": "HND",
+      "department": "marketing",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "marketing"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-purchasing-and-supply",
+      "name": "HND Purchasing and Supply",
+      "qualification": "HND",
+      "department": "procurement",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "procurement"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-secretaryship-and-management-studies",
+      "name": "HND Secretaryship and Management Studies",
+      "qualification": "HND",
+      "department": "management",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "management"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-bilingual-secretaryship-and-management-studies",
+      "name": "HND Bilingual Secretaryship and Management Studies",
+      "qualification": "HND",
+      "department": "management",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "hnd",
+        "management"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "hnd-dispensing-technology",
+      "name": "HND Dispensing Technology",
+      "qualification": "HND",
+      "department": "slt",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "slt"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-mechanical-engineering",
+      "name": "BTech Mechanical Engineering",
+      "qualification": "BTECH",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "mechanical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-automotive-engineering",
+      "name": "BTech Automotive Engineering",
+      "qualification": "BTECH",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [
+        "BTech Automobile Engineering"
+      ],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "mechanical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-electrical-and-electronic-engineering",
+      "name": "BTech Electrical and Electronic Engineering",
+      "qualification": "BTECH",
+      "department": "electrical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "electrical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-civil-engineering",
+      "name": "BTech Civil Engineering",
+      "qualification": "BTECH",
+      "department": "civil",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "civil"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-water-and-sanitation-engineering",
+      "name": "BTech Water and Sanitation Engineering",
+      "qualification": "BTECH",
+      "department": "civil",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "civil"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-interior-design-and-technology",
+      "name": "BTech Interior Design and Technology",
+      "qualification": "BTECH",
+      "department": "interior",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "interior"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-construction-engineering-management",
+      "name": "BTech Construction Engineering Management",
+      "qualification": "BTECH",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "building"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-facilities-management",
+      "name": "BTech Facilities Management",
+      "qualification": "BTECH",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "building"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-medical-laboratory-science",
+      "name": "BTech Medical Laboratory Science",
+      "qualification": "BTECH",
+      "department": "medical",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "medical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-science-laboratory-technology",
+      "name": "BTech Science Laboratory Technology",
+      "qualification": "BTECH",
+      "department": "slt",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "slt"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-medical-imaging-technology",
+      "name": "BTech Medical Imaging Technology",
+      "qualification": "BTECH",
+      "department": "medical",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "medical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-biomedical-equipment-technology",
+      "name": "BTech Biomedical Equipment Technology",
+      "qualification": "BTECH",
+      "department": "electrical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "electrical",
+        "engineering_report"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-computer-science",
+      "name": "BTech Computer Science",
+      "qualification": "BTECH",
+      "department": "computing",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "computing"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-cyber-security",
+      "name": "BTech Cyber Security",
+      "qualification": "BTECH",
+      "department": "computing",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "computing"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-applied-statistics",
+      "name": "BTech Applied Statistics",
+      "qualification": "BTECH",
+      "department": "mathematics",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "mathematics"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-public-relations-with-digital-communication",
+      "name": "BTech Public Relations with Digital Communication",
+      "qualification": "BTECH",
+      "department": "liberal",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "liberal"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-multimedia-communication",
+      "name": "BTech Multimedia Communication",
+      "qualification": "BTECH",
+      "department": null,
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "btech-fashion-design-and-textiles",
+      "name": "BTech Fashion Design and Textiles",
+      "qualification": "BTECH",
+      "department": "fashion",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "fashion"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-marketing",
+      "name": "BTech Marketing",
+      "qualification": "BTECH",
+      "department": "marketing",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "marketing"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-accounting-and-finance-analytics",
+      "name": "BTech Accounting and Finance Analytics",
+      "qualification": "BTECH",
+      "department": "accounting",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "accounting"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-logistics-and-transport-management",
+      "name": "BTech Logistics and Transport Management",
+      "qualification": "BTECH",
+      "department": "procurement",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "procurement"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-secretaryship-and-administrative-practice",
+      "name": "BTech Secretaryship and Administrative Practice",
+      "qualification": "BTECH",
+      "department": "management",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "management"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-applied-informatics",
+      "name": "BTech Applied Informatics",
+      "qualification": "BTECH",
+      "department": null,
+      "faculty": "applied-sciences",
+      "aliases": [
+        "BTech Informatics"
+      ],
+      "sources": [
+        "admissions_2026",
+        "btech"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "btech-hospitality-management-and-catering-technology",
+      "name": "BTech Hospitality Management and Catering Technology",
+      "qualification": "BTECH",
+      "department": "hospitality",
+      "faculty": "applied-arts",
+      "aliases": [
+        "BTech Hospitality Management"
+      ],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "hospitality"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-food-manufacturing-technology",
+      "name": "BTech Food Manufacturing Technology",
+      "qualification": "BTECH",
+      "department": "slt",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "slt"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-procurement-and-supply-chain-management",
+      "name": "BTech Procurement and Supply Chain Management",
+      "qualification": "BTECH",
+      "department": "procurement",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "procurement"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-data-science-and-analytics",
+      "name": "BTech Data Science and Analytics",
+      "qualification": "BTECH",
+      "department": null,
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "btech-graphic-communication",
+      "name": "BTech Graphic Communication",
+      "qualification": "BTECH",
+      "department": "liberal",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "liberal"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-chemical-and-process-engineering",
+      "name": "BTech Chemical and Process Engineering",
+      "qualification": "BTECH",
+      "department": null,
+      "faculty": null,
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "btech-renewable-energy-technology",
+      "name": "BTech Renewable Energy Technology",
+      "qualification": "BTECH",
+      "department": null,
+      "faculty": "engineering",
+      "aliases": [
+        "BTech Renewable Energy"
+      ],
+      "sources": [
+        "admissions_2026",
+        "btech"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "btech-architectural-technology",
+      "name": "BTech Architectural Technology",
+      "qualification": "BTECH",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "building"
+      ],
+      "department_confirmed": false,
+      "mapping_note": "Subject-based association; final department confirmation is required."
+    },
+    {
+      "id": "btech-veterinary-laboratory-science",
+      "name": "BTech Veterinary Laboratory Science",
+      "qualification": "BTECH",
+      "department": "medical",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "medical",
+        "engineering_report"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-building-technology",
+      "name": "BTech Building Technology",
+      "qualification": "BTECH",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "building"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-statistics",
+      "name": "BTech Statistics",
+      "qualification": "BTECH",
+      "department": "mathematics",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "mathematics"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-secretaryship-and-management-studies",
+      "name": "BTech Secretaryship and Management Studies",
+      "qualification": "BTECH",
+      "department": "management",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "management"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-accounting",
+      "name": "BTech Accounting",
+      "qualification": "BTECH",
+      "department": "accounting",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "accounting"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "btech-banking-and-finance",
+      "name": "BTech Banking and Finance",
+      "qualification": "BTECH",
+      "department": "accounting",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "btech",
+        "accounting"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-sustainable-electrical-power-engineering",
+      "name": "MTech Sustainable Electrical Power Engineering",
+      "qualification": "MTECH",
+      "department": "electrical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "electrical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-data-science-and-industrial-analytics",
+      "name": "MTech Data Science and Industrial Analytics",
+      "qualification": "MTECH",
+      "department": null,
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026"
+      ],
+      "department_confirmed": false
+    },
+    {
+      "id": "mtech-fashion-production-management",
+      "name": "MTech Fashion Production Management",
+      "qualification": "MTECH",
+      "department": "fashion",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "fashion"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-construction-technology-and-management",
+      "name": "MTech Construction Technology and Management",
+      "qualification": "MTECH",
+      "department": "building",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "building"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-interior-design-and-technology",
+      "name": "MTech Interior Design and Technology",
+      "qualification": "MTECH",
+      "department": "interior",
+      "faculty": "built-environment",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "interior"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-administration-and-management",
+      "name": "MTech Administration and Management",
+      "qualification": "MTECH",
+      "department": "management",
+      "faculty": "business",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "management"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-food-and-bioprocess-engineering",
+      "name": "MTech Food and Bioprocess Engineering",
+      "qualification": "MTECH",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "mechanical"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-communication-and-brands-management",
+      "name": "MTech Communication and Brands Management",
+      "qualification": "MTECH",
+      "department": "liberal",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "liberal"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-multimedia-communication",
+      "name": "MTech Multimedia Communication",
+      "qualification": "MTECH",
+      "department": "liberal",
+      "faculty": "applied-arts",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "liberal"
+      ],
+      "department_confirmed": true
+    },
+    {
+      "id": "mtech-automotive-engineering",
+      "name": "MTech Automotive Engineering",
+      "qualification": "MTECH",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "mechanical"
+      ],
+      "department_confirmed": false,
+      "mapping_note": "Subject-based association; final department confirmation is required."
+    },
+    {
+      "id": "mtech-plant-maintenance-engineering",
+      "name": "MTech Plant Maintenance Engineering",
+      "qualification": "MTECH",
+      "department": "mechanical",
+      "faculty": "engineering",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "mechanical"
+      ],
+      "department_confirmed": false,
+      "mapping_note": "Subject-based association; final department confirmation is required."
+    },
+    {
+      "id": "mtech-medical-laboratory-science-medical-microbiology",
+      "name": "MTech Medical Laboratory Science (Medical Microbiology)",
+      "qualification": "MTECH",
+      "department": "medical",
+      "faculty": "applied-sciences",
+      "aliases": [],
+      "sources": [
+        "admissions_2026",
+        "medical"
+      ],
+      "department_confirmed": true
+    }
+  ],
+  "other_awards": [
+    {
+      "qualification": "MSC",
+      "name": "MSc Construction Project Management",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "MSC",
+      "name": "MSc Marketing Strategy and Innovation",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "MSC",
+      "name": "MSc Procurement and Supply Chain Management",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "MSC",
+      "name": "MSc Applied Accounting and Finance",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "MSC",
+      "name": "MSc Financial Analytics",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "MSC",
+      "name": "MSc Logistics and Transport Management",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "BSC",
+      "name": "BSc Economics and Finance",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Business Administration",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Computerized Accounting",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Banking Technology and Accounting",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Public Relations",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Marketing",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Information Technology",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Interior Design and Technology",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Procurement and Supply Chain Management",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Architectural Technology",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Hotel and Catering Management",
+      "source": "admissions_2026"
+    },
+    {
+      "qualification": "DIPLOMA",
+      "name": "Diploma in Cyber Security",
+      "source": "admissions_2026"
+    }
+  ],
+  "notes": [
+    "Qualification index rules remain HND=D, BTECH=B, MTECH=M. MSc, BSc and diploma index rules are not assumed.",
+    "The directory lists 16 departments; the Applied Sciences faculty page additionally names Information Systems and Technology. Both are represented, with provenance.",
+    "Distinct award titles are retained; morning/evening/weekend and top-up delivery variants are not separate qualifications. Automotive/Automobile and other naming variants are recorded as aliases.",
+    "A null programme department means the department association was not verified. These choices are explicitly flagged for administrator confirmation, rather than assigned by guesswork.",
+    "The 2026/2027 advertisement governs programme availability; current programme and department pages supplement aliases and associations. HND Dispensing Technology is explicitly listed by the SLT department.",
+    "Department association for MTech Automotive/Plant Maintenance follows the Mechanical Engineering subject grouping; administrators confirm all selections before activation."
+  ]
+}

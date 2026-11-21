@@ -15,6 +15,8 @@ def approve_for_academic_setup(*, user, reviewer):
         raise ValueError("Administrator accounts cannot enter public approval workflow.")
     if user.approval_status != User.ApprovalStatus.PENDING:
         raise ValueError("Only pending accounts can be approved.")
+    from apps.academics.catalogue import prepare_requested_structure
+    prepare_requested_structure(user)
     user.approval_status = User.ApprovalStatus.ACADEMIC_SETUP
     user.reviewed_by = reviewer
     user.reviewed_at = timezone.now()

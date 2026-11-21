@@ -31,6 +31,9 @@ def test_registration_is_pending_and_administrator_is_not_public(page, demo_reco
     assert page.get_by_label("Role", exact=True).locator("option").all_text_contents() == ["Student", "Lecturer"]
     page.get_by_label("Full name", exact=True).fill("E2E Pending Student")
     page.get_by_label("Course", exact=True).select_option("MTECH")
+    page.get_by_label("Faculty / school", exact=True).select_option("engineering")
+    page.get_by_label("Department", exact=True).select_option("mechanical")
+    page.get_by_label("Programme", exact=True).select_option("mtech-automotive-engineering")
     page.get_by_label("Username (index number)", exact=True).fill("01181429M")
     page.get_by_label("Email", exact=True).fill("e2e-pending@example.edu")
     page.get_by_label("Password", exact=True).fill("E2EPassword!842")
