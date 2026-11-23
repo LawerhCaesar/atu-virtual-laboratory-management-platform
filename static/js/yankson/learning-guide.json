@@ -1,20 +1,30 @@
 {
   "title": "Authenticated Engine Starting: practical learning guide",
-  "version": "Isolated retest review | 19 November 2026",
+  "version": "Local UI review · 22 November 2026 · default command Start",
   "sections": [
     [
       "Before engine permission: check two independent services",
       [
-        "Simulation and device controls are on the left. Results and export buttons are on the right, or below on a narrow screen. Start with Test microphone. Allow the browser prompt, speak and check the waveform and level. Stop capture when finished. This diagnostic never authorizes or starts the engine.",
-        "Next choose Listen for test - phrase only. Say the complete active phrase, initially Hey Start. RESULT and MATCH mean a diagnostic transcript matched; they do not mean engine authorization. Check actual recognized text. This mode works while the engine remains locked. Its result cannot be reused to start.",
+        "Simulation and device controls are on the left. Results and export buttons are on the right, or below on a narrow screen. The default screen has three steps: Check microphone, Authorise by contact, then say “Start”. Keep the pad, numeric duration and Listen together. Start with Test microphone. Allow the browser prompt, speak and check the waveform and level. Stop capture when finished. This diagnostic never authorizes or starts the engine. Test microphone opens and brings the waveform into view. Stop microphone test before moving to contact authorization. If a direct long hold has already started the engine, reset before attempting the voice route.",
+        "Next choose Test spoken command (Step 1). Say the complete active phrase, initially Start. RESULT and MATCH mean a diagnostic transcript matched; they do not mean engine authorization. Check actual recognized text. This button is visible in Step 1 without opening Advanced settings. It needs no practice identity or contact hold and works while the engine remains locked. Its result cannot be reused to start.",
         "Capture and recognition are different services. A responsive waveform proves capture only. The recognition service may be unavailable or require internet access even when capture works. An unanswered device prompt is WAITING, not permission denied. Cancel stops a pending request; a stream that arrives late is closed.",
-        "Recognition progresses through REQUESTING, STARTING SERVICE and LISTENING only after the service starts. A startup taking more than 8 seconds reports STARTUP_TIMEOUT; a session has a 20-second maximum. ERROR retains its cause after the end event. Retry or cancel without changing the 10-second production permission setting."
+        "Recognition progresses through REQUESTING, STARTING SERVICE and LISTENING only after the service starts. A startup taking more than 8 seconds reports STARTUP_TIMEOUT; a session has a 20-second maximum. ERROR retains its cause after the end event. Retry or cancel without changing the 10-second production permission setting.",
+        "From 22 November 2026 the current default phrase is Start, at the owner’s request. This is a new command configuration. The recorded Hey Start demonstration remains historical evidence; a new human Start trial has not yet been verified."
+      ]
+    ],
+    [
+      "Layout and measured contact timing",
+      [
+        "Use Collapse inputs or Show inputs to change the workspace. On desktop, drag the divider or focus it and use Left/Right, Home/End or Shift+Arrow. The width slider also supports mouse and keyboard. Smaller screens use a stacked layout. Only panel width and collapse preference are remembered; authorization, identity, contact and speech state are not restored. Start is the default on each visit.",
+        "The live numeric timer starts at 0.00 s and uses the existing performance clock. Release freezes the measured duration. The controller uses separately scheduled 0.01 s calculations, including immediate input samples. Differences can include queued simulation time and input-edge sampling; they are not all rounding. Advanced diagnostics and each measured-contact export include wall duration, model contact duration, model advance, their difference and queued time at press/release. A long request requires a sample while contact is still held at the threshold; release exactly at that boundary can generate neither a short nor long event. Read the actual controller decision beside the measured classification.",
+        "A short matched release grants time-limited permission for Listen. A long contact is a separate direct-start route and generates one request per continuous hold. Cancelling, losing focus, hiding the page or Reset must not generate a new request. Reset clears duration, progress and voice permission.",
+        "Advanced settings contain optional phrase personalisation, device registration, circuit controls, CAN diagnostics, lecturer exercises and detailed trial records. Microphone capture and browser recognition have separate status indicators. An analyser waveform is shown only during the microphone check and is cleared when that capture stops."
       ]
     ],
     [
       "Practice a custom phrase before activation",
       [
-        "Keep Hey Start as the working default. Type a candidate phrase, select English US or UK and choose Listen for test - phrase only. Read target, final transcript, language and exact MATCH/NO MATCH together. A new custom phrase can be activated only after this check matches. This does not grant permission or start the engine.",
+        "Keep Start as the working default. Type a candidate phrase, select English US or UK and choose Test spoken command (Step 1). Read target, final transcript, language and exact MATCH/NO MATCH together. A new custom phrase can be activated only after this check matches. This does not grant permission or start the engine.",
         "If the service hears different words, choose a clearer phrase and retest. Never silently enrol misheard words. Recognition still compares the full normalized phrase; a longer sentence containing the target is not accepted. The language setting selects the requested recognition language, not a guarantee of availability or accent accuracy.",
         "The external 17 November retest report records one successful human Hey Start run using practice identity and seven nonmatching Yankson Start results. These are historical reported outcomes, not new trials in the active run or a population recognition-accuracy estimate. A fresh human custom-phrase trial is still required on the revised interface.",
         "Controls for inputs remain on the left; exports and results are on the right. CSV and JSON use the selected run. Reset and parameter application create a new run, clear active transcripts and events, and retain only explicitly separated historical report context."
@@ -25,7 +35,7 @@
       [
         "First check this device. Register a platform authenticator once for this account and website, then choose Verify device / fingerprint. Your operating system may ask you to touch its fingerprint reader, use face recognition or enter its device PIN. A successful server-verified response supplies identity for 60 seconds. Registration alone never supplies identity.",
         "The browser cannot read the fingerprint image, choose fingerprint over every other operating-system method, or measure how long you touch its reader. Use the separate contact pad to measure hold duration. An external R503 reader would need its own trusted hardware bridge; none is installed here. Practice identity is explicitly simulated.",
-        "Voice route: use a verified identity, press the contact pad for about 0.3 seconds, then release. Short contacts from 0.15 seconds to less than 1.5 seconds grant a 10-second voice window. Choose Enable microphone / Listen and say the complete active phrase, initially Hey Start. Watch recognized text and the decision.",
+        "Voice route: use a verified identity, press the contact pad for about 0.3 seconds, then release. Short contacts from 0.15 seconds to less than 1.5 seconds grant a 10-second voice window. Choose Enable microphone / Listen and say the complete active phrase, initially Start. Watch recognized text and the decision.",
         "Direct route: with identity present, hold the contact pad for at least 1.5 seconds. This produces one start request. Short contacts authorize voice; long contacts request a start directly. Neither route bypasses feedback or electrical checks.",
         "Keep Simulation pacing at 1 for live input. Keep the tab in front. Leaving the tab, changing parameters, stopping or resetting cancels pending speech or contact. Device permission is cleared on stop/reset."
       ]
@@ -60,7 +70,7 @@
     [
       "Read the engine and graphs",
       [
-        "The movable engine stand is based on the documented 1NZ methodology: engine, starter, separate tank, radiator and control panel. Geometry is a generic teaching reconstruction, not manufacturer CAD, exact part dimensions, a photographic engine or proof of a physical installation.",
+        "The movable engine stand is based on the documented 1NZ methodology: engine, starter, separate tank, radiator and control panel. Images represent a future hardware concept. Geometry is a generic teaching reconstruction, not manufacturer CAD, exact part dimensions, a photographic engine or proof of a physical installation.",
         "The pinion engages with the starter command; flywheel motion uses calculated plant RPM. Running confirmation releases the starter. Whole stand and Starter close-up change the camera. Rotate/zoom to inspect the assembly. High-speed motion can strobe; use numerical RPM for measurement. Reduced-motion settings suppress rotation.",
         "The signal ribbon separates identity, transcript, command, permission, supervisor, relays and CAN feedback. The trace charts share model-time on their horizontal axis. Solid, dashed and dotted lines are named explicitly; use each information icon for the meaning. Codes and 0/1 signals are not physical units.",
         "The RPM chart compares plant truth with decoded feedback. A disagreement or invalid flag is a useful fault clue. Export run JSON for inputs, all 28 outputs, device/contact source notes, circuit settings and signal events. CSV contains all 28 output columns. Exports do not include private keys or raw microphone audio."
@@ -123,7 +133,15 @@
         "Each reset creates a new run ID and clears run-specific practical, signal, trial and recognition histories. JSON saves the original 28 output columns, the complete deterministic input timeline, supplementary received-frame/delivered-output trace, parameters and provenance. Raw audio and credential material are not exported.",
         "Record a question, baseline, one controlled change, expected result, measured result and conditions in Experiment record and replay. Human-source entries are operator attestations and need evidence review. Attach a reference by filename; attachment does not independently verify its content. Preserve failed, blocked and not-run attempts.",
         "Validate an exported JSON run to replay its deterministic inputs against the reference engine within 1e-9 absolute tolerance. Recorded animation replay is separate from the live clock. Slowing replay never extends a live voice window. Camera views and transparent casing affect presentation only.",
-        "The runtime deployment commit is included separately in exported evidence when provided by the host. Automated recognition callbacks verify software handling only. The reported 17 November default human speech trial is retained separately. The revised custom phrase and owner-device paths still require new owner trials. The 33 original native input/trace pairs were unavailable for a new parity run. The physical objective is not achieved: time constraints prevented any construction attempt within the project period."
+        "The runtime deployment commit is included separately in exported evidence when provided by the host. Automated recognition callbacks verify software handling only. The reported 17 November default human speech trial is retained separately. The revised custom phrase and owner-device paths still require new owner trials. The 33 original native input/trace pairs were unavailable for a new parity run. Thesis results remain based on the recorded “Hey Start” demonstration. The stand images are future hardware concepts rather than physical-construction evidence."
+      ]
+    ],
+    [
+      "Reported retests: keep the evidence distinct",
+      [
+        "The owner-supplied 21 November follow-up confirms microphone capture and a direct long-contact virtual start, not a completed voice retest. A 1.7782 s measured mouse hold was recorded as 1.61 s model contact. CRANKING began at model time 12.08 s and RUNNING at 13.77 s; starter OFF, run supply ON and CAN VALID. Listen was attempted afterward without new voice permission. Recognition was NOT RUN, with no accepted voice event across 16,347 rows. This does not show that recognition is defective.",
+        "The earlier 17 November human Hey Start demonstration remains the thesis default-command evidence: recognized hey start, accepted voice and CRANKING at 10.34 s, RUNNING at 12.03 s, 11,669 rows and 28 columns. Its original export reportedly contains contradictory static wording that human trials were not performed. Preserve the original export and explain the discrepancy; do not overwrite it. These values are owner-supplied report evidence; the Windows raw archive was not independently inspected here.",
+        "The 20 November report found isolated new-run exports after reset, but a stale measured-contact label. Reset now clears that label too. A Start Engine phrase-only match is diagnostic evidence, not a completed personalized start. New-interface human speech trials remain pending until an operator performs and records them."
       ]
     ],
     [

@@ -100,6 +100,29 @@
           association:
             "Historical external evidence, never attributed to the active run",
         },
+        followUpReportedEvidence: {
+          source: "Yankson_Codex_Follow_Up_With_Test_Results.txt",
+          classification: "Owner-supplied summaries; underlying Windows trace and screenshot archive not inspected in this local review. Separate from current-run trials.",
+          november21: {
+            date: "2026-11-21", identity: "practice identity (simulated)", contact: "mouse press; no physical fingerprint reader tested",
+            microphone: "Owner confirmed waveform moved with voice; capture only, not recognition accuracy",
+            shortAuthorizationModelTimes: [1.44, 6.55, 8.28],
+            shortMeasuredSeconds: [1.4279, 0.2122, 0.2000],
+            directStart: {measuredContactSeconds: 1.7782, modelContactSeconds: 1.61, crankingModelTime: 12.08, runningModelTime: 13.77, crankIntervalSeconds: 1.69, finalRPMApproximate: 750, starter: "OFF", runSupply: "ON", can: "VALID"},
+            voiceRetest: "NOT COMPLETED: source none, recognitionEvidence empty, voice_accepted zero across 16347 rows; NOT RUN recognition. Listen after direct start had no permission. Not proof of recognizer failure.",
+            blockedListenModelTimes: [17.62, 21.28, 26.59],
+            originalRunId: "28c052cf-4a54-4c90-9a8b-7dd9784e496a",
+            reportedRawSha256: "8e35b2b21837ca93c0b6814e7ba47e92b036754136e8dab331a86c705485023b"
+          },
+          november20: "Reset record isolation reported successful; stale visible contact value required correction. Start Engine phrase-only diagnostic matched without crank; complete personalized spoken start not completed.",
+          november17: {
+            measuredContactSeconds: 1.0367, modelContactSeconds: 1.04, authorizationModelTime: 1.06,
+            phrase: "Hey Start", transcript: "hey start", match: true, voiceAcceptedModelTime: 10.34,
+            crankingModelTime: 10.34, runningModelTime: 12.03, crankIntervalSeconds: 1.69,
+            rows: 11669, columns: 28,
+            historicalMetadataDiscrepancy: "The original export reportedly says human recognition trials were not performed, conflicting with its recognized phrase, accepted event and contemporaneous observation. Preserve that original; this note explains the discrepancy without rewriting it."
+          }
+        },
         engineSha256,
         resetReason,
         environment: {
@@ -116,9 +139,9 @@
         trials: trials.slice(),
         references: references.slice(),
         physicalObjective: {
-          status: "NOT ACHIEVED",
+          status: "OUTSIDE VIRTUAL STUDY SCOPE",
           reason:
-            "Time constraints prevented any construction attempt within the project period.",
+            "This study is virtual-only. Stand images are future concepts, not physical construction evidence. This describes new exports; original historical exports are preserved unchanged.",
         },
         humanVoiceEvidence: {
           attestedTrials: trials.filter(

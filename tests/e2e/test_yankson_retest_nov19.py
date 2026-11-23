@@ -8,11 +8,11 @@ pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 def test_custom_draft_practice_language_and_activation(page,demo_records,live_server):
  open_lab(page,demo_records,live_server)
  page.locator('#yp-command').fill('Yankson Start');page.locator('#yp-save').click()
- expect(page.locator('#yp-active-command')).to_contain_text('Hey Start')
+ expect(page.locator('#yp-active-command')).to_contain_text('Start')
  page.locator('#yp-language').select_option('en-GB')
  page.locator('#yp-test-phrase').click();assert page.evaluate('recognizers.at(-1).lang')=='en-GB'
  result(page,'yankson stats');expect(page.locator('#yp-phrase-check')).to_contain_text('NO MATCH')
- page.locator('#yp-save').click();expect(page.locator('#yp-active-command')).to_contain_text('Hey Start')
+ page.locator('#yp-save').click();expect(page.locator('#yp-active-command')).to_contain_text('Start')
  page.locator('#yp-command').fill('Start my engine');page.locator('#yp-test-phrase').click();result(page,'START, MY ENGINE!')
  expect(page.locator('#yp-phrase-check')).to_contain_text('en-GB');page.locator('#yp-save').click()
  expect(page.locator('#yp-active-command')).to_contain_text('Start my engine')
@@ -63,7 +63,7 @@ def test_diagnostic_no_result_and_payload_are_explicit(page,demo_records,live_se
  page.locator('#yp-command').fill('New clear phrase');page.locator('#yp-test-phrase').click()
  page.evaluate("recognizers.at(-1).onerror({error:'network'})")
  expect(page.locator('#yp-phrase-check')).to_contain_text('No final matching transcript')
- page.locator('#yp-save').click();expect(page.locator('#yp-active-command')).to_contain_text('Hey Start')
+ page.locator('#yp-save').click();expect(page.locator('#yp-active-command')).to_contain_text('Start')
  page.locator('#ya-tab-signals').click();page.locator('#ys-run').click();page.clock.run_for(300)
  expect(page.locator('#ya-can')).to_contain_text('Received payload:')
  expect(page.locator('#ya-can')).to_contain_text('frame model time')

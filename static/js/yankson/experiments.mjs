@@ -3,7 +3,7 @@ export function mountEvidenceControls() {
   const right = document.querySelector("#ys-output-pane");
   const controls = document.createElement("details");
   controls.className = "ys-input-group";
-  controls.open = true;
+  controls.open = false;
   controls.innerHTML = `<summary>Experiment record and replay</summary>
     <p>Record every attempt, including failures. Human-source selections are operator attestations requiring review against the event log.</p>
     <label>Test ID and experiment question<input id="ye-question" class="form-control" maxlength="240"></label>
@@ -23,12 +23,12 @@ export function mountEvidenceControls() {
     <button id="ye-play" class="btn btn-outline-primary">Replay recorded animation</button>
     <button id="ye-pause" class="btn btn-outline-secondary">Pause recorded animation</button>
     <p id="ye-play-status" role="status">Replay is separate from the live calculation clock.</p>`;
-  left.append(controls);
+  (document.getElementById("ys-input-advanced") || left).append(controls);
   const output = document.createElement("section");
   output.className = "content-panel";
   output.innerHTML =
-    '<h2>Recorded trials and objective status</h2><p id="ye-run-id"></p><p>The physical objective was not achieved. Time constraints prevented any construction attempt within the project period.</p><div class="table-responsive" tabindex="0" role="region" aria-label="Selected-run trial records"><table class="table"><caption>Selected-run trials</caption><thead><tr><th>Test</th><th>Source</th><th>Expected</th><th>Observed</th><th>Status</th></tr></thead><tbody id="ye-trials"></tbody></table></div>';
-  right.append(output);
+    '<h2>Recorded trials and study evidence</h2><p id="ye-run-id"></p><p>Thesis results remain based on the recorded “Hey Start” demonstration. Stand images illustrate a future hardware concept; they are not evidence of physical construction.</p><div class="table-responsive" tabindex="0" role="region" aria-label="Selected-run trial records"><table class="table"><caption>Selected-run trials</caption><thead><tr><th>Test</th><th>Source</th><th>Expected</th><th>Observed</th><th>Status</th></tr></thead><tbody id="ye-trials"></tbody></table></div>';
+  (document.getElementById("ys-output-advanced") || right).append(output);
   const get = (id) => document.getElementById(id);
   const evidence = window.YanksonEvidence;
   function render() {

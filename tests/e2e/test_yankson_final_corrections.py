@@ -11,7 +11,7 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 @pytest.mark.parametrize('route,duration', [('short', 600), ('long', 2000)])
 def test_CIR_02_open_paths_block_presets(page, demo_records, live_server, wire, route, duration):
     open_lab(page, demo_records, live_server)
-    page.get_by_text('Simulated test events and original supervisor display', exact=True).click()
+    page.locator('#ys-simulated-inputs').evaluate('e=>e.open=true')
     page.locator('#yp-circuit > summary').click()
     page.locator('#yp-wire-' + wire).uncheck()
     page.locator('#ys-' + route).click()
@@ -26,7 +26,7 @@ def test_CIR_02_open_paths_block_presets(page, demo_records, live_server, wire, 
 @pytest.mark.parametrize('route,duration,expected', [('short', 600, 'AUTHORIZED'), ('long', 5000, 'RUNNING')])
 def test_CIR_02_connected_baseline(page, demo_records, live_server, route, duration, expected):
     open_lab(page, demo_records, live_server)
-    page.get_by_text('Simulated test events and original supervisor display', exact=True).click()
+    page.locator('#ys-simulated-inputs').evaluate('e=>e.open=true')
     page.locator('#ys-' + route).click()
     page.clock.run_for(duration)
     expect(page.locator('#ys-state')).to_contain_text(expected)
@@ -35,13 +35,13 @@ def test_CIR_02_connected_baseline(page, demo_records, live_server, route, durat
 def test_VOI_01_diagnostic_match_never_authorizes(page, demo_records, live_server):
     open_lab(page, demo_records, live_server)
     page.locator('#yp-test-phrase').click()
-    expect(page.locator('#ya-signals-panel')).to_be_visible()
+    expect(page.locator('#ys-live-feedback')).to_be_visible()
     expect(page.locator('#yp-speech')).to_contain_text('LISTENING')
-    result(page, 'HEY, START!')
+    result(page, 'START!')
     expect(page.locator('#yp-diagnostic-count')).to_contain_text('MATCH')
     assert page.evaluate('YanksonLab.row[2] + YanksonLab.row[3]') == 0
     page.locator('#yp-test-phrase').click()
-    result(page, 'do not hey start')
+    result(page, 'do not start')
     expect(page.locator('#yp-diagnostic-count')).to_contain_text('NO MATCH')
     assert page.evaluate('YanksonPractical.metadata().diagnosticMatches') == 1
 

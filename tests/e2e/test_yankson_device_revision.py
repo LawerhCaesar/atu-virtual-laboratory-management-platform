@@ -3,7 +3,7 @@ from playwright.sync_api import expect
 from test_yankson_practical import contact,freeze_lab_clock
 pytestmark=[pytest.mark.e2e,pytest.mark.django_db(transaction=True)]
 def login(page,user,live_server):
- page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(user.email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click();page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();expect(page.locator('#ya-tab-engine')).to_be_visible();expect(page.locator('#ys-workbench')).to_be_visible()
+ page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(user.email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click();page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();expect(page.locator('#ys-workbench')).to_be_visible();page.locator('#ye-record').wait_for(state='attached');page.evaluate("document.querySelectorAll('#ys-workbench details.ys-input-group').forEach(d=>d.open=true)");expect(page.locator('#ya-tab-engine')).to_be_visible()
 def test_real_webauthn_ceremony_and_fault_recovery(page,demo_records,live_server):
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  cdp=page.context.new_cdp_session(page);cdp.send('WebAuthn.enable');cdp.send('WebAuthn.addVirtualAuthenticator',{'options':{'protocol':'ctap2','transport':'internal','hasResidentKey':True,'hasUserVerification':True,'isUserVerified':True,'automaticPresenceSimulation':True}})
@@ -40,8 +40,8 @@ def test_revision_views_guide_and_accessibility(page,demo_records,live_server,wi
  page.set_viewport_size({'width':width,'height':1000});page.add_init_script(MOCK);login(page,demo_records['student'],live_server)
  expect(page.locator('#ya-stand canvas')).to_be_visible(timeout=15000);expect(page.locator('#ya-learning')).to_contain_text('Controller parameter glossary')
  freeze_lab_clock(page)
- page.locator('#yp-practice').check();contact(page,300);page.locator('#yp-listen').click();result(page,'Hey Start');page.clock.run_for(4000)
- page.locator('#ya-tab-signals').click();expect(page.locator('#ya-binary')).to_contain_text('01101000');expect(page.locator('#ya-command')).to_contain_text('00000001');expect(page.locator('#ya-chain')).to_contain_text('RUNNING')
+ page.locator('#yp-practice').check();contact(page,300);page.locator('#yp-listen').click();result(page,'Start');page.clock.run_for(4000)
+ page.locator('#ya-tab-signals').click();expect(page.locator('#ya-binary')).to_contain_text('01110011');expect(page.locator('#ya-command')).to_contain_text('00000001');expect(page.locator('#ya-chain')).to_contain_text('RUNNING')
  assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
  page.evaluate('YanksonLab.pause()');page.clock.resume()
  page.add_script_tag(path='node_modules/axe-core/axe.min.js');issues=page.evaluate("async()=> (await axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})).violations");assert not issues,issues

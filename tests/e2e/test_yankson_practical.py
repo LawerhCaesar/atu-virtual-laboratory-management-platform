@@ -16,7 +16,7 @@ def freeze_lab_clock(page):
 def open_lab(page,demo_records,live_server):
  page.add_init_script(MOCK)
  page.goto(live_server.url+'/accounts/login/');page.get_by_label('Email address or index number',exact=True).fill(demo_records['student'].email);page.get_by_label('Password',exact=True).fill('DemoPass!742');page.get_by_role('button',name='Sign in',exact=True).click()
- page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');freeze_lab_clock(page)
+ page.goto(live_server.url+'/virtual-lab/ice/authenticated-engine-starting/');page.locator('#tour-close').click();page.locator('#ys-workbench').wait_for(state='visible');page.locator('#ye-record').wait_for(state='attached');page.evaluate("document.querySelectorAll('#ys-workbench details.ys-input-group').forEach(d=>d.open=true)");freeze_lab_clock(page)
 def contact(page,ms):
  target=page.locator('#yp-hold');target.focus()
  target.dispatch_event('keydown',{'key':' ','repeat':False});page.clock.run_for(ms);target.dispatch_event('keyup',{'key':' '});
@@ -27,11 +27,11 @@ def test_voice_personalization_epoch_and_normal_time(page,demo_records,live_serv
  page.locator('#yp-listen').click();expect(page.locator('#yp-reason')).to_contain_text('No current voice permission')
  page.locator('#yp-practice').check();contact(page,300)
  expect(page.locator('#ys-auth')).to_contain_text('permission ·')
- page.locator('#yp-listen').click();result(page,'do not hey start');expect(page.locator('#yp-reason')).to_contain_text('Wrong command')
+ page.locator('#yp-listen').click();result(page,'do not start');expect(page.locator('#yp-reason')).to_contain_text('Wrong command')
  page.locator('#yp-command').fill('Start my engine');page.locator('#yp-test-phrase').click();result(page,'Start my engine');page.locator('#yp-save').click();page.locator('#yp-listen').click();result(page,'START, MY ENGINE!');page.clock.run_for(4000)
  expect(page.locator('#ys-state')).to_contain_text('RUNNING');expect(page.locator('#ys-outputs')).to_contain_text('Starter OFF · Run supply ON')
  page.locator('#ys-reset').click();contact(page,300);page.locator('#yp-listen').click();page.locator('#ys-reset').click();result(page,'Start my engine');expect(page.locator('#ys-state')).to_contain_text('LOCKED')
- page.locator('#yp-default').click();expect(page.locator('#yp-command')).to_have_value('Hey Start')
+ page.locator('#yp-default').click();expect(page.locator('#yp-command')).to_have_value('Start')
  page.locator('#ys-speed').select_option('10');contact(page,500);expect(page.locator('#yp-reason')).to_contain_text('1×')
 
 def test_circuit_cancel_parameters_and_exports(page,demo_records,live_server):
@@ -61,7 +61,7 @@ def test_practical_visual_capabilities_and_errors(page,demo_records,live_server,
 
 def test_delayed_recognition_and_unavailable_services(page,demo_records,live_server):
  open_lab(page,demo_records,live_server);page.locator('#yp-practice').check();contact(page,300)
- page.locator('#yp-listen').click();page.locator('#yp-command').fill('My start');page.locator('#yp-test-phrase').click();result(page,'My start');page.locator('#yp-save').click();result(page,'Hey Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
+ page.locator('#yp-listen').click();page.locator('#yp-command').fill('My start');page.locator('#yp-test-phrase').click();result(page,'My start');page.locator('#yp-save').click();result(page,'Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
  page.locator('#yp-listen').click();page.clock.run_for(11000);result(page,'My start');expect(page.locator('#ys-state')).to_contain_text('LOCKED')
  page.locator('#ys-reset').click();contact(page,300);page.locator('#yp-listen').click();page.locator('#yp-stop-listening').click();result(page,'My start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
  page.evaluate('delete window.SpeechRecognition;delete window.webkitSpeechRecognition');page.locator('#yp-listen').click();expect(page.locator('#yp-speech')).to_contain_text('unavailable')
@@ -85,8 +85,8 @@ def test_recognition_error_never_starts(page,demo_records,live_server,code,expec
 
 def test_identity_rearm_epoch_and_parameter_countdown(page,demo_records,live_server):
  open_lab(page,demo_records,live_server);contact(page,1700);expect(page.locator('#ys-state')).to_contain_text('LOCKED')
- page.locator('#yp-practice').check();contact(page,300);page.locator('#yp-listen').click();contact(page,300);result(page,'Hey Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
- page.locator('#yp-listen').click();result(page,'Hey Start');result(page,'Hey Start');page.clock.run_for(4000);expect(page.locator('#ys-state')).to_contain_text('RUNNING')
+ page.locator('#yp-practice').check();contact(page,300);page.locator('#yp-listen').click();contact(page,300);result(page,'Start');expect(page.locator('#ys-state')).to_contain_text('AUTHORIZED')
+ page.locator('#yp-listen').click();result(page,'Start');result(page,'Start');page.clock.run_for(4000);expect(page.locator('#ys-state')).to_contain_text('RUNNING')
  page.get_by_text('Timing and CAN parameters',exact=True).click();page.locator('#yp-param-3').fill('5');page.get_by_role('button',name='Apply parameters / new experiment').click();contact(page,300)
  page.locator('#ys-run').click()
  remaining=page.evaluate('YanksonLab.parameters[3]-(YanksonLab.row[0]-YanksonLab.row[24])')

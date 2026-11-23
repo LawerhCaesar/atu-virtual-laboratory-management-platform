@@ -110,11 +110,11 @@
     "beforeend",
     `<div class="yp-status-grid"><p id="yp-voice-source">Voice: not enabled</p><p id="yp-contact-source">Contact: none</p><p id="yp-identity-source">Identity: not selected</p><p id="yp-engine-state">Virtual engine: LOCKED</p></div>
  <button id="yp-check" class="btn btn-outline-primary">Check this device</button><p id="yp-capabilities" role="status">Device capabilities not checked.</p>
- <label><input id="yp-practice" type="checkbox"> Select practice identity (simulated matched identity)</label>
+ <label><input id="yp-practice" type="checkbox"> Practice identity (simulated match)</label>
  <p>Use device verification below for a real signed authentication response. Practice identity remains a separate simulation option. External R503 contact transport is not configured.</p>
- <div class="yp-start-grid"><section><h3>Authorize by contact</h3><button id="yp-hold" class="yp-hold" type="button" aria-describedby="yp-thresholds">Press and hold here<br>Touch, pointer or Space / Enter</button><p id="yp-thresholds"></p><progress id="yp-progress" value="0" max="1.5" aria-label="Measured contact duration"></progress><p id="yp-contact-result" role="status">Release to classify a short contact; hold for direct start.</p></section>
- <section><h3>Speak your command</h3><label for="yp-command">Personal command</label><input id="yp-command" class="form-control" maxlength="80" value="Hey Start"><div class="ys-buttons"><button id="yp-save" class="btn btn-outline-primary">Save command</button><button id="yp-default" class="btn btn-outline-secondary">Restore default command</button></div><p id="yp-active-command"></p><label for="yp-language">Recognition language</label><select id="yp-language" class="form-select"><option value="en-US">English (United States) · en-US</option><option value="en-GB">English (United Kingdom) · en-GB</option></select><p>Before activating a new phrase, use Listen for test to check these draft words. Choose clearer words if the transcript differs. Matching always requires the whole normalized phrase.</p><p id="yp-phrase-check" role="status">Draft phrase has not been tested.</p><p>Recognition uses the browser speech service, which may process audio remotely and require a network connection. It is not guaranteed offline. Raw audio is not stored by this laboratory.</p><div class="ys-buttons"><button id="yp-test-phrase" class="btn btn-outline-primary">Listen for test · phrase only</button><button id="yp-listen" class="btn btn-primary">Enable microphone / Listen</button><button id="yp-stop-listening" class="btn btn-outline-secondary">Stop listening</button></div><p id="yp-speech" role="status">Not listening.</p><p id="yp-transcript"></p></section></div>
- <p id="yp-reason" class="yp-reason" role="status">Verify this device or select practice identity, then use a short contact and speak, or hold for direct start.</p>
+ <div class="yp-start-grid"><section><h3>Authorize by contact</h3><button id="yp-hold" class="yp-hold" type="button" aria-describedby="yp-thresholds">Press and hold here<br>Touch, pointer or Space / Enter</button><output id="yp-contact-timer" aria-label="Measured contact duration" aria-live="off">0.00 s</output><p id="yp-contact-classification" role="status">Not held yet.</p><p id="yp-thresholds"></p><progress id="yp-progress" value="0" max="1.5" aria-label="Measured contact duration"></progress><p id="yp-contact-result" role="status">Release to classify a short contact; hold for direct start.</p></section>
+ <section><h3>Speak your command</h3><label for="yp-command">Personal command</label><input id="yp-command" class="form-control" maxlength="80" value="Start"><div class="ys-buttons"><button id="yp-save" class="btn btn-outline-primary">Save command</button><button id="yp-default" class="btn btn-outline-secondary">Restore default command</button></div><p id="yp-active-command"></p><label for="yp-language">Recognition language</label><select id="yp-language" class="form-select"><option value="en-US">English (United States) · en-US</option><option value="en-GB">English (United Kingdom) · en-GB</option></select><p>Before activating a new phrase, use Listen for test to check these draft words. Choose clearer words if the transcript differs. Matching always requires the whole normalized phrase.</p><p id="yp-phrase-check" role="status">Draft phrase has not been tested.</p><p>Recognition uses the browser speech service, which may process audio remotely and require a network connection. It is not guaranteed offline. Raw audio is not stored by this laboratory.</p><div class="ys-buttons"><button id="yp-test-phrase" class="btn btn-outline-primary">Listen for test · phrase only</button><button id="yp-listen" class="btn btn-primary">Enable microphone / Listen</button><button id="yp-stop-listening" class="btn btn-outline-secondary">Stop listening</button></div><p id="yp-speech" role="status">Not listening.</p><p id="yp-transcript"></p></section></div>
+ <p id="yp-listen-help" class="small">Release a matched short contact before Listen.</p><p id="yp-start-source" role="status">Start source: none.</p><p id="yp-reason" class="yp-reason" role="status">Verify this device or select practice identity, then use a short contact and speak, or hold for direct start.</p>
  <details id="yp-circuit"><summary>Interactive component and circuit workbench</summary><p>Functional circuit simulation, not analog/SPICE analysis. Terminals are functional names, not verified ECU pin numbers. ECU board revision and DFRobot voice-module model must be confirmed. No GPIO directly powers a relay coil or starter.</p>
  <p class="small">On narrow screens, scroll the schematic horizontally to inspect terminal labels.</p><div class="yp-diagram-scroll" tabindex="0" role="region" aria-label="Scrollable functional circuit"><svg viewBox="0 0 920 330" role="img" aria-label="Functional engine starting circuit with protected drivers and CAN feedback"><g fill="#e8f2f5" stroke="#46667a" stroke-width="2"><rect x="10" y="20" width="200" height="55" rx="10"/><rect x="10" y="120" width="200" height="55" rx="10"/><rect x="10" y="230" width="200" height="65" rx="10"/><rect x="300" y="100" width="200" height="100" rx="10"/><rect x="580" y="20" width="325" height="60" rx="10"/><rect x="580" y="130" width="325" height="60" rx="10"/><rect x="580" y="240" width="325" height="65" rx="10"/></g><g font-size="16" fill="#173b58"><text x="20" y="52">R503 / separate contact</text><text x="20" y="152">Voice module / browser</text><text x="20" y="256">Battery, fuse, regulator</text><text x="20" y="280">E-stop / interlocks / GND</text><text x="323" y="145">ESP32-WROOM-32</text><text x="320" y="173">10 ms virtual controller</text><text x="595" y="45">SN65HVD230 → CANH / CANL</text><text x="595" y="68">↔ ECU 121-pin (revision TBD)</text><text x="595" y="155">Protected driver + suppression</text><text x="595" y="178">→ starter relay / Toyota 1NZ</text><text x="595" y="267">Separate protected run relay</text><text x="595" y="290">→ ECU / virtual engine run supply</text></g><g fill="none" stroke-width="4"><path data-wire="match" d="M210 45H250V115H300" stroke="#7954a0"/><path data-wire="voice" d="M210 145H300" stroke="#7954a0"/><path data-wire="power" d="M210 260H250V190H300" stroke="#ad6015"/><path data-wire="canh" d="M500 115H540V45H580" stroke="#146c97"/><path data-wire="canl" d="M500 125H550V65H580" stroke="#146c97"/><path data-wire="starter" d="M500 150H580" stroke="#1c7a68"/><path data-wire="run" d="M500 185H540V270H580" stroke="#1c7a68"/></g></svg></div>
  <p>Legend: orange = protected power · purple = data · blue = CAN feedback · green = relay commands. CAN requires appropriate bus-end termination; this logical model does not solve impedance, EMC or electrical voltage drop.</p>
@@ -129,7 +129,7 @@
   let permissionWallEpoch = null;
   let livePermissionInvalid = false;
   let lastDecision = null;
-  let command = "Hey Start",
+  let command = "Start",
     active = null,
     contact = null,
     contactRAF = 0,
@@ -139,7 +139,7 @@
     source = { voice: "none", contact: "none", identity: "none" },
     listening = false,
     reasonPinned = false;
-  const preferenceKey = `atu:yankson:command:v1:${desk.dataset.user}`;
+  let liveVoiceRequest = false, previousStarter = false, startSource = "none";
   const normalize = (s) =>
     s
       .normalize("NFKC")
@@ -147,10 +147,6 @@
       .replace(/[\p{P}\p{S}]/gu, " ")
       .replace(/\s+/g, " ")
       .trim();
-  try {
-    const saved = localStorage.getItem(preferenceKey);
-    if (saved && saved.length <= 80 && normalize(saved)) command = saved;
-  } catch {}
   function note(reason) {
     reasonPinned =
       /wrong command|rejected|denied|failure|no usable|no speech|no current|require 1×|no verified/i.test(
@@ -192,15 +188,9 @@
     $("#yp-command").value = command;
     $("#yp-active-command").textContent =
       `Active command: “${command}”. Complete phrase only; case, punctuation and whitespace are normalized.`;
+    window.dispatchEvent(new CustomEvent("yankson:command", {detail: command}));
   }
-  try {
-    const savedLanguage = localStorage.getItem(preferenceKey + ":language");
-    $("#yp-language").value = ["en-US", "en-GB"].includes(savedLanguage)
-      ? savedLanguage
-      : "en-US";
-  } catch {
-    $("#yp-language").value = "en-US";
-  }
+  $("#yp-language").value = "en-US";
   function invalidateDraft() {
     testedDraft = null;
     $("#yp-phrase-check").textContent =
@@ -210,12 +200,7 @@
   $("#yp-command").addEventListener("input", invalidateDraft);
   $("#yp-language").addEventListener("change", () => {
     invalidateDraft();
-    try {
-      localStorage.setItem(
-        preferenceKey + ":language",
-        $("#yp-language").value,
-      );
-    } catch {}
+
   });
   function save(value) {
     if (!normalize(value) || value.length > 80) {
@@ -223,7 +208,7 @@
       return;
     }
     if (
-      normalize(value) !== "hey start" &&
+      normalize(value) !== "start" &&
       normalize(value) !== normalize(command) &&
       !(
         testedDraft?.matched &&
@@ -238,17 +223,10 @@
     }
     invalidate("Command changed; listen again.");
     command = value.trim();
-    try {
-      localStorage.setItem(preferenceKey, command);
-    } catch {
-      note(
-        "Preference storage unavailable; command is retained for this visit only.",
-      );
-    }
     updateCommand();
   }
   $("#yp-save").onclick = () => save($("#yp-command").value);
-  $("#yp-default").onclick = () => save("Hey Start");
+  $("#yp-default").onclick = () => save("Start");
   updateCommand();
   $("#yp-check").onclick = async () => {
     const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -288,8 +266,18 @@
     lab.step();
     note("Identity source changed; start with a fresh contact.");
   };
+  function resetContactDisplay() {
+    $("#yp-contact-timer").textContent = "0.00 s";
+    $("#yp-progress").value = 0;
+    $("#yp-contact-classification").textContent = "Not held yet.";
+  }
   function beginContact(kind, id) {
-    if (contact || !liveReady()) return;
+    if (contact) return;
+    resetContactDisplay();
+    if (!liveReady()) {
+      $("#yp-contact-classification").textContent = "Rejected: live inputs need a current 1× clock.";
+      return;
+    }
     if (
       !$("#yp-practice").checked &&
       !(verifiedDevice && performance.now() < verifiedDevice.expires)
@@ -297,6 +285,7 @@
       note(
         "No verified identity available. Verify this device, or explicitly select practice identity.",
       );
+      $("#yp-contact-classification").textContent = "Rejected: verify identity first.";
       return;
     }
     invalidate("New contact started.");
@@ -304,9 +293,11 @@
     contact = {
       start: performance.now(),
       modelStart: lab.time,
+      debtAtStart: lab.debt,
       kind,
       id,
       generation: lab.generation,
+      modelLongFired: false,
     };
     source.contact = kind;
     source.identity = $("#yp-practice").checked
@@ -321,6 +312,8 @@
     if (!contact) return;
     const elapsed = (performance.now() - contact.start) / 1000;
     $("#yp-progress").value = elapsed;
+    $("#yp-contact-timer").textContent = elapsed.toFixed(2) + " s";
+    $("#yp-contact-classification").textContent = elapsed < lab.parameters[1] ? "Holding: below short threshold." : elapsed < lab.parameters[2] ? "Holding: release for the voice route." : contact.modelLongFired ? "Controller: long-contact request sent once." : "Measured long threshold reached; waiting for the controller sample.";
     $("#yp-contact-result").textContent =
       `Measured ${source.contact}: ${elapsed.toFixed(2)} s · ${source.identity}`;
     contactRAF = requestAnimationFrame(animateContact);
@@ -333,6 +326,9 @@
     cancelAnimationFrame(contactRAF);
     if (c.generation !== lab.generation || !liveReady()) {
       lab.cancelContact();
+      $("#yp-contact-timer").textContent = elapsed.toFixed(2) + " s";
+      $("#yp-contact-classification").textContent = "Rejected: clock or experiment changed.";
+      $("#yp-progress").value = 0;
       return;
     }
     lab.contact(false);
@@ -343,25 +339,46 @@
         : elapsed < p[2]
           ? "short contact"
           : "long contact";
+    $("#yp-contact-timer").textContent = elapsed.toFixed(2) + " s";
+    $("#yp-progress").value = elapsed;
+    const controllerDecision = c.modelLongFired ? "LONG request sent once" : lab.row[9] ? (lab.row[2] ? "SHORT: voice permission granted" : "SHORT: permission not granted") : "REJECTED: no new request";
+    const timing = {
+      measuredSeconds: elapsed,
+      modelContactSeconds: lab.row[12],
+      modelAdvanceSeconds: lab.time - c.modelStart,
+      measuredMinusModelContactSeconds: elapsed - lab.row[12],
+      pendingModelSecondsAtStart: c.debtAtStart,
+      pendingModelSecondsAtRelease: lab.debt,
+      integrationStepSeconds: p[0],
+      interpretation: "Wall contact uses performance.now; the controller advances through scheduled fixed steps and immediate input samples. Differences include scheduling/queued time and edge sampling, not just display rounding. Long events require a held sample at the threshold; releasing exactly there can produce neither event."
+    };
+    $("#yp-contact-classification").textContent = (elapsed < p[1] ? "Rejected: too short" : classification + " measured") + " · Controller: " + controllerDecision + ".";
     $("#yp-contact-result").textContent =
-      `Measured ${elapsed.toFixed(3)} s · ${classification}. Model contact ${lab.row[12].toFixed(3)} s.`;
+      `Measured ${elapsed.toFixed(3)} s · ${classification}. Model contact ${lab.row[12].toFixed(3)} s (0.01 s controller sampling). Difference ${(timing.measuredMinusModelContactSeconds * 1000).toFixed(1)} ms; scheduled model advance ${timing.modelAdvanceSeconds.toFixed(3)} s, queued ${lab.debt.toFixed(3)} s. These clocks can differ through scheduling and edge sampling, not just rounding. ${controllerDecision}.`;
     events.push({
       type: "measured contact",
       durationSeconds: elapsed,
       modelDurationSeconds: lab.row[12],
+      measuredClassification: classification,
+      controllerDecision,
+      timing,
       source: c.kind,
       identity: source.identity,
       modelTime: lab.time,
     });
     note(
-      classification === "short contact"
-        ? "Contact released. If permission is granted, say the active command before expiry."
-        : "Contact completed: " + classification,
+      c.modelLongFired ? "Long-contact request sent once. Inspect the actual start source and supervisor response." :
+      lab.row[2] ? (classification === "long contact" ? "Measured hold reached the long boundary, but the sampled controller granted short-contact voice permission. Use Listen, or reset and hold longer for the direct route." : "Short-contact voice permission granted. Click Listen and say the active phrase before expiry.") :
+      "Contact rejected by the sampled controller: no new voice permission or direct request. Inspect timing and circuit readiness, then try a fresh contact away from the boundary.",
     );
   }
   function cancelContact(reason) {
     if (!contact) return;
+    const elapsed = (performance.now() - contact.start) / 1000;
     contact = null;
+    $("#yp-contact-timer").textContent = elapsed.toFixed(2) + " s";
+    $("#yp-progress").value = 0;
+    $("#yp-contact-classification").textContent = "Rejected: cancelled (" + reason + ").";
     cancelAnimationFrame(contactRAF);
     lab.cancelContact();
     $("#yp-contact-result").textContent = "Contact cancelled: " + reason;
@@ -507,7 +524,8 @@
         note("Wrong command: the complete normalized phrase must match.");
         return;
       }
-      lab.voice(lab.time);
+      liveVoiceRequest = true;
+      try { lab.voice(lab.time); } finally { liveVoiceRequest = false; }
       const decision = {
         source: "browser recognition production",
         accepted: !!lab.row[14],
@@ -535,16 +553,21 @@
   function listen(mode = "production") {
     if (speech.active) return;
     if (mode === "production") {
-      if (!liveReady()) return;
+      if (!liveReady()) {
+        $("#yp-listen-help").textContent = "Unavailable: " + $("#yp-reason").textContent;
+        return;
+      }
       if (
         !lab.row[2] ||
         livePermissionInvalid ||
         permissionWallEpoch === null ||
         (performance.now() - permissionWallEpoch) / 1000 >= lab.parameters[3]
       ) {
-        note(
-          "No current voice permission. Use a matched short contact and release first.",
-        );
+        const reason = lab.row[1] >= 2 ?
+          "No current voice permission. The engine has already received a start. Reset experiment, then use a matched short contact (about 0.3–0.5 s), release and select Listen." :
+          "No current voice permission. Use a matched short contact (about 0.3–0.5 s) and release first, then select Listen.";
+        note(reason);
+        $("#yp-listen-help").textContent = "Unavailable: " + reason;
         return;
       }
       lab.start();
@@ -645,7 +668,7 @@
     $("#ys-parameter-explanation").textContent =
       `Fixed 0.01 s Euler model; one-sample command delay. Running: valid RPM at least ${p[5]} for ${p[6]} s. Crank: ${p[4]} s from original acceptance. Voice: ${p[3]} s permission, ${p[20]} s maximum event age. CAN: ${p[8]} s period, ${p[7]} s freshness. Live input requires 1×. Undefined human recognition metrics remain not performed.`;
     $("#yp-thresholds").textContent =
-      `Short: ${p[1]} s to less than ${p[2]} s; long: at least ${p[2]} s. Live contact requires 1× and an active foreground clock.`;
+      `Short ${p[1]}–<${p[2]} s · Long ≥${p[2]} s (1×).`;
     $("#yp-progress").max = p[2];
   }
   $("#yp-parameters").onsubmit = (e) => {
@@ -737,7 +760,14 @@
     d.append(summary, p);
     $("#yp-experiments").append(d);
   }
+  function readiness() {
+    const row = lab.row;
+    return {activeCommand: command, startSource,
+      permissionSecondsRemaining: row[2] && !livePermissionInvalid && permissionWallEpoch !== null ?
+        Math.max(0, Math.min(lab.parameters[3] - (row[0] - row[24]), lab.parameters[3] - (performance.now() - permissionWallEpoch) / 1000)) : 0};
+  }
   window.YanksonPractical = {
+    readiness,
     setDeviceIdentity(value) {
       invalidate("Device identity changed.");
       cancelContact("device identity changed");
@@ -761,7 +791,8 @@
     },
     metadata() {
       return {
-        adapterVersion: "3.0-review",
+        adapterVersion: "3.1-local-ui-review",
+        ...readiness(),
         caseId: "interactive-practical-session",
         activeCommand: command,
         recognitionLanguage: $("#yp-language").value,
@@ -779,8 +810,26 @@
       };
     },
   };
+  // Observe single-step events before display-frame batching can hide them.
+  window.addEventListener("yankson:tick", (e) => {
+    const r = e.detail;
+    if (contact && r[10]) contact.modelLongFired = true;
+    if (r[3] && !previousStarter) {
+      startSource = r[14] ? (liveVoiceRequest ? "accepted voice (browser recognition)" : "simulated voice test event") :
+        r[10] ? (contact ? "long contact (measured screen pad)" : "simulated long-contact test event") : "supervisor request (inspect advanced trace)";
+      $("#yp-start-source").textContent = "Start source: " + startSource + ".";
+    }
+    previousStarter = !!r[3];
+  });
   window.addEventListener("yankson:sample", (e) => {
     const r = e.detail;
+    $("#yp-listen").setAttribute("aria-describedby", "yp-listen-help");
+    $("#yp-listen-help").textContent = speech.active ? "Recognition is busy. Stop listening to cancel the current request." :
+      !(window.SpeechRecognition || window.webkitSpeechRecognition) ? "Unavailable: this browser does not provide speech recognition. Try a supported Chrome or Edge browser." :
+      Number($("#ys-speed").value) !== 1 ? "Unavailable: switch to 1× normal time for live speech." :
+      r[1] >= 2 ? "Unavailable: a start is already in progress or completed. Reset experiment for a new voice trial, then use a short contact and release." :
+      !r[2] || livePermissionInvalid ? "Unavailable: make a matched short contact (about 0.3–0.5 s), release, then select Listen." :
+      "Ready: click Listen and say the whole active phrase before permission expires.";
     for (const path of document.querySelectorAll("[data-wire]")) {
       const key = path.dataset.wire,
         connected = $("#yp-wire-" + key).checked;
@@ -828,13 +877,23 @@
         "RPM feedback invalid or stale. A new crank is inhibited; an accepted crank retains its deadline.";
     else if (r[2] && !active && !reasonPinned)
       $("#yp-reason").textContent =
-        "Permission granted—say “" +
+        "Permission granted. Click Enable microphone / Listen, wait for LISTENING, then say “" +
         command +
         "” within " +
         Math.max(0, lab.parameters[3] - (r[0] - r[24])).toFixed(1) +
         " s.";
   });
   window.addEventListener("yankson:run-start", () => {
+    contact = null;
+    cancelAnimationFrame(contactRAF);
+    resetContactDisplay();
+    $("#yp-contact-result").textContent = "Release to classify a short contact; hold for direct start.";
+    startSource = "none"; previousStarter = false; liveVoiceRequest = false;
+    source.voice = "none"; source.contact = "none";
+    $("#yp-voice-source").textContent = "Voice: none";
+    $("#yp-contact-source").textContent = "Contact: none";
+    permissionWallEpoch = null; livePermissionInvalid = false;
+    $("#yp-start-source").textContent = "Start source: none.";
     events = [];
     diagnosticMatches = 0;
     previousAuthorization = false;
@@ -858,6 +917,7 @@
       if (lab.row[2]) livePermissionInvalid = true;
       invalidate("Experiment " + name + ".");
       cancelContact(name);
+      $("#yp-listen-help").textContent = "Unavailable: the experiment stopped or paused. Make a fresh matched short contact before listening.";
     });
   window.addEventListener("blur", () => {
     invalidate("Window lost focus.");

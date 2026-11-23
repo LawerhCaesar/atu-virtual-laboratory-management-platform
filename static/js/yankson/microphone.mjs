@@ -1,10 +1,11 @@
 // Local capture diagnostic. Audio samples remain in memory for the visible analyser.
 export function mountMicrophone(host) {
-  host.innerHTML = `<details open><summary>Check your actual microphone · waveform and sample bytes</summary>
-    <p>Test capture before requesting engine permission. Watch the waveform while speaking, then stop. Recognition is checked separately.</p>
+  host.innerHTML = `<details open><summary>Microphone check · live waveform</summary>
+    <p>Watch this waveform during the microphone check, then stop. The analyser stops when speech recognition begins; its waveform is not a recording of the recognised phrase.</p>
     <div class="ys-buttons"><button id="ya-mic-start" class="btn btn-outline-primary">Test microphone</button><button id="ya-mic-stop" class="btn btn-outline-secondary">Stop microphone test</button></div>
     <p id="ya-mic-status" role="status">Microphone test is off.</p>
     <canvas id="ya-mic-wave" width="700" height="100" role="img" aria-label="Live local microphone waveform"></canvas>
+    <a class="ya-mic-back" href="#ys-microphone-step">Back to microphone controls to stop this check</a>
     <pre id="ya-mic-bytes">No samples. Diagnostic bytes are not saved or exported.</pre></details>`;
   const get = (id) => document.getElementById(id);
   let stream = null;
@@ -33,6 +34,8 @@ export function mountMicrophone(host) {
     cancelAnimationFrame(frame);
     stream?.getTracks().forEach((track) => track.stop());
     stream = null;
+    const canvas = get("ya-mic-wave");
+    canvas.getContext("2d")?.clearRect(0,0,canvas.width,canvas.height);
     const previousContext = context;
     context = null;
     previousContext?.close().catch(() => {});
@@ -42,6 +45,11 @@ export function mountMicrophone(host) {
   }
   get("ya-mic-stop").onclick = () => stop();
   get("ya-mic-start").onclick = async () => {
+    const waveform = get("ya-mic-wave");
+    waveform.closest("details").open = true;
+    const bounds = waveform.getBoundingClientRect();
+    if (bounds.top < 0 || bounds.bottom > window.innerHeight)
+      waveform.scrollIntoView({block: "center", behavior: "instant"});
     stop();
     const epoch = generation;
     get("ya-mic-start").disabled = true;

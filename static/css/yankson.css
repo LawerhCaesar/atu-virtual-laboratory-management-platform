@@ -615,3 +615,56 @@ details {
 #ys-output-pane #ya-stand {
   margin: 10px 0;
 }
+
+/* Local follow-up: compact first-use workflow and an adjustable, optional input pane. */
+#ys-workbench { grid-template-columns: var(--ys-input-width, 360px) 12px minmax(0, 1fr); gap: 12px; }
+#ys-workbench[data-inputs-collapsed="true"] { grid-template-columns: minmax(0, 1fr); }
+#ys-layout-toolbar { display:flex;align-items:center;flex-wrap:wrap;gap:16px;margin:14px 0; }
+#ys-layout-toolbar .ys-width-control { display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem; }
+#ys-input-width { width:140px;accent-color:#236e83; }
+#ys-width-value { min-width:48px;font-variant-numeric:tabular-nums; }
+#ys-input-divider { border-radius:8px;background:#dce7ef;cursor:col-resize;touch-action:none;align-self:stretch;min-height:160px; }
+#ys-input-divider:hover,#ys-input-divider:focus-visible { background:#2b7b8b;outline:3px solid #e4b94f;outline-offset:2px; }
+#ys-input-divider[hidden],#ys-inputs[hidden] { display:none; }
+.ys-basic-step { background:#fff;border:1px solid #cad9e2;border-radius:12px;padding:12px;margin:10px 0; }
+.ys-basic-step h3 { font-size:1rem;font-weight:650;margin:0 0 10px; }
+.ys-basic-step p { margin:6px 0;font-size:.82rem;line-height:1.35; }
+.ys-identity-controls { display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px; }
+.ys-identity-controls label { font-size:.78rem;margin:0; }
+.ys-identity-controls button { min-height:38px;font-size:.8rem; }
+.ys-contact-controls { display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:10px;align-items:center; }
+#ys-inputs .yp-hold { min-height:70px;padding:10px;font-size:.86rem; }
+#yp-contact-timer { font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;color:#173b58; }
+#ys-contact-step progress { width:100%;height:12px; }
+#ys-contact-step #yp-contact-classification { font-weight:650; }
+#ys-inputs .ys-basic-step .ys-buttons { display:flex;flex-wrap:wrap; }
+#ys-inputs .ys-basic-step .ys-buttons>.btn { flex:1 1 0;min-height:40px;font-size:.8rem; }
+.ys-quick-buttons { display:flex;gap:8px;flex-wrap:wrap; }
+.ys-quick-buttons>.btn { flex:1 1 0;min-height:40px;white-space:normal;font-size:.82rem; }
+#ys-inputs .ys-workflow { font-size:.8rem;line-height:1.5;margin:0 0 8px; }
+#ys-inputs #ys-quick-controls { position:static;margin-bottom:8px; }
+#ys-live-feedback { display:grid;gap:8px;margin-bottom:12px; }
+#ys-live-feedback h3 { font-size:1rem;margin:0; }
+#ys-live-feedback p { margin:0;font-size:.9rem; }
+#ys-permission-countdown { display:block;font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums; }
+#ya-microphone { margin:12px 0;padding:12px;border:1px solid #cad9e2;border-radius:12px;background:#fff; }
+#ya-microphone p { margin:8px 0;font-size:.85rem; }
+#ys-output-pane #ya-mic-wave { display:block;width:100%;height:90px; }
+#ys-output-advanced { margin:12px 0; }
+@media (max-width:900px) {
+ #ys-workbench { grid-template-columns:minmax(0,1fr); }
+ #ys-input-divider,#ys-layout-toolbar .ys-width-control { display:none; }
+ #ys-inputs { position:static;max-height:none;overflow:visible;padding:0; }
+ #ys-layout-toolbar { position:sticky;top:4px;z-index:6;background:#f4f7fb;padding:6px 0; }
+}
+@media (prefers-reduced-motion:reduce) { #ys-inputs,#ys-output-pane { scroll-behavior:auto; } }
+#ys-inputs .ys-basic-step { padding:10px; }
+#ys-inputs .ys-workflow { margin-bottom:6px;line-height:1.35; }
+#ys-inputs .ys-basic-step .btn,#ys-inputs #ys-quick-controls .btn { padding:7px 9px;line-height:1.35;min-height:44px; }
+#ys-inputs .ys-basic-step h3 { margin-bottom:8px; }
+#ys-inputs .ys-basic-step p { margin:5px 0; }
+.ys-contact-controls.ys-contact-with-help { grid-template-columns:minmax(0,1fr) 84px 26px;gap:6px; }
+#ys-layout-toolbar #tour-launch { position:static;right:auto;bottom:auto;margin-left:auto;box-shadow:none;z-index:auto; }
+@media (max-width:900px) { #ys-layout-toolbar { position:static; } }
+.ya-mic-back { display:inline-block;margin-top:8px;font-size:.85rem; }
+@media (min-width:901px) { .ya-mic-back { display:none; } }

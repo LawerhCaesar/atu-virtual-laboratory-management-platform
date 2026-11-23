@@ -1,8 +1,8 @@
-import {
+const {
   DEFAULT_ELECTRICAL,
   ELECTRICAL_FIELDS,
   evaluateElectrical,
-} from "./electrical.mjs";
+} = await import(window.YanksonAssetURL("./electrical.mjs", import.meta.url));
 const $ = (s) => document.querySelector(s),
   lab = window.YanksonLab,
   app = $("#yp-workbench");
@@ -10,7 +10,7 @@ const panel = document.createElement("section");
 panel.id = "ya-results";
 panel.className = "content-panel";
 panel.innerHTML = `<p class="eyebrow">Technical result → Physical response</p><h2>Follow the starting system</h2><nav class="ys-buttons" aria-label="Starting output views"><button id="ya-tab-engine" class="btn btn-primary" aria-pressed="true">Engine and starter</button><button id="ya-tab-signals" class="btn btn-outline-primary" aria-pressed="false">Voice, binary and CAN</button><button id="ya-tab-circuit" class="btn btn-outline-primary" aria-pressed="false">Circuit health and faults</button></nav>
-<section id="ya-engine-panel"><h3>Movable engine stand · starter focus</h3><p>Based on the proposed 1NZ stand, tank, radiator, control panel and protected relays. Generic teaching geometry, not manufacturer CAD or a validated hardware installation.</p><div class="ys-buttons"><button id="ya-camera-wide" class="btn btn-outline-secondary">Whole stand</button><button id="ya-camera-starter" class="btn btn-outline-secondary">Starter close-up</button><button id="ya-transparent" class="btn btn-outline-secondary" aria-pressed="false">Transparent engine casing</button></div><div id="ya-stand"></div><p id="ya-stand-status" role="status"></p><p class="small">Starter pinion engages only with the starter command. Flywheel motion follows calculated plant RPM; rendering can strobe at speed. Qualified CAN feedback releases the starter while run supply stays on.</p></section>
+<section id="ya-engine-panel"><h3>Future engine-stand concept · starter focus</h3><p>Future concept based on the proposed 1NZ stand, tank, radiator, control panel and protected relays. This is teaching geometry, not a constructed or validated hardware installation.</p><div class="ys-buttons"><button id="ya-camera-wide" class="btn btn-outline-secondary">Whole stand</button><button id="ya-camera-starter" class="btn btn-outline-secondary">Starter close-up</button><button id="ya-transparent" class="btn btn-outline-secondary" aria-pressed="false">Transparent engine casing</button></div><div id="ya-stand"></div><p id="ya-stand-status" role="status"></p><p class="small">Starter pinion engages only with the starter command. Flywheel motion follows calculated plant RPM; rendering can strobe at speed. Qualified CAN feedback releases the starter while run supply stays on.</p></section>
 <section id="ya-signals-panel" hidden><h3>Signal conversion and feedback</h3><div id="ya-microphone"></div><div id="ya-chain" class="ya-chain"></div><p class="small">Speech recognition produces text, not raw audio bits in this lab. The binary view encodes that text as UTF-8 bytes; command ID 1 is a separate software decision. The existing demonstration CAN ID 0x100 carries RPM feedback to the supervisor; it is not an OEM start-message definition.</p><div class="ya-signal-grid"><section><h4>Recognized text → UTF-8 bytes</h4><pre id="ya-binary">No live recognition result yet.</pre></section><section><h4>Command and permission</h4><pre id="ya-command">No voice command sampled.</pre></section><section><h4>CAN receiver and validity</h4><pre id="ya-can"></pre></section><section><h4>Electrical differential test sample</h4><pre id="ya-levels"></pre></section></div><div id="ya-charts" class="ya-charts"></div><details><summary>Signal event log</summary><pre id="ya-signal-events"></pre></details></section>
 <section id="ya-circuit-panel" hidden><h3>Electrical teaching bench</h3><p>Independent ideal DC and static CAN checks feed the original supervisor as power/interlock/feedback faults. This is not SPICE, a production CAN physical-layer decoder, or a fuse time-current model. Starter supply current is prospective I = V/(cable resistance + starter resistance).</p><div id="ya-electric-fields" class="ys-fields"></div><div class="ys-buttons"><button id="ya-check" class="btn btn-primary">Check circuit integrity</button><button id="ya-fuse" class="btn btn-outline-secondary">Replace virtual fuse</button><button id="ya-good" class="btn btn-outline-secondary">Restore electrical defaults</button></div><div id="ya-preflight" role="status"></div><div id="ya-circuit-meters" class="ya-chain"></div><p id="ya-electrical-values"></p>
 <details open><summary>Lecturer trial exercises</summary><p>Save an exercise to your staff account, then share its ID with approved students. Loading an exercise restores its starting faults and resets the experiment. Students repair their browser’s copy; it does not alter the saved question.</p><label for="ya-exercise-title">Exercise title</label><input id="ya-exercise-title" class="form-control" maxlength="120"><label for="ya-instructions">Student instructions</label><textarea id="ya-instructions" class="form-control" maxlength="3000"></textarea><div class="ys-buttons"><button id="ya-save-exercise" class="btn btn-primary">Save lecturer exercise</button><button id="ya-list-exercises" class="btn btn-outline-secondary">My saved exercises</button></div><label for="ya-exercise-list">Saved exercise</label><select id="ya-exercise-list" class="form-select"><option value="">Choose a saved exercise</option></select><label for="ya-exercise-id">Shared exercise ID</label><input id="ya-exercise-id" type="number" class="form-control" min="1"><button id="ya-load-exercise" class="btn btn-outline-primary">Load shared exercise</button><p id="ya-exercise-status" role="status"></p></details></section>`;
@@ -287,11 +287,27 @@ const observer = new IntersectionObserver((entries) => {
   stand?.setVisible(visible && !$("#ya-engine-panel").hidden);
 });
 observer.observe($("#ya-stand"));
-import("./engine-stand.bundle.mjs")
+function updateStandStatus(row) {
+  $("#ya-stand-status").textContent =
+    "State " +
+    ["LOCKED", "AUTHORIZED", "CRANKING", "RUNNING", "FAULT"][row[1]] +
+    " · starter " +
+    (row[3] ? "REQUESTED" : "not requested") +
+    " · delivered coil / pinion " +
+    (deliveredRow(row)[3] ? "ENERGIZED / ENGAGED" : "OFF / RELEASED") +
+    " · run supply " +
+    (row[7] ? "ON" : "OFF") +
+    " · plant " +
+    row[8].toFixed(1) +
+    " rpm · CAN " +
+    (row[5] ? "valid" : "invalid");
+}
+import(window.YanksonAssetURL("./engine-stand.bundle.mjs", import.meta.url))
   .then(({ createStand }) => {
     try {
       stand = createStand($("#ya-stand"));
       stand.setVisible(visible);
+      updateStandStatus(lastRow);
       stand.update(
         deliveredRow(lastRow),
         matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -596,19 +612,7 @@ window.addEventListener("yankson:sample", (e) => {
       matchMedia("(prefers-reduced-motion: reduce)").matches,
     );
   }
-  $("#ya-stand-status").textContent =
-    "State " +
-    ["LOCKED", "AUTHORIZED", "CRANKING", "RUNNING", "FAULT"][lastRow[1]] +
-    " · starter " +
-    (lastRow[3] ? "REQUESTED" : "not requested") +
-    " · delivered coil / pinion " +
-    (deliveredRow(lastRow)[3] ? "ENERGIZED / ENGAGED" : "OFF / RELEASED") +
-    " · run supply " +
-    (lastRow[7] ? "ON" : "OFF") +
-    " · plant " +
-    lastRow[8].toFixed(1) +
-    " rpm · CAN " +
-    (lastRow[5] ? "valid" : "invalid");
+  updateStandStatus(lastRow);
 });
 window.addEventListener("yankson:run-start", () => {
   events = [];
@@ -803,12 +807,12 @@ window.addEventListener("pagehide", () => {
   observer.disconnect();
   stand?.destroy();
 });
-import { mountMicrophone } from "./microphone.mjs";
+const { mountMicrophone } = await import(window.YanksonAssetURL("./microphone.mjs", import.meta.url));
 mountMicrophone(document.querySelector("#ya-microphone"));
-import { mountGuide } from "./guide.mjs";
+const { mountGuide } = await import(window.YanksonAssetURL("./guide.mjs", import.meta.url));
 await mountGuide(help);
-const { mountWorkbench } = await import("./workbench.mjs");
+const { mountWorkbench } = await import(window.YanksonAssetURL("./workbench.mjs", import.meta.url));
 mountWorkbench();
 window.YanksonEvidence?.setInitialConfiguration(configuration());
-const { mountEvidenceControls } = await import("./experiments.mjs");
+const { mountEvidenceControls } = await import(window.YanksonAssetURL("./experiments.mjs", import.meta.url));
 mountEvidenceControls();

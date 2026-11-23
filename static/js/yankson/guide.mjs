@@ -18,7 +18,7 @@ export async function mountGuide(help) {
   document.querySelector("#ys-results").after(section);
   try {
     const response = await fetch(
-      new URL("./learning-guide.json", import.meta.url),
+      window.YanksonAssetURL("./learning-guide.json", import.meta.url),
     );
     if (!response.ok) throw Error("Guide unavailable");
     const data = await response.json();
@@ -28,7 +28,7 @@ export async function mountGuide(help) {
     const link = document.createElement("a");
     link.className = "btn btn-outline-primary";
     link.textContent = "Download complete learning guide (PDF)";
-    link.href = new URL(
+    link.href = window.YanksonAssetURL(
       "./authenticated-starting-learning-guide.pdf",
       import.meta.url,
     );
