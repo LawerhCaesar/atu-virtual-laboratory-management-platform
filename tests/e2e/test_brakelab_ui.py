@@ -47,7 +47,7 @@ def test_brake_baseline_charts_scaled_animation_and_export(page, demo_records, l
     assert float(page.locator("#brake-wheel-flow").get_attribute("opacity")) > 0
     page.get_by_role("button", name="Pause", exact=True).click()
     progress = page.locator("#brake-scene").get_attribute("data-progress")
-    page.clock.run_for(1000)
+    page.wait_for_timeout(250)
     expect(page.locator("#brake-scene")).to_have_attribute("data-progress", progress)
     page.get_by_role("button", name="Resume", exact=True).click()
     page.clock.run_for(4200)
@@ -155,9 +155,9 @@ def test_brake_accessibility_responsiveness_reduced_motion_and_fresh_navigation(
 def test_brake_motion_preference_changes_pause_the_playback(page, demo_records, live_server):
     page.emulate_media(reduced_motion="no-preference")
     open_brake(page, demo_records, live_server)
-    page.clock.install()
+    # Keep the real render clock for native media-query change delivery.
     page.get_by_role("button", name="Run Model", exact=True).click()
-    page.clock.run_for(1000)
+    page.wait_for_timeout(1000)
     assert float(page.locator("#brake-speed").inner_text()) < 60
     page.emulate_media(reduced_motion="reduce")
     expect(page.get_by_label("Animate illustrative braking", exact=True)).not_to_be_checked()

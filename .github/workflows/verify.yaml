@@ -41,7 +41,6 @@ jobs:
       - run: python manage.py check
       - run: python manage.py makemigrations --check --dry-run
       - run: pytest -q
-      - run: pytest -m e2e tests/e2e -q
       - name: Render startup and isolated-schema smoke test
         run: |
           python deploy/render_start.py > /tmp/atu-render-startup.log 2>&1 &
@@ -106,5 +105,51 @@ jobs:
         if: always()
         with:
           name: browser-accessibility-results
+          path: test-results/
+          if-no-files-found: ignore
+
+  browser:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: atu_ci
+          POSTGRES_USER: atu_ci
+          POSTGRES_PASSWORD: ci-only-disposable-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U atu_ci -d atu_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DJANGO_DEBUG: "true"
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: atu_ci
+      POSTGRES_USER: atu_ci
+      POSTGRES_PASSWORD: ci-only-disposable-password
+      POSTGRES_PORT: "5432"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - uses: pnpm/action-setup@v4
+        with: {version: "11.19.0"}
+      - run: pip install -r requirements-dev.txt
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm run sync-assets
+      - run: git diff --exit-code -- static/vendor/bootstrap static/vendor/three static/js/engine-live-data/cutaway.bundle.mjs static/js/bless/engine.mjs
+      - run: python -m playwright install --with-deps chromium
+      - run: python manage.py migrate --noinput
+      - run: python scripts/run_browser_shard.py --index ${{ matrix.shard }} --total 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-accessibility-results-${{ matrix.shard }}
           path: test-results/
           if-no-files-found: ignore

@@ -148,7 +148,11 @@ def test_ci_defines_disposable_postgresql_and_browser_verification():
     assert workflow["on"] == ["push", "pull_request"]
     job = workflow["jobs"]["postgres-and-browser"]
     assert job["services"]["postgres"]["image"] == "postgres:18-alpine"
-    assert any("pytest -m e2e" in step.get("run", "") for step in job["steps"])
+    browser = workflow["jobs"]["browser"]
+    assert browser["services"]["postgres"]["image"] == "postgres:18-alpine"
+    assert browser["strategy"]["matrix"]["shard"] == list(range(8))
+    assert browser["strategy"]["fail-fast"] is False
+    assert any("run_browser_shard.py --index ${{ matrix.shard }} --total 8" in step.get("run", "") for step in browser["steps"])
 
 
 @pytest.mark.django_db

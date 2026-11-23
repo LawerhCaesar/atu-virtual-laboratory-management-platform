@@ -302,6 +302,7 @@ function updateStandStatus(row) {
     " rpm · CAN " +
     (row[5] ? "valid" : "invalid");
 }
+function mountStand() {
 import(window.YanksonAssetURL("./engine-stand.bundle.mjs", import.meta.url))
   .then(({ createStand }) => {
     try {
@@ -322,6 +323,7 @@ import(window.YanksonAssetURL("./engine-stand.bundle.mjs", import.meta.url))
       ($("#ya-stand").textContent =
         "3D unavailable; use the numerical response and original circuit diagram."),
   );
+}
 window.addEventListener("yankson:recognized", (e) => {
   voice = e.detail;
   const bytes = new TextEncoder().encode(voice.normalized);
@@ -810,9 +812,13 @@ window.addEventListener("pagehide", () => {
 const { mountMicrophone } = await import(window.YanksonAssetURL("./microphone.mjs", import.meta.url));
 mountMicrophone(document.querySelector("#ya-microphone"));
 const { mountGuide } = await import(window.YanksonAssetURL("./guide.mjs", import.meta.url));
-await mountGuide(help);
 const { mountWorkbench } = await import(window.YanksonAssetURL("./workbench.mjs", import.meta.url));
 mountWorkbench();
 window.YanksonEvidence?.setInitialConfiguration(configuration());
 const { mountEvidenceControls } = await import(window.YanksonAssetURL("./experiments.mjs", import.meta.url));
 mountEvidenceControls();
+document.getElementById('ys-layout-source').hidden=false;
+document.getElementById('ys-layout-source').dataset.ready='true';
+document.getElementById('ys-layout-loading').remove();
+// Guide fetch and GPU initialization must not delay the usable workspace.
+mountGuide(help).finally(()=>requestAnimationFrame(()=>setTimeout(mountStand,0)));

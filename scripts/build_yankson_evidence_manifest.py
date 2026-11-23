@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 root = Path(__file__).resolve().parents[1]
-names = ['engine.js','ui.js','practical.js','speech.js','evidence.js','teaching.mjs','workbench.mjs','microphone.mjs','devices.js','experiments.mjs','layout.mjs','electrical.mjs','guide.mjs','engine-stand.bundle.mjs','learning-guide.json','authenticated-starting-learning-guide.pdf']
+names = ['boot.mjs','engine.js','ui.js','practical.js','speech.js','evidence.js','teaching.mjs','workbench.mjs','microphone.mjs','devices.js','experiments.mjs','layout.mjs','electrical.mjs','guide.mjs','engine-stand.bundle.mjs','learning-guide.json','authenticated-starting-learning-guide.pdf']
 build = {
     'scope': 'Reviewed source assets; runtime deployment commit is reported separately.',
     'baseCommit': '05d72ec5a4a626f35060b7ab0b334eed799b5b66',

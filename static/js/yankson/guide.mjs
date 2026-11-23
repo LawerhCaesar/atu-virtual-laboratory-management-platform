@@ -7,6 +7,9 @@ export async function mountGuide(help) {
       wrapper.className = "ya-field-help";
       label.before(wrapper);
       wrapper.append(label, help(title, text));
+    } else if (target.id === 'yp-hold') {
+      target.parentElement.classList.add('ys-contact-with-help');
+      target.parentElement.append(help(title,text));
     } else target.after(help(title, text));
   }
   const section = document.createElement("section");
@@ -15,10 +18,11 @@ export async function mountGuide(help) {
   const heading = document.createElement("h2");
   heading.textContent = "Learning guide and reference evidence";
   section.append(heading);
-  document.querySelector("#ys-results").after(section);
+  (document.querySelector("#ys-workbench") || document.querySelector("#ys-results")).after(section);
   try {
     const response = await fetch(
       window.YanksonAssetURL("./learning-guide.json", import.meta.url),
+      {signal:AbortSignal.timeout(8000)},
     );
     if (!response.ok) throw Error("Guide unavailable");
     const data = await response.json();
