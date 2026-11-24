@@ -9,6 +9,9 @@ services:
     autoDeployTrigger: checksPass
     buildCommand: pip install -r requirements.txt && DJANGO_DEBUG=true python manage.py collectstatic --noinput --settings=config.build_settings
     startCommand: python deploy/render_start.py
+    # Public access stays suspended until the owner explicitly requests restoration.
+    maintenanceMode:
+      enabled: true
     healthCheckPath: /health/ready/
     numInstances: 1
     disk:
